@@ -1,0 +1,21 @@
+{
+  "format": "tosijs-character",
+  "version": 1,
+  "name": "Extreme, heavy",
+  "settings": {
+    "gender": 1,
+    "age": 1,
+    "weight": 1,
+    "muscle": 1,
+    "height": 1,
+    "proportions": 1,
+    "tone": 0.05,
+    "outfit": "male_worksuit01",
+    "shoes": "shoes03",
+    "hair": "afro01",
+    "brows": "eyebrow010"
+  },
+  "cloth": {},
+  "tailor": [],
+  "garments": {}
+}

@@ -3,7 +3,7 @@
 
 import type { Character } from 'tosijs-3d/character-file'
 import type { HumanPack } from 'tosijs-3d/human-pack'
-import type { BuildOptions, BuiltCharacter } from './built-character'
+import type { BuildOptions } from './built-character'
 import { notImplemented } from './lanes'
 import type { NamingProfile } from './profile'
 
@@ -26,30 +26,14 @@ export interface ExportOptions {
  * Write a built character as a GLB to the profile, synchronously: the one
  * GLB writer. `naming` renames joints on the way out; the rest of
  * `ExportOptions` was settled when the character was built.
+ *
+ * A character file to GLB bytes (`exportCharacterGlb`): `buildCharacter`
+ * then `writeCharacterGlb`. Async because building fetches the pack's
+ * targets and proxies.
+ *
+ * Implemented by lane skinned-glb (src/build/), same signatures and docs.
  */
-export function writeCharacterGlb(
-  built: BuiltCharacter,
-  options: Pick<ExportOptions, 'naming'> = {}
-): Uint8Array {
-  void built
-  void options
-  return notImplemented('skinned-glb')
-}
-
-/**
- * A character file to GLB bytes: `buildCharacter` then `writeCharacterGlb`.
- * Async because building fetches the pack's targets and proxies.
- */
-export async function exportCharacterGlb(
-  character: Character,
-  pack: HumanPack,
-  options: ExportOptions = {}
-): Promise<Uint8Array> {
-  void character
-  void pack
-  void options
-  return notImplemented('skinned-glb')
-}
+export { exportCharacterGlb, writeCharacterGlb } from '../build'
 
 /** VRM's meta, beyond what the licence entries give. */
 export interface VrmMeta {

@@ -1,0 +1,17 @@
+{
+  "format": "tosijs-character",
+  "version": 1,
+  "name": "Long hair",
+  "settings": {
+    "gender": 0,
+    "age": 0.45,
+    "tone": 0.75,
+    "outfit": "female_sportsuit01",
+    "shoes": "shoes02",
+    "hair": "long01",
+    "brows": "eyebrow006"
+  },
+  "cloth": {},
+  "tailor": [],
+  "garments": {}
+}
