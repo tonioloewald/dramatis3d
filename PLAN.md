@@ -65,6 +65,14 @@ Every arrow points one way. **Work goes where it is general:**
 | Keeping the core engine-free (below) | The three.js embed |
 | "Bake to crowd variant" for its crowds | The crowds-in-the-city demo |
 
+- **Built here, moved before it ships** (owner, 2026-11-02). So Dramatis need not wait on
+  tosijs-3d, the general pieces in the left column may be written here first, under
+  `src/upstream/`, against tosijs-3d's public subpaths only. They are never exported from
+  Dramatis's public API, each has a `dramatis3d` board task tagged `upstream:tosijs-3d`
+  naming its destination module, and each moves into tosijs-3d (and is deleted here)
+  before Gate 1 closes, so there is never a published second copy. Dramatis imports
+  tosijs-3d at an exact pinned version and runs its own no-Babylon bundle check until
+  Stage A pins the core there.
 - **Character controllers:** in Babylon, tosijs-3d's biped is the controller and its sample.
   In other engines, samples use existing controllers. Dramatis builds none.
 - **One character file.** Dramatis reads and writes `tosijs-character` through tosijs-3d's
