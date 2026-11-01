@@ -78,18 +78,23 @@ export function summarise(result: SweepResult): SweepSummary {
   const failingOn = new Map<string, number>()
   for (const item of result.items) {
     let failing = 0
-    let worst = { corner: '', visible: -1, fraction: 0, depth: 0, rawDepth: 0 }
-    let vertices = 0
+    let worst = {
+      corner: 'default',
+      visible: 0,
+      fraction: 0,
+      depth: 0,
+      rawDepth: 0,
+    }
+    const vertices = item.vertices
     for (const c of result.corners) {
       const r = c.items[item.id]
       if (!r) continue
-      vertices = r.vertices
       const fraction = r.visible / Math.max(1, r.vertices)
       if (fails(r.visible, r.vertices)) {
         failing++
         failingOn.set(c.corner.id, (failingOn.get(c.corner.id) ?? 0) + 1)
       }
-      if (fraction > worst.fraction || worst.visible < 0)
+      if (fraction > worst.fraction)
         worst = {
           corner: c.corner.id,
           visible: r.visible,

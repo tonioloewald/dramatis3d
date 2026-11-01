@@ -272,7 +272,6 @@ describe('the report', () => {
     visible,
     visibleDepth: visible ? 0.004 : 0,
     visibleBeyond: [visible, 0, 0] as [number, number, number],
-    worstAt: [],
   })
   const item = (name: string) => ({
     id: `makehuman:proxy/${name}`,
@@ -281,6 +280,7 @@ describe('the report', () => {
     category: 'clothes',
     slot: 'top',
     licence: { licence: 'CC0-1.0', author: 'a', source: 's' },
+    vertices: 1000,
   })
   const result: SweepResult = {
     items: [item('good'), item('extreme'), item('broken')],

@@ -74,19 +74,18 @@ export interface SweepItem {
   category: string
   slot: string | null
   licence: ItemLicence | null
+  /** Vertices tested per body (0 until swept). */
+  vertices: number
 }
 
 /** One item on one corner. */
-export interface ItemCorner extends Omit<Penetration, 'worst'> {
-  /** Worst vertices' positions (xyz), for a picture. */
-  worstAt: number[]
-}
+export type ItemCorner = Omit<Penetration, 'worst'>
 
 export interface CornerResult {
   corner: Corner
   height: number
   bones: BoneIssue[]
-  /** By item id. */
+  /** By item id; an item with nothing inside on this body is absent. */
   items: Record<string, ItemCorner>
   ms: number
 }
@@ -119,11 +118,6 @@ export function sweptHair(pieces: HairPiece[]): HairPiece[] {
       !p.name.startsWith('Reference_')
   )
 }
-
-const xyz = (a: ArrayLike<number>, idx: number[]): number[] =>
-  idx.flatMap((i) =>
-    [a[i * 3]!, a[i * 3 + 1]!, a[i * 3 + 2]!].map((v) => +v.toFixed(4))
-  )
 
 /** A corner's body, morphed and measured, ready to wear things. */
 export interface Body {
@@ -253,6 +247,7 @@ export async function wearables(
         category: p.category,
         slot: p.slot ?? null,
         licence: licences[p.name] ?? null,
+        vertices: 0,
       },
       wearable: { kind: 'proxy', id, proxy: p },
     })
@@ -274,6 +269,7 @@ export async function wearables(
             source:
               'https://quaternius.com (quaternius/libraries/hairstyles.glb)',
           },
+          vertices: 0,
         },
         wearable: {
           kind: 'hair',
@@ -315,8 +311,11 @@ export async function runSweep(input: SweepInput): Promise<SweepResult> {
       let r = penetration(body.sdf, w.points, null, { tolerance })
       if (r.raw > 0 && w.tuck)
         r = penetration(body.sdf, w.points, w.tuck(), { tolerance })
-      const { worst, ...rest } = r
-      out[item.id] = { ...rest, worstAt: xyz(w.points, worst) }
+      item.vertices = r.vertices
+      // Only what is inside is kept: an absent item was clean on this body.
+      if (r.raw === 0) continue
+      const { worst: _worst, ...rest } = r
+      out[item.id] = rest
     }
     const result: CornerResult = {
       corner,
@@ -333,5 +332,81 @@ export async function runSweep(input: SweepInput): Promise<SweepResult> {
     corners: results,
     boneBaseline: [...(reference?.outside ?? [])],
     boundaryEdges,
+  }
+}
+
+/*
+THE SAVED FORM: a sweep result with each item-on-body as one short row
+(depths in tenths of a millimetre), so the JSON stays readable and small
+once prettier has laid it out.
+*/
+export const SAVED_COLUMNS = [
+  'raw',
+  'rawDepth (0.1 mm)',
+  'visible',
+  'visibleDepth (0.1 mm)',
+  'visible beyond 2 mm',
+  'beyond 5 mm',
+  'beyond 10 mm',
+] as const
+
+export type SavedRow = [number, number, number, number, number, number, number]
+
+export interface SavedResult extends Omit<SweepResult, 'corners'> {
+  columns: typeof SAVED_COLUMNS
+  corners: Array<
+    Omit<CornerResult, 'items'> & { items: Record<string, SavedRow> }
+  >
+}
+
+const tenths = (m: number) => Math.round(m * 10000)
+
+export function saveResult(r: SweepResult): SavedResult {
+  return {
+    ...r,
+    columns: SAVED_COLUMNS,
+    corners: r.corners.map((c) => ({
+      ...c,
+      height: +c.height.toFixed(4),
+      items: Object.fromEntries(
+        Object.entries(c.items).map(([id, p]) => [
+          id,
+          [
+            p.raw,
+            tenths(p.rawDepth),
+            p.visible,
+            tenths(p.visibleDepth),
+            ...p.visibleBeyond,
+          ] as SavedRow,
+        ])
+      ),
+    })),
+  }
+}
+
+export function loadResult(s: SavedResult): SweepResult {
+  const vertices = new Map(s.items.map((i) => [i.id, i.vertices]))
+  return {
+    items: s.items,
+    boneBaseline: s.boneBaseline,
+    boundaryEdges: s.boundaryEdges,
+    corners: s.corners.map((c) => ({
+      ...c,
+      items: Object.fromEntries(
+        Object.entries(c.items).map(
+          ([id, [raw, rd, visible, vd, b2, b5, b10]]) => [
+            id,
+            {
+              vertices: vertices.get(id) ?? 0,
+              raw,
+              rawDepth: rd / 10000,
+              visible,
+              visibleDepth: vd / 10000,
+              visibleBeyond: [b2, b5, b10] as [number, number, number],
+            },
+          ]
+        )
+      ),
+    })),
   }
 }

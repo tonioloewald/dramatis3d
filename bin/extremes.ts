@@ -26,7 +26,10 @@ import { loadHumanPack } from 'tosijs-3d/human-pack'
 import { sweepCorners } from '../src/upstream/extremes/corners'
 import {
   runSweep,
+  saveResult,
+  loadResult,
   type ItemLicence,
+  type SavedResult,
   type SweepResult,
 } from '../src/upstream/extremes/sweep'
 import {
@@ -152,9 +155,13 @@ let minutes: number
 if (from) {
   const saved = JSON.parse(readFileSync(from, 'utf8')) as {
     meta: { minutes: number }
-    result: SweepResult
+    result: SavedResult | SweepResult
   }
-  result = saved.result
+  // The saved form, or (from before it) the plain result.
+  result =
+    'columns' in saved.result
+      ? loadResult(saved.result)
+      : (saved.result as SweepResult)
   minutes = saved.meta.minutes
   console.log(`re-summarising ${from}`)
 } else {
@@ -200,7 +207,7 @@ if (flag('--sheet')) {
 }
 writeFileSync(
   join(ROOT, 'reports/extremes.json'),
-  JSON.stringify({ meta, summary, result })
+  JSON.stringify({ meta, summary, result: saveResult(result) })
 )
 // Formatted by the repo's prettier, so `bun run check` passes with it committed.
 Bun.spawnSync(
