@@ -77,6 +77,18 @@ export interface BuildDeps {
 
 /** How far armour sits out from the body (tosijs-3d's character, metres). */
 const ARMOUR_LIFT = 0.005
+/** The order meshes go out in (export-format.md, "Nodes and meshes"). */
+const MESH_ORDER: readonly MeshRole[] = [
+  'body',
+  'eyes',
+  'eyelashes',
+  'teeth',
+  'tongue',
+  'brows',
+  'beard',
+  'hair',
+  'garment',
+]
 /** A delta smaller than this moves nothing (metres). */
 const STILL = 1e-7
 
@@ -482,6 +494,14 @@ export async function buildCharacterWith(
       ...(m.texture !== undefined ? { texture: m.texture } : {}),
     })
   })
+
+  // The profile's mesh order: body, eyes, lashes, teeth, tongue, brows,
+  // beard (then a moustache), hair, garments by asset name (sorted above).
+  const rank = (p: Part): number =>
+    p.name === 'moustache'
+      ? MESH_ORDER.indexOf('beard') + 0.5
+      : MESH_ORDER.indexOf(p.role)
+  parts.sort((a, b) => rank(a) - rank(b))
 
   // THE REST POSE: the T-pose with UAL's frames, or the body's own.
   const restJoints: Vec3[] = rig.joints.map((j) => [

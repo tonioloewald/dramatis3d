@@ -44,6 +44,15 @@ export const DEFAULTS = {
   source: 'MakeHuman',
 } as const
 
+/**
+ * Every setting the build reads, with its default: `readCharacter`'s
+ * `defaults.settings` (it keeps only the keys it is given).
+ */
+export const BUILD_SETTINGS: Readonly<Record<string, unknown>> = Object.freeze({
+  ...DEFAULT_HUMAN_BODY,
+  ...DEFAULTS,
+})
+
 /** The proxies every MakeHuman character carries, inside the mouth. */
 export const MOUTH = { teeth: 'teeth_base', tongue: 'tongue01' } as const
 

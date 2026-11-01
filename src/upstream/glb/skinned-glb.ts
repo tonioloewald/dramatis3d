@@ -352,6 +352,19 @@ export function writeSkinnedGlb(g: SkinnedGlb): Uint8Array {
         count,
         type: 'VEC4',
       })
+      const m = g.materials[p.material]
+      if (m === undefined)
+        throw new Error(`skinned-glb: ${mesh.name}: no material ${p.material}`)
+      if (
+        p.uvs == null &&
+        (m.baseColorTexture ||
+          m.metallicRoughnessTexture ||
+          m.normalTexture ||
+          m.occlusionTexture)
+      )
+        throw new Error(
+          `skinned-glb: ${mesh.name}: its material is textured but has no uvs`
+        )
       const wide = count >= 65535
       const idx = wide
         ? Uint32Array.from(p.indices)
