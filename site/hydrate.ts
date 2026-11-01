@@ -13,6 +13,8 @@ import 'tosijs-ui/live-example'
 import * as tosijs from 'tosijs'
 import * as tosijsui from 'tosijs-ui'
 import * as dramatis from '../src/index'
+// <dramatis-creator>: light; it loads the creator's own bundle when it mounts.
+import './creator/element'
 
 // <tosi-doc-system> reads .context in render(), after its docs.json fetch, so a
 // synchronous assignment here lands in time.

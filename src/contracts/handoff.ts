@@ -12,7 +12,6 @@
 // IndexedDB is same-origin, shared between tabs, stores bytes as they are, and
 // survives a reload. The viewer also takes `?glb=<url>` for a GLB by URL.
 
-import { notImplemented } from './lanes'
 import type { LicenceEntry } from './licences'
 
 /** The database: one object store, keyed by id. */
@@ -46,22 +45,15 @@ export interface HandoffEntry {
   created: number
 }
 
-/** Put an export in the store (pruning expired entries); resolves to its id. */
-export async function putHandoff(
-  entry: Omit<HandoffEntry, 'id' | 'created'>
-): Promise<string> {
-  void entry
-  return notImplemented('site-creator')
-}
-
 /**
- * Read an export by id; null when it is absent or expired. It is not
- * deleted on read, so a reload of the viewer still finds it.
+ * Put an export in the store (pruning expired entries); resolves to its id.
+ *
+ * Read an export by id (`takeHandoff`); null when it is absent or expired.
+ * It is not deleted on read, so a reload of the viewer still finds it.
+ *
+ * Implemented by site-creator in site/creator/handoff.ts.
  */
-export async function takeHandoff(id: string): Promise<HandoffEntry | null> {
-  void id
-  return notImplemented('site-creator')
-}
+export { putHandoff, takeHandoff } from '../../site/creator/handoff'
 
 /** The viewer's URL for a handoff id, against `origin` (default: the page's). */
 export function viewerUrl(id: string, origin?: string): string {
