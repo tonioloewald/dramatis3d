@@ -1,0 +1,17 @@
+{
+  "format": "tosijs-character",
+  "version": 1,
+  "name": "Clothed, casual (Mixamo)",
+  "settings": {
+    "gender": 1,
+    "age": 0.5,
+    "tone": 0.35,
+    "outfit": "male_casualsuit02",
+    "shoes": "shoes01",
+    "hair": "short02",
+    "brows": "eyebrow001"
+  },
+  "cloth": {},
+  "tailor": [],
+  "garments": {}
+}

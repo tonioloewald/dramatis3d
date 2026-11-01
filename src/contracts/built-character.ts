@@ -4,9 +4,6 @@
 // writer and the three.js adapter both consume this one shape, so they cannot
 // drift apart. Lane: skinned-glb (src/build/). Profile: site/docs/export-format.md.
 
-import type { Character } from 'tosijs-3d/character-file'
-import type { HumanPack } from 'tosijs-3d/human-pack'
-import { notImplemented } from './lanes'
 import type { LicenceEntry } from './licences'
 import type { FaceUnitName, RestPose } from './profile'
 
@@ -203,13 +200,5 @@ export interface BuildOptions {
  * Throws `UnlicensedAssetError` (licences.ts) when the character uses an
  * asset the manifest has no entry for.
  */
-export async function buildCharacter(
-  character: Character,
-  pack: HumanPack,
-  options: BuildOptions = {}
-): Promise<BuiltCharacter> {
-  void character
-  void pack
-  void options
-  return notImplemented('skinned-glb')
-}
+// Implemented by lane skinned-glb (src/build/), same signature and doc.
+export { buildCharacter } from '../build'
