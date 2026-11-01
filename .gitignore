@@ -13,3 +13,4 @@ llms.txt
 # Dev TLS certificate for `bun start` (bun run tls). Never commit a key.
 tls/*
 !tls/.gitkeep
+.claude/worktrees/
