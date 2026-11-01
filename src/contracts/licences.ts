@@ -1,10 +1,6 @@
 // The asset licence manifest. Lane: share-licence (src/licences/).
 // Page: site/docs/licences.md. In exports: site/docs/export-format.md.
 
-import type { Character } from 'tosijs-3d/character-file'
-import type { HumanPack } from 'tosijs-3d/human-pack'
-import { notImplemented } from './lanes'
-
 /** What an asset is, as the licence page groups them. */
 export type AssetKind =
   | 'base'
@@ -54,40 +50,26 @@ export interface LicenceEntry {
 }
 
 /**
- * The manifest: every asset Dramatis can put in a character, with its
- * licence. An asset not in it is never shipped and never exported
- * (`buildCharacter` throws on one).
+ * `licenceManifest()`: the manifest, every asset Dramatis can put in a
+ * character, with its licence. An asset not in it is never shipped and never
+ * exported (`buildCharacter` throws on one).
+ *
+ * `lookupLicence(asset)`: one asset's entry by id, or undefined when it is
+ * not in the manifest.
+ *
+ * `characterLicences(character, pack)`: the entries for every asset a
+ * character uses with this pack (the base, its parts, each worn proxy, hair,
+ * skin-tone data), each once, base first. Throws `UnlicensedAssetError`
+ * naming the first asset with no entry.
+ *
+ * `UnlicensedAssetError`: thrown when a character uses an asset the manifest
+ * has no entry for.
+ *
+ * Implemented in src/licences/ (lane share-licence).
  */
-export function licenceManifest(): readonly LicenceEntry[] {
-  return notImplemented('share-licence')
-}
-
-/** One asset's entry by id, or undefined when it is not in the manifest. */
-export function lookupLicence(asset: string): LicenceEntry | undefined {
-  void asset
-  return notImplemented('share-licence')
-}
-
-/**
- * The entries for every asset a character uses with this pack (the base,
- * its parts, each worn proxy, hair, skin-tone data), each once, base first.
- * Throws `UnlicensedAssetError` naming the first asset with no entry.
- */
-export function characterLicences(
-  character: Character,
-  pack: HumanPack
-): LicenceEntry[] {
-  void character
-  void pack
-  return notImplemented('share-licence')
-}
-
-/** Thrown when a character uses an asset the manifest has no entry for. */
-export class UnlicensedAssetError extends Error {
-  readonly asset: string
-  constructor(asset: string) {
-    super(`no licence entry for asset ${asset}: it cannot be shipped`)
-    this.name = 'UnlicensedAssetError'
-    this.asset = asset
-  }
-}
+export {
+  characterLicences,
+  licenceManifest,
+  lookupLicence,
+  UnlicensedAssetError,
+} from '../licences'

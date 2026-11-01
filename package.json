@@ -34,6 +34,7 @@
     "gate1": "bun test test/gate1"
   },
   "dependencies": {
+    "fflate": "0.8.3",
     "tosijs-3d": "0.11.6"
   },
   "peerDependencies": {
