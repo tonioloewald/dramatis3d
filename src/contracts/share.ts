@@ -1,13 +1,6 @@
 // The share link. Lane: share-licence (src/share/). Page: site/docs/licences.md
 // covers the licences; the link's format is specified here.
 
-import type {
-  Character,
-  ReadCharacter,
-  SlotLook,
-} from 'tosijs-3d/character-file'
-import { notImplemented } from './lanes'
-
 /**
  * THE LINK: `<base>#c=<version>.<payload>`, where `payload` is the
  * character document (`writeCharacter`, JSON, UTF-8) compressed with raw
@@ -45,30 +38,15 @@ export interface EncodeShareOptions {
   base?: string
 }
 
-/** Encode a character as a share link. Throws when it exceeds `SHARE_LINK_BUDGET`. */
-export function encodeShareLink(
-  character: Character,
-  options: EncodeShareOptions = {}
-): ShareLink {
-  void character
-  void options
-  return notImplemented('share-licence')
-}
-
 /**
- * Read a share link back: `input` is a whole URL, a fragment (with or
- * without `#`), or the payload. `defaults` are `readCharacter`'s. Throws on
- * a link that is not a Dramatis share link or is newer than this module;
- * what was filled in is in `warnings`.
+ * `encodeShareLink(character, options?)`: encode a character as a share
+ * link. Throws when it exceeds `SHARE_LINK_BUDGET`.
+ *
+ * `decodeShareLink(input, defaults)`: read a share link back: `input` is a
+ * whole URL, a fragment (with or without `#`), or the payload. `defaults`
+ * are `readCharacter`'s. Throws on a link that is not a Dramatis share link
+ * or is newer than this module; what was filled in is in `warnings`.
+ *
+ * Implemented in src/share/ (lane share-licence).
  */
-export function decodeShareLink(
-  input: string,
-  defaults: {
-    settings: Record<string, unknown>
-    slots?: Record<string, SlotLook>
-  }
-): ReadCharacter {
-  void input
-  void defaults
-  return notImplemented('share-licence')
-}
+export { decodeShareLink, encodeShareLink } from '../share'
