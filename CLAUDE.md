@@ -12,10 +12,11 @@ honour the assumed stack. Work is tracked on the virta board (project `dramatis3
 
 ## Invariants (from PLAN.md)
 
-- **The core is engine-agnostic.** No engine import in the core; engines are adapters.
+- **Built on tosijs-3d; outputs are engine-free.** The creator runs on tosijs-3d. GLB/VRM
+  export and the embeds (three.js first) use `dramatis/core`, which never pulls in Babylon.
   Export is written against the core, never through an engine's serializer.
-- **tosijs-3d depends on dramatis, never the reverse.** Changes tosijs-3d needs go to it as
-  issues, not edits from here.
+- **Dramatis depends on tosijs-3d, never the reverse.** Changes tosijs-3d needs go to it as
+  issues, not edits from here. tosijs-3d-ensemble depends on Dramatis.
 - **Export is the launch gate.** A feature that doesn't survive export into the five engines
   (three.js, Babylon, Unity, Godot, Unreal 5) isn't done.
 - **Every shipped asset has a known licence**, stated on the page and carried into exports.

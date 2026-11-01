@@ -35,20 +35,28 @@ fitter) and moves here.
 
 ## Shape
 
-**The core is engine-agnostic; engines are adapters.** The pure modules above are most of the
-value and already have no Babylon in them. Export is written against the core, not through an
-engine's serializer, so the same exporter runs in the page, in a worker, headless in tests,
-and under any adapter.
+**Dramatis is built on tosijs-3d; what it puts out is engine-free.** The creator runs on
+tosijs-3d (Babylon). Its outputs are pure GLB (and VRM) files, and later embed libraries that
+give other engines the same capabilities at runtime, three.js first. Export is written against
+the engine-free core, not through Babylon's serializer, so the same exporter runs in the page,
+in a worker, headless in tests, and under any embed.
 
 ```
-dramatis            core: packs, morph, rig, fit, retarget data, character file, GLB/VRM writer
-dramatis/three      three.js adapter (the first outside embed target)
-tosijs-3d           the Babylon adapter: rendering, shading, face runtime; depends on dramatis
-apps/creator        the hosted creator (tosijs + tosijs-ui, viewing through tosijs-3d)
+dramatis            the creator's library: the character builder, on tosijs-3d
+dramatis/core       engine-free: packs, morph, rig, fit, retarget data, character file, GLB/VRM writer
+dramatis/three      three.js embed: loads and drives characters at runtime, on dramatis/core
+apps/creator        the hosted creator (tosijs + tosijs-ui + tosijs-3d)
 ```
 
-- **tosijs-3d depends on dramatis, never the reverse.** Its Babylon modules import the core
-  from here; it re-exports the moved names until its next major.
+- **Dramatis depends on tosijs-3d, never the reverse.** The character builder moves here
+  from tosijs-3d. tosijs-3d can't re-export from a package that depends on it, so its copies
+  stay, frozen and marked deprecated with a pointer here, and go in its next major.
+- **The embeds must not pull in Babylon.** `dramatis/core` imports nothing from tosijs-3d
+  except its engine-free modules (retargeting maths, GLB manifest), through subpath exports
+  that tosijs-3d keeps side-effect free. A three.js bundle with Babylon in it is a failed build.
+- **Consumers build on Dramatis the same way.** tosijs-3d-ensemble adds Dramatis as a
+  dependency, and offers GLB export and, later, its own embeddable loader for other runtimes.
+  Demos that combine the two (crowds in the city) live in Dramatis or Ensemble, not tosijs-3d.
 - **Assets stay on the CDN** (static-assets builds the packs). Dramatis owns the pack *format*
   and its reader; the converter can move later.
 - **The character file is the save format and the share format.** It is already versioned and
@@ -118,15 +126,15 @@ joints, and meta with the CC0 licence.
 
 ## Sequence
 
-1. **Repo and boundary.** Move the pure modules here with history, publish `dramatis` 0.x;
-   tosijs-3d depends on it and re-exports. No behaviour change.
+1. **Repo and move.** Move the character builder here with history, on tosijs-3d as a
+   dependency; publish `dramatis` 0.x. tosijs-3d deprecates its copies. No behaviour change.
 2. **Export to gate 1.** The writer, then spike 1 until all five engines pass. The sample
    repos (three.js first, then Unity) are the gate's test harness, not extra work.
 3. **Launch readiness.** Wardrobe, extremes sweep, phone budget, share link, licence page,
    docs (quick start, format spec, per-engine import guides, `llms.txt`).
 4. **VRM, Mixamo naming, three.js runtime embedding.**
 5. **Crowds** (second launch): a "bake to crowd variant" step whose far version matches the
-   near one in morphs and clothing, for tosijs-3d's city demo to swap between.
+   near one in morphs and clothing, for the city demo (on tosijs-3d's city) to swap between.
 
 ## Out of scope
 
@@ -138,10 +146,6 @@ joints, and meta with the CC0 licence.
 
 ## Decisions for the owner
 
-- **The boundary.** Recommended: core here, Babylon rendering stays in tosijs-3d (above).
-  The alternative moves the Babylon modules here as `dramatis/babylon`, which makes tosijs-3d
-  a consumer like any other but leaves its builder page depending on a sibling for its own
-  scene.
 - **Default skeleton naming.** Recommended: keep UE mannequin (what UAL is) as the default,
   Mixamo as an option, pending spike 1.
 - **Names.** `dramatis` and `dramatis3d` are free on npm, and the `dramatis3d` GitHub org is
