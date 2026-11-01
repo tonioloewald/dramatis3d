@@ -3,8 +3,6 @@
 // entry never imports three.
 
 import type { Group, Skeleton, SkinnedMesh } from 'three'
-import type { BuiltCharacter } from './built-character'
-import { notImplemented } from './lanes'
 import type { FaceUnitName, NamingProfile } from './profile'
 
 export interface CharacterObjectOptions {
@@ -30,17 +28,5 @@ export interface CharacterObject {
   dispose(): void
 }
 
-/**
- * The same thing the GLB writer writes, made directly: the scene graph a
- * GLTFLoader would give for `writeCharacterGlb(built)`, node names, bone
- * order, morph names and materials (MeshStandardMaterial, or
- * MeshPhysicalMaterial for sheen) included.
- */
-export function characterObject(
-  built: BuiltCharacter,
-  options: CharacterObjectOptions = {}
-): CharacterObject {
-  void built
-  void options
-  return notImplemented('three')
-}
+// The implementation, with its TSDoc: src/three/character-object.ts.
+export { characterObject } from '../three/character-object'

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dramatis three.js sample</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #20232a;
+        color: #eee;
+        font: 14px system-ui, sans-serif;
+      }
+      canvas {
+        display: block;
+      }
+      #panel {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        padding: 10px 14px;
+        background: #000a;
+        border-radius: 8px;
+        display: grid;
+        grid-template-columns: auto 160px 3em;
+        gap: 6px 10px;
+        align-items: center;
+      }
+      #panel output {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      #note {
+        position: fixed;
+        bottom: 12px;
+        left: 12px;
+        right: 12px;
+        opacity: 0.7;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="panel"></div>
+    <div id="note">
+      Stand-in character (a hand-made built character on UAL's skeleton) until
+      the builder lands. Walk_Loop: Quaternius UAL, CC0.
+    </div>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
