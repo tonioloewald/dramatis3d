@@ -48,3 +48,7 @@ export type {
   CharacterObject,
   CharacterObjectOptions,
 } from '../contracts/three-adapter'
+// Live update: a rebuilt character into the same objects (no reload).
+export { updateCharacterObject } from './character-object'
+// UAL clips on a character, as the profile says to play them.
+export { characterClip, type CharacterClipOptions } from './clip'
