@@ -1,0 +1,15 @@
+node_modules/
+# Library build (bun run build). Not published yet; the package is private.
+dist/
+# The site build (bun run build), deployed to Pages by .github/workflows/pages.yml.
+www/
+# tosijs-ui writes this next to the bundle entry on every build.
+site/docs.json
+.cache/
+*.tsbuildinfo
+.DS_Store
+.dev-keeper
+llms.txt
+# Dev TLS certificate for `bun start` (bun run tls). Never commit a key.
+tls/*
+!tls/.gitkeep

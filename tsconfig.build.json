@@ -1,0 +1,16 @@
+{
+  // Declarations for the public entry points only (src/index.ts, src/three/index.ts).
+  // Run by tosijs-ui's libraryBundle with --emitDeclarationOnly; bun build makes the JS.
+  // `types: []`: a published .d.ts must not lean on Bun's globals.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "types": []
+  },
+  "include": [],
+  "files": ["src/index.ts", "src/three/index.ts"]
+}
