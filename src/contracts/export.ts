@@ -1,0 +1,90 @@
+// The exporter. GLB lane: skinned-glb (src/build/ and src/upstream/glb/).
+// VRM lane: vrm (src/vrm/). Normative profile: site/docs/export-format.md.
+
+import type { Character } from 'tosijs-3d/character-file'
+import type { HumanPack } from 'tosijs-3d/human-pack'
+import type { BuildOptions, BuiltCharacter } from './built-character'
+import { notImplemented } from './lanes'
+import type { NamingProfile } from './profile'
+
+/** How a character is exported. */
+export interface ExportOptions {
+  /** Skeleton naming. Default `ue` (UE mannequin, as UAL names it). */
+  naming?: NamingProfile
+  /**
+   * The face units as morph targets: true for all (the default), false for
+   * none, or a list of `FACE_UNITS`.
+   */
+  faceUnits?: BuildOptions['faceUnits']
+  /** The bind pose. Default `t-pose`. */
+  restPose?: BuildOptions['restPose']
+  /** Fetches assets the pack does not carry. Default `fetch`. */
+  fetch?: BuildOptions['fetch']
+}
+
+/**
+ * Write a built character as a GLB to the profile, synchronously: the one
+ * GLB writer. `naming` renames joints on the way out; the rest of
+ * `ExportOptions` was settled when the character was built.
+ */
+export function writeCharacterGlb(
+  built: BuiltCharacter,
+  options: Pick<ExportOptions, 'naming'> = {}
+): Uint8Array {
+  void built
+  void options
+  return notImplemented('skinned-glb')
+}
+
+/**
+ * A character file to GLB bytes: `buildCharacter` then `writeCharacterGlb`.
+ * Async because building fetches the pack's targets and proxies.
+ */
+export async function exportCharacterGlb(
+  character: Character,
+  pack: HumanPack,
+  options: ExportOptions = {}
+): Promise<Uint8Array> {
+  void character
+  void pack
+  void options
+  return notImplemented('skinned-glb')
+}
+
+/** VRM's meta, beyond what the licence entries give. */
+export interface VrmMeta {
+  /** Default: the character's name. */
+  name?: string
+  /** Default: `['Dramatis user']`. */
+  authors?: string[]
+  /** Default: the creator's URL. */
+  contactInformation?: string
+}
+
+/**
+ * How a character is exported as VRM 1.0. Naming is always `ue` underneath
+ * (VRM's humanoid map names the bones) and the rest pose is always the
+ * T-pose, which VRM requires.
+ */
+export interface VrmExportOptions {
+  /** As `ExportOptions.faceUnits`; the presets need at least the visemes, blink and lids. */
+  faceUnits?: ExportOptions['faceUnits']
+  fetch?: ExportOptions['fetch']
+  meta?: VrmMeta
+}
+
+/**
+ * A character file to VRM 1.0 bytes (a GLB with `VRMC_vrm`): the GLB
+ * profile plus a humanoid bone map, expression presets mapped from the face
+ * units, look-at from the eye joints, and meta carrying the licences.
+ */
+export async function exportCharacterVrm(
+  character: Character,
+  pack: HumanPack,
+  options: VrmExportOptions = {}
+): Promise<Uint8Array> {
+  void character
+  void pack
+  void options
+  return notImplemented('vrm')
+}

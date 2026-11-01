@@ -11,6 +11,8 @@ to place it. (Name the file for its slug: pages are served at `/<filename>/`.)
 - [Dramatis core](/dramatis-core/): the engine-free API, starting with the
   character file.
 - [dramatis/three](/dramatis-three/): the three.js embed.
+- [Export format](/export-format/): the GLB and VRM profile every export
+  follows (normative).
 
 ## Coming
 
@@ -24,4 +26,5 @@ These pages arrive with the work they describe (see PLAN.md):
 <!-- toc -->
 - [Dramatis core](/dramatis-core/)
 - [dramatis/three](/dramatis-three/)
+- [Export format](/export-format/)
 <!-- /toc -->

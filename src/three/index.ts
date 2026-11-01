@@ -40,3 +40,11 @@ export async function morphedBodyGeometry(
   const positions = await morphHuman(pack, weights)
   return bodyGeometry(positions, pack.triangles)
 }
+
+// The adapter's contract (src/contracts/three-adapter.ts): a built character
+// as three.js objects. Lane: three.
+export { characterObject } from '../contracts/three-adapter'
+export type {
+  CharacterObject,
+  CharacterObjectOptions,
+} from '../contracts/three-adapter'

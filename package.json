@@ -30,7 +30,8 @@
     "typecheck": "bunx tsc -p tsconfig.json --noEmit",
     "format": "bun --bun prettier --cache --write .",
     "format:check": "bun --bun prettier --check .",
-    "check": "bun run typecheck && bun run format:check && bun test"
+    "check": "bun run typecheck && bun run format:check && bun test",
+    "gate1": "bun test test/gate1"
   },
   "dependencies": {
     "tosijs-3d": "0.11.6"
@@ -51,6 +52,7 @@
     "@types/bun": "latest",
     "@types/three": "^0.186.0",
     "chokidar": "^4.0.3",
+    "gltf-validator": "2.0.0-dev.3.10",
     "happy-dom": "^21.0.4",
     "prettier": "^2.8.8",
     "three": "^0.186.1",
