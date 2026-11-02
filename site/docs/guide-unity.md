@@ -1,11 +1,12 @@
-# Unity
+# Unity (draft)
 
-<!--{"parent": "docs", "order": 23}-->
+<!--{"parent": "docs", "order": 13, "description": "Draft, not verified: importing a Dramatis GLB into Unity with glTFast, building a Humanoid avatar, and playing UAL clips."}-->
 
-**Not yet verified in Unity.** The steps below and the sample project
+**Draft. Not yet verified in Unity.** The steps below and the sample project
 (`samples/unity`) were written for spike 1 without a Unity editor at hand;
-they run in batch mode the first time the editor is installed. This page
-changes with what that run finds (`reports/spike-1.md`).
+its C# has never been compiled. They run in batch mode the first time an
+editor is installed. This page changes with what that run finds
+(`reports/spike-1.md`).
 
 ## Import with glTFast
 

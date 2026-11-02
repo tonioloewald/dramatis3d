@@ -57,7 +57,8 @@ export interface VrmExportOptions {
 /**
  * A character file to VRM 1.0 bytes (a GLB with `VRMC_vrm`): the GLB
  * profile plus a humanoid bone map, expression presets mapped from the face
- * units, look-at from the eye joints, and meta carrying the licences.
+ * units, look-at by the eye units (UAL has no eye joints), and meta
+ * carrying the licences.
  *
  * Implemented by lane vrm (src/vrm/), same signature and doc.
  */

@@ -1,6 +1,6 @@
 # VRM
 
-<!--{"parent": "docs", "order": 11}-->
+<!--{"parent": "docs", "order": 4, "description": "The VRM 1.0 export: the GLB plus VRMC_vrm, with its humanoid bone map, expression presets from the face units, look-at by expression and licence terms. Checked with three-vrm; not yet in a VTuber app."}-->
 
 A character also leaves Dramatis as a **VRM 1.0** file (`.vrm`), the avatar
 format VTuber apps, VRChat-style worlds and VRM viewers read. A Dramatis VRM
@@ -23,6 +23,10 @@ const vrm = await exportCharacterVrm(character, pack, {
 })
 // vrm is a Uint8Array: save it as ada.vrm
 ```
+
+**Checked** with @pixiv/three-vrm under three.js and with a structural
+check of its own (below). **Not yet tried** in UniVRM, a VTuber app or any
+VRM viewer. The creator has no VRM button yet: make one with the API.
 
 Also exported: `writeCharacterVrm(built)` (a built character to VRM,
 synchronously), `vrmFromGlb(glb)` (any Dramatis GLB under `ue` naming in

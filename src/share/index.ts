@@ -65,6 +65,14 @@ function shareable(character: Character): {
   }
 }
 
+/**
+ * A character as a share link: its character file, deflated, base64url, in
+ * the URL fragment (`<base>#c=1.<payload>`; see `SHARE_FRAGMENT_KEY`).
+ * Garments of the wearer's own, tailor outlines and file bodies are left out
+ * and listed in `dropped`. `options.base` is the creator page (default
+ * `https://dramatis.tosijs.net/creator/`). Throws when the link would exceed
+ * `SHARE_LINK_BUDGET`.
+ */
 export function encodeShareLink(
   character: Character,
   options: EncodeShareOptions = {}
@@ -86,6 +94,13 @@ export function encodeShareLink(
   return { url, fragment, dropped }
 }
 
+/**
+ * A share link read back as a character. `input` is a whole URL, a fragment
+ * (with or without `#`) or the payload alone; `defaults` are
+ * `readCharacter`'s (the page's settings and slots). Throws on input that is
+ * not a Dramatis share link, a link newer than this module, or a payload
+ * that inflates past 256 KB; what was skipped or filled in is in `warnings`.
+ */
 export function decodeShareLink(
   input: string,
   defaults: {

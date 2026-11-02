@@ -24,6 +24,7 @@ export const SHARE_LINK_VERSION = 1
  */
 export const SHARE_LINK_BUDGET = 8000
 
+/** What `encodeShareLink` returns. */
 export interface ShareLink {
   /** The whole link: `base` with the fragment. */
   url: string
@@ -33,6 +34,7 @@ export interface ShareLink {
   dropped: string[]
 }
 
+/** Options for `encodeShareLink`. */
 export interface EncodeShareOptions {
   /** The creator page's URL. Default: the site's creator, `https://dramatis.tosijs.net/creator/`. */
   base?: string

@@ -1,11 +1,14 @@
 # Godot
 
-<!--{"parent": "docs", "order": 21}-->
+<!--{"parent": "docs", "order": 11, "description": "Import a Dramatis GLB into Godot 4 with its own glTF importer, drive the face units as blend shapes and play UAL clips by bone name. Verified with Godot 4.5."}-->
+
+**Verified** with Godot 4.5 on every sample export (spike 1,
+`reports/spike-1.md`): a headless import and check, and frames rendered by
+Godot's own renderer.
 
 A Dramatis export is a plain GLB, so Godot 4 imports it with its own glTF
-importer and no add-ons. Checked with **Godot 4.5** on every sample export
-(spike 1, `reports/spike-1.md`): skeleton, skins, blend shapes, materials and
-a third-party animation all come through with default import settings.
+importer and no add-ons. The skeleton, skins, blend shapes, materials and a
+third-party animation all come through with default import settings.
 
 ## Import
 
@@ -20,7 +23,8 @@ character (Node3D)
 ```
 
 - Metres, Y up, the character facing +Z with its left hand on +X, feet on
-  the floor. No rotation or scale to fix.
+  the floor. No rotation or scale to fix. (Shoe soles sit a little below
+  the floor for now: see [Export](/export/).)
 - **Mixamo-named exports:** Godot does not allow `:` in bone names, so
   `mixamorig:Hips` becomes `mixamorig_Hips` (all 64 Mixamo bones). Look
   bones up by the underscore name.

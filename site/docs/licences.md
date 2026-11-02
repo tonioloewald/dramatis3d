@@ -1,6 +1,6 @@
 # Licences and share links
 
-<!--{"parent": "docs", "order": 30}-->
+<!--{"parent": "docs", "order": 20, "description": "Every asset Dramatis ships, with its source and licence, the unchecked community assets it excludes, and how a character becomes a share link."}-->
 
 Every asset Dramatis ships has a known licence, stated here and carried into
 every export (`asset.extras.dramatis.licences`, see

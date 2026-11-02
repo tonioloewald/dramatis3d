@@ -1,13 +1,17 @@
 # dramatis/three
 
-<!--{"parent": "docs", "order": 2}-->
+<!--{"parent": "docs", "order": 2, "description": "The three.js embed (dramatis/three): a built character as live three.js objects, updated in place as sliders move, with UAL clips playing by name."}-->
 
 The three.js embed. It turns a built character into three.js objects you add
 to your scene, and keeps them live as the character changes. It never imports
 Babylon: `src/no-babylon.test.ts` fails the build if it does, in the bundle or
 in the emitted types.
 
-`three` is a peer dependency: bring your own (0.160 or later).
+`three` is a peer dependency: bring your own (0.160 or later). The package
+is not on npm yet; in a checkout, import from `src/three/index.ts`.
+
+This page is for building the character in your page. To load a GLB you
+exported, read the [three.js guide](/guide-threejs/) instead.
 
 ## A character in a scene
 
@@ -34,7 +38,7 @@ c.setFaceUnit('JawDrop', 0.4)
 It is the scene graph three's `GLTFLoader` gives for the exported GLB, made
 directly: the same node and bone names (`naming: 'mixamo'` gives Mixamo's,
 with `:` dropped as three does), the face units as morph targets named as in
-the [export profile](export-format.md), and `MeshStandardMaterial`
+the [export profile](/export-format/), and `MeshStandardMaterial`
 (`MeshPhysicalMaterial` where a garment has sheen). Textures decode in the
 background, so the call itself is synchronous.
 
@@ -72,8 +76,12 @@ mixer
 ## The sample
 
 `samples/three/` is a plain three.js page (no framework) with live sliders,
-orbit controls and a UAL walk: `bun samples/three/serve.ts`. Until the
-builder lands it shows a hand-made stand-in character on UAL's skeleton.
+orbit controls and a UAL walk: `bun samples/three/serve.ts`. It still shows
+the adapter's hand-made stand-in character on UAL's skeleton
+(`src/three/fixture-character.ts`), not a character from `buildCharacter`:
+it was written before the builder landed and has not been moved over yet.
+For a real export in three.js, `samples/three-glb/` (the
+[three.js guide](/guide-threejs/)) loads one.
 
 **Next step: a character controller.** Dramatis builds none. For
 react-three-fiber, [ecctrl](https://github.com/pmndrs/ecctrl) takes any

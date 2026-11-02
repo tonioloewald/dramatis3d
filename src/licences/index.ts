@@ -21,10 +21,20 @@ export { COMMUNITY, MANIFEST, type CommunityAsset } from './manifest'
 
 const BY_ID = new Map(MANIFEST.map((e) => [e.asset, e]))
 
+/**
+ * The manifest: every asset Dramatis can put in a character, with its source
+ * and licence. An asset not in it is never shipped and never exported
+ * (`buildCharacter` throws `UnlicensedAssetError` on one). Community assets
+ * nobody has checked yet are not in it.
+ */
 export function licenceManifest(): readonly LicenceEntry[] {
   return MANIFEST
 }
 
+/**
+ * One asset's manifest entry by id (`makehuman:base/hm08`), or undefined when
+ * the manifest has no entry for it.
+ */
 export function lookupLicence(asset: string): LicenceEntry | undefined {
   return BY_ID.get(asset)
 }
@@ -79,6 +89,14 @@ function own(kind: 'garment' | 'base', name: string): LicenceEntry {
   }
 }
 
+/**
+ * The licence entries for every asset a character uses with this pack, each
+ * once, base first: the base mesh and its parts, the skin-tone data, UAL's
+ * skeleton, each hair piece and worn garment (and a garment's colourway when
+ * it has its own entry). A garment or body of the character's own is listed
+ * as `NOASSERTION`. Throws `UnlicensedAssetError` naming the first asset the
+ * manifest has no entry for.
+ */
 export function characterLicences(
   character: Character,
   pack: HumanPack

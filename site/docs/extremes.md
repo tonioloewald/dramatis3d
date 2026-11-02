@@ -1,6 +1,6 @@
 # The extremes sweep
 
-<!--{"parent": "docs", "order": 40}-->
+<!--{"parent": "docs", "order": 30, "description": "How Dramatis checks garments and hair on the most extreme bodies its sliders make: penetration, bone-length sanity and a contact sheet."}-->
 
 A character creator is judged on its worst screenshot, so Dramatis checks the
 worst bodies its sliders can make, with everything it can put on them

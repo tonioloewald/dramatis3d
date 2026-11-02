@@ -139,7 +139,9 @@ export interface TextureRef {
 /**
  * Plain glTF metallic-roughness PBR, plus `KHR_materials_sheen` for fabric.
  * The creator's shading plugins (skin scatter, hair highlights) do not
- * travel; what they compute is baked into these textures. Colours are linear.
+ * travel. The profile has what they compute baked into these textures; the
+ * writer does not bake yet (the skin is a flat colour, garments keep their
+ * own textures). Colours are linear.
  */
 export interface PbrMaterial {
   name: string
@@ -195,7 +197,12 @@ export interface BuildOptions {
  * its sliders, UAL's skeleton placed in it and posed to the rest pose,
  * skinned (max 4 influences), covered skin removed, each worn proxy and the
  * hair fitted and skinned to the same skeleton, the face units baked as
- * morphs, materials baked to plain PBR, and the licence entries collected.
+ * morphs, materials as plain PBR, and the licence entries collected.
+ *
+ * Not yet: the skin is one flat colour (no baked albedo, lips or stubble)
+ * and the eyes plain white. Throws for what does not export yet: Quaternius
+ * hair and brows, garments of the character's own, bodies other than
+ * MakeHuman's.
  *
  * Throws `UnlicensedAssetError` (licences.ts) when the character uses an
  * asset the manifest has no entry for.

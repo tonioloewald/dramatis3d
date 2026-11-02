@@ -16,7 +16,12 @@ export { writeCharacterGlb }
  * its sliders, UAL's skeleton placed in it and posed to the rest pose,
  * skinned (max 4 influences), covered skin removed, each worn proxy and the
  * hair fitted and skinned to the same skeleton, the face units baked as
- * morphs, materials baked to plain PBR, and the licence entries collected.
+ * morphs, materials as plain PBR, and the licence entries collected.
+ *
+ * Not yet: the skin is one flat colour (no baked albedo, lips or stubble)
+ * and the eyes plain white. Throws for what does not export yet: Quaternius
+ * hair and brows, garments of the character's own, bodies other than
+ * MakeHuman's.
  *
  * Throws `UnlicensedAssetError` (licences.ts) when the character uses an
  * asset the manifest has no entry for.

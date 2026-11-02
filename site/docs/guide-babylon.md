@@ -1,12 +1,16 @@
 # Babylon.js
 
-<!--{"parent": "docs", "order": 22}-->
+<!--{"parent": "docs", "order": 12, "description": "Load a Dramatis GLB into your own Babylon.js scene with @babylonjs/loaders, set face units and play UAL clips by bone name. Verified headless with Babylon.js 9.33."}-->
+
+**Verified** with Babylon.js 9.33 on every sample export (spike 1,
+`reports/spike-1.md`), headless: on a `NullEngine` under Bun, so nothing was
+rendered. Skinning was checked by computing it on the CPU from Babylon's own
+bone matrices.
 
 Babylon's own glTF loader (`@babylonjs/loaders`) reads a Dramatis export
-as is. Checked with **Babylon.js 9.33** on every sample export (spike 1,
-`reports/spike-1.md`), on a `NullEngine` under Bun: one skeleton of 65
-bones, every mesh skinned to it, the face units as morph targets, PBR
-materials, and a third-party clip moving the bones and the skin.
+as is: one skeleton of 65 bones, every mesh skinned to it, the face units
+as morph targets, PBR materials, and a third-party clip moving the bones
+and the skin.
 
 (The creator itself runs on Babylon through tosijs-3d. This page is about
 loading an *exported* character into your own Babylon scene.)

@@ -17,5 +17,12 @@ written here first. The rules (owner, 2026-11-02):
    there) and is deleted here **before Gate 1 closes**, so there is never a
    published second copy.
 
+What is here now:
+
+| Module | Destination in tosijs-3d | Board task |
+| --- | --- | --- |
+| `glb/` | `skinned-glb` (the skinned GLB writer) | #3662 |
+| `extremes/` | `fit-extremes` (the slider-extremes sweep) | #3661 |
+
 Until then Dramatis pins tosijs-3d at an exact version and runs its own
 no-Babylon bundle check (`src/no-babylon.test.ts`).

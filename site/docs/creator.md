@@ -1,6 +1,6 @@
 # Creator
 
-<!--{"pin": "top", "order": 0}-->
+<!--{"pin": "top", "order": 0, "description": "Make a character in the browser, then download it as a GLB, view it in three.js, or share it as a link."}-->
 
 **Make a person, then take them anywhere.** Shape the body in the scene's
 panel, name your character, and export it.
@@ -28,23 +28,29 @@ panel, name your character, and export it.
   **Export character file** saves a `tosijs-character` file, which
   **import** reads back here or in tosijs-3d.
 
-Some of this is still being built. When a part is not there yet the toolbar
-says so in a line under the buttons, and your character is kept.
+When an export cannot be made, the line under the buttons says why, and
+your character is kept.
+
+There is no **VRM** button yet. The library makes VRM files
+([VRM](/vrm/)); the creator does not offer it.
 
 ## What it is made of
 
-Every asset the creator shows is CC0 (public domain):
+Every asset the creator shows is CC0 (public domain), except the skin
+tones, which are CC BY 4.0 and credited in every export:
 
 | Asset | Source | Licence |
 | --- | --- | --- |
-| The body, its shapes, eyes, teeth, brows, clothes | [MakeHuman](http://www.makehumancommunity.org) (hm08 and its system assets) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
-| Hairstyles | [Quaternius](https://quaternius.com) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
-| The preview's animations (not exported) | Quaternius' Universal Animation Library | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| The body, its shapes, eyes, teeth, hair, brows, clothes | [MakeHuman](http://www.makehumancommunity.org) (hm08 and its system assets) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| More hairstyles and brows (not exportable yet) | [Quaternius](https://quaternius.com) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| The skin tones | [Monk Skin Tone Scale](https://skintone.google), by Dr. Ellis Monk and Google | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| The skeleton, and the preview's animations (the clips are not exported) | Quaternius' Universal Animation Library | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 
 MakeHuman's data is used as published; its code is not (Dramatis
 reimplements what it needs from the file formats). An exported file lists
 the assets it actually contains, each with its source and licence, in
-`asset.extras.dramatis.licences`.
+`asset.extras.dramatis.licences`. The full list is on the
+[licences page](/licences/).
 
 The creator runs on [tosijs-3d](https://3d.tosijs.net)'s character system,
 the same one as its [character builder](https://3d.tosijs.net/character-builder/),
@@ -58,6 +64,13 @@ from `cdn.tosijs.net`, cached after the first visit.
 
 ## Known issues
 
+- **Quaternius hairstyles and brows do not export yet.** The panel offers
+  them (they are CC0), but **View in three.js** and **Download GLB** then
+  stop with "Quaternius hair does not export yet". MakeHuman's hairstyles
+  and brows (the default) export.
+- The export is plainer than the scene: the skin is one colour (no lips),
+  the eyes are plain white, and the creator's skin, hair and cloth shading
+  stay behind. [Export](/export/) lists what does not travel yet.
 - The creator's bundle carries its own copy of tosijs beside the site's, so
   the console notes a few elements "already defined". It is harmless.
 - Babylon forgets every material plugin when its last engine is disposed,

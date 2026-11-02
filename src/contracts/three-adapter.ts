@@ -5,6 +5,7 @@
 import type { Group, Skeleton, SkinnedMesh } from 'three'
 import type { FaceUnitName, NamingProfile } from './profile'
 
+/** Options for `characterObject`. */
 export interface CharacterObjectOptions {
   /**
    * Bone names. Default `ue`, so UAL clips bind by name (three's

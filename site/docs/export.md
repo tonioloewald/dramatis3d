@@ -1,6 +1,6 @@
 # Export
 
-<!--{"parent": "docs", "order": 9}-->
+<!--{"parent": "docs", "order": 3, "description": "How a character leaves Dramatis as one GLB: the options, what happens to the body, clothes, face, rest pose, materials and licences, and the known gaps."}-->
 
 A character leaves Dramatis as one **GLB** file that any engine opens with no
 fixes: a skinned body and everything it wears on one skeleton, the face as
@@ -89,6 +89,21 @@ These are known gaps, each tracked on the board:
 - **Baked textures.** The skin is one colour (no lips, no stubble), the
   eyes are plain white, and the lashes a dark opaque card; garment normal
   maps and colour recipes do not travel yet.
-- **Quaternius hair**, garments of the character's own, mesh bodies other
-  than MakeHuman's, and a hat pushing the hair under it.
-- **VRM** (`exportCharacterVrm`) is its own lane.
+- **Quaternius hair and brows**, garments of the character's own, and mesh
+  bodies other than MakeHuman's: `buildCharacter` throws, saying which (the
+  creator offers Quaternius hair, so its export stops there).
+- A hat pushing the hair under it.
+- **Shoes go below the floor.** The body is grounded on its whole skin,
+  then the skin under shoes is cut away, and a shoe's sole ends up below
+  y = 0:
+  2.6 mm on `clothed-casual`, 10.6 mm on `long-hair`, 36.3 mm on
+  `extreme-heavy` (`reports/spike-1.md`, finding 6).
+
+**VRM** is the same export plus one extension: see [VRM](/vrm/).
+
+## Where it has been checked
+
+The samples have been imported into three.js, Godot 4.5, Babylon.js 9.33
+(headless) and Blender 5.2 with default settings and no fixes. Unity and
+Unreal 5 have not been run. The [docs index](/docs/) has the table, and
+each engine's guide says what was checked.

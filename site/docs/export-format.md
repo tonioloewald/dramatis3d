@@ -1,6 +1,6 @@
 # Export format
 
-<!--{"parent": "docs", "order": 10}-->
+<!--{"parent": "docs", "order": 5, "description": "The normative profile every Dramatis GLB and VRM export follows: units, axes, nodes, the 65-joint skeleton, skinning, the T-pose, the 59 face units, materials and the licence block."}-->
 
 **Normative.** This page is the profile every Dramatis GLB and VRM export
 follows, version 1. The writer (`writeCharacterGlb`), the three.js adapter
@@ -9,6 +9,17 @@ it. Where it says MUST, a file that does otherwise is a bug in the writer;
 the harness fails it. The same names are in code, in
 `src/contracts/profile.ts` (`UE_JOINTS`, `MIXAMO_NAMES`, `FACE_UNITS`,
 `checkExportExtras`), and a test pins them to tosijs-3d.
+
+**Where today's writer falls short of it** (each is a known bug, tracked on
+the board, and listed on [Export](/export/) under "Not yet"):
+
+- **Materials** are not baked yet: the skin is one flat colour, the eyes
+  are plain white, and `body`, `eyes` and `eyelashes` carry no
+  `TEXCOORD_0`.
+- **The floor.** The body is placed so that its whole skin would touch
+  y = 0, but where shoes cover the feet that skin is cut away, so the
+  exported skin's lowest point is higher and the shoe soles go below the
+  floor (by up to 36 mm on the samples).
 
 ## The file
 
@@ -316,5 +327,9 @@ Bun; and **UAL's `Walk_Loop` (Quaternius, CC0)** binding by name to the
 major joints (spine, neck, head, each limb to the hand and foot) and moving
 them. With nothing in `samples/out/`, every check reports **NOT RUN**.
 Each check is shown able to fail on a hand-made bad file
-(`test/gate1/fixtures.test.ts`). The engine imports (Babylon, Unity, Godot,
-Unreal 5) are spike 1's.
+(`test/gate1/fixtures.test.ts`).
+
+The engine imports are spike 1's (`tools/engines/`, `reports/spike-1.md`):
+Godot 4.5, Babylon.js 9.33 (headless) and Blender 5.2 have passed on every
+sample; Unity and Unreal 5 have not been run. Each engine's guide says what
+was checked there.

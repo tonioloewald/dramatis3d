@@ -4,6 +4,24 @@ How the build is split between agents working at once. Each lane owns a
 territory and writes only there; everything else is either another lane's or
 shared (below). Read PLAN.md and CLAUDE.md first, then your lane.
 
+## Where the lanes stand
+
+All eight lanes have been merged into `main` (2026-11-02). Every contract
+stub has been replaced by its lane's implementation; none throws
+`not implemented` any more. What each lane left open is on its docs page
+and in `reports/`:
+
+| Lane | State on main | Left open |
+| --- | --- | --- |
+| skinned-glb | GLB export; four samples in `samples/out/` pass gate 1 | Baked skin and eye textures; Quaternius hair; shoe soles below y = 0 ([Export](site/docs/export.md)); the writer moving to tosijs-3d (#3662) |
+| three | `characterObject`, `updateCharacterObject`, `characterClip` | `samples/three/` still draws the stand-in character; no ecctrl sample |
+| share-licence | Share links; the licence manifest and its page | Link lengths not checked on real clients |
+| site-creator | The creator page: View in three.js, Download GLB, Share link | No VRM button |
+| extremes | `bin/extremes.ts`, `reports/extremes.md` | Layering and posed bodies; moving to tosijs-3d (#3661) |
+| three-viewer | `/viewer/`, `samples/three-glb/` | Real-GPU and non-Chromium checks |
+| engines | Godot, Blender, Babylon checks pass ([spike 1](reports/spike-1.md)) | Unity and Unreal 5 not run (not installed) |
+| vrm | `exportCharacterVrm`, checked with three-vrm | Not tried in a VTuber app or UniVRM |
+
 ## The contracts
 
 `src/contracts/` holds the types and signatures every lane builds against,
@@ -45,12 +63,12 @@ harness is `test/gate1/` (`bun run gate1`): it checks every GLB in
 | **site-creator** | `site/creator/` and the creator page and its parts; implements `src/contracts/handoff.ts` | `site/docs/creator.md` |
 | **extremes** | `src/upstream/extremes/` (the slider-extremes sweep, bound for tosijs-3d), `bin/extremes.ts`, `reports/extremes*` | `site/docs/extremes.md` |
 
-## Engines-phase lanes (later)
+## Engines-phase lanes
 
 | Lane | Territory | Docs page |
 | --- | --- | --- |
 | **three-viewer** | `site/viewer/`, `samples/three-glb/` | `site/docs/guide-threejs.md` |
-| **engines** | `tools/engines/`, `samples/godot/`, `samples/unity/`, `reports/spike-1.md` | `site/docs/guide-godot.md`, `guide-unity.md`, `guide-babylon.md`, `guide-unreal.md` |
+| **engines** | `tools/engines/`, `samples/godot/`, `samples/unity/`, `reports/spike-1.md` | `site/docs/guide-godot.md`, `guide-babylon.md`, `guide-unity.md`, `guide-unreal.md` |
 | **vrm** | `src/vrm/` | `site/docs/vrm.md` |
 
 ## Swarm rules
@@ -64,9 +82,15 @@ harness is `test/gate1/` (`bun run gate1`): it checks every GLB in
      bump or remove another lane's),
    - `src/index.ts` and `src/three/index.ts` (add your exports),
    - `src/contracts/*` (only the stub-to-real swap above),
-   - `site/docs/docs.md` (a link to your page), `site/config.ts`,
-     `site/hydrate.ts`,
-   - `.gitignore`, `README.md`, `.github/workflows/*`.
+   - `site/hydrate.ts`, `.gitignore`, `.github/workflows/*`.
+
+   The shared docs (`README.md`, `LANES.md`, `site/config.ts`,
+   `site/docs/docs.md`, `site/docs/landing.md`) have one owner, the docs
+   lane: a lane that adds a page says so in its report, and the docs owner
+   links it from the index and places it in `llms.txt` (`LLMS_SECTIONS` in
+   `site/config.ts`; the build fails on a page that is not placed or has no
+   `description`). The build itself rewrites the list between `<!-- toc -->`
+   markers in `docs.md`: commit what it writes.
    `PLAN.md`, `CLAUDE.md`, `LANES.md`, `site/docs/export-format.md`,
    `src/no-babylon.test.ts` and `test/gate1/` are changed only with a
    reason in your report: they are what every lane is checked against.

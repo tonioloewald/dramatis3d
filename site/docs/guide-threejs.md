@@ -1,6 +1,10 @@
 # three.js
 
-<!--{"parent": "docs", "order": 11}-->
+<!--{"parent": "docs", "order": 10, "description": "Load a Dramatis GLB in three.js with GLTFLoader, play UAL clips on it by name, drive the face units and show the licences. Verified."}-->
+
+**Verified** with three.js 0.186: gate 1 runs on every sample export under
+Bun, and the [viewer](/viewer/) is tested in headless Chromium (see "What is
+checked", below).
 
 **A Dramatis GLB is an ordinary glTF file.** three.js opens it with its own
 `GLTFLoader`, with no plugin and no fixes. Quaternius' Universal Animation
@@ -24,7 +28,7 @@ scene.add(gltf.scene)
 
 That is all the setup there is. The file is in metres, Y up, facing +Z, with
 its feet on y = 0 (the [export format](/export-format/) gives the full
-profile). Its meshes are named `body`, `eyes`, `hair`, `garment_<asset>` and
+profile; shoe soles sit a little below it for now, see [Export](/export/)). Its meshes are named `body`, `eyes`, `hair`, `garment_<asset>` and
 so on. Every mesh is skinned to one 65-joint skeleton, and the materials are
 plain metallic-roughness PBR, so they need no special lighting. A
 `HemisphereLight` and a `DirectionalLight` are enough, and an environment

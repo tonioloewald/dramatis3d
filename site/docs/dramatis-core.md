@@ -1,18 +1,70 @@
 # Dramatis core
 
-<!--{"parent": "docs", "order": 1}-->
+<!--{"parent": "docs", "order": 1, "description": "The engine-free core API (dramatis): read a character, build it, export GLB or VRM, make share links, look up licences."}-->
 
-The engine-free core API: no DOM, no Babylon, no three.js. Everything here runs
-under plain Bun or Node and in any browser bundle.
+The `dramatis` entry is the engine-free core: no DOM, no Babylon, no
+three.js. Everything here runs under plain Bun or Node and in any browser
+bundle. `src/no-babylon.test.ts` bundles it for the browser and fails if
+Babylon reaches the output or its types.
 
-Dramatis keeps **one character file**, `tosijs-character`, and reads and writes
-it through tosijs-3d's `character-file` module. This entry re-exports that
-module rather than wrapping it, so there is one implementation and one format.
+The package is not on npm yet (it is `private`, version 0.0.0). The imports
+below are what it will be; in a checkout, import from `src/index.ts`.
+
+## The character file
+
+Dramatis keeps **one character file**, `tosijs-character`, and reads and
+writes it through tosijs-3d's `character-file` module. This entry re-exports
+that module rather than wrapping it, so there is one implementation and one
+format: `readCharacter`, `writeCharacter`, `CHARACTER_FORMAT`,
+`CHARACTER_VERSION`, and the types `Character`, `CharacterDoc`,
+`CharacterBody`, `ReadCharacter` and `SlotLook`.
+
+## From a character to a file
 
 ```ts
-import { writeCharacter, readCharacter, CHARACTER_FORMAT } from 'dramatis'
+import { loadHumanPack } from 'tosijs-3d/human-pack'
+import { buildCharacter, writeCharacterGlb, exportCharacterVrm } from 'dramatis'
+
+const pack = await loadHumanPack(packUrl)
+const built = await buildCharacter(character, pack) // engine-free data
+const glb = writeCharacterGlb(built) // Uint8Array, synchronous
+const vrm = await exportCharacterVrm(character, pack)
 ```
 
-This entry is thin on purpose for now. What grows here is what Dramatis itself
-owns (export options, the licence manifest, share links), never a copy of
-tosijs-3d's character system.
+| Export | What it does | Page |
+| --- | --- | --- |
+| `buildCharacter(character, pack, options?)` | The character as engine-free data (`BuiltCharacter`): meshes, one skeleton, morphs, materials, licences | [Export](/export/) |
+| `writeCharacterGlb(built, options?)` | A built character as GLB bytes, to the profile | [Export](/export/) |
+| `exportCharacterGlb(character, pack, options?)` | `buildCharacter` then `writeCharacterGlb` | [Export](/export/) |
+| `exportCharacterVrm(character, pack, options?)` | The same character as VRM 1.0 | [VRM](/vrm/) |
+| `writeCharacterVrm`, `vrmFromGlb`, `vrmProblems`, `VRM_HUMAN_BONES`, `VRM_PRESETS` | VRM from a built character or a GLB, its check, and its tables | [VRM](/vrm/) |
+
+## The profile's names
+
+The export profile's names are in code as well as on the
+[Export format](/export-format/) page, so a consumer can check a file
+without copying tables: `UE_JOINTS` (the 65 joints and their parents),
+`UE_JOINT_NAMES`, `MIXAMO_NAMES`, `jointName`, `jointNames`, `MAJOR_JOINTS`,
+`FACE_UNITS` (the 59 face units), `faceUnitTarget`, and for the metadata
+block `EXTRAS_KEY`, `EXPORT_FORMAT`, `EXPORT_PROFILE_VERSION` and
+`checkExportExtras`.
+
+## Licences and share links
+
+- `licenceManifest()`, `lookupLicence(id)` and
+  `characterLicences(character, pack)` give every asset's source and
+  licence. A character with an asset not in the manifest throws
+  `UnlicensedAssetError`.
+- `encodeShareLink(character)` and `decodeShareLink(link, defaults)` put a
+  character in a URL fragment and read it back (`SHARE_FRAGMENT_KEY`,
+  `SHARE_LINK_VERSION`, `SHARE_LINK_BUDGET`).
+
+Both are on [Licences and share links](/licences/).
+
+## What is not here
+
+tosijs-3d's character system (the body maths, fitting, rigging, the
+creator's Babylon scene) stays in tosijs-3d. Dramatis imports its
+engine-free subpaths (`tosijs-3d/human-pack`, `tosijs-3d/human-morph`, ...)
+and never copies it. For three.js objects, see
+[dramatis/three](/dramatis-three/).

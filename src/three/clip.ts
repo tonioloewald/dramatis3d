@@ -9,6 +9,7 @@ import {
 } from 'three'
 import { jointName, UE_JOINTS, type NamingProfile } from '../contracts/profile'
 
+/** Options for `characterClip`. */
 export interface CharacterClipOptions {
   /** The character's bone names (default `ue`); the clip's are UAL's (`ue`). */
   naming?: NamingProfile
