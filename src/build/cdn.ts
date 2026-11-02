@@ -8,9 +8,9 @@ import { createHash } from 'node:crypto'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-/** The hm08 pack the creator loads (tosijs-3d's `loadCharacterAssets`). */
-export const HM08_PACK_URL =
-  'https://cdn.tosijs.net/makehuman/hm08/hm08.json?v=17'
+// The pack's URL is public (src/index.ts), so it lives in the engine-free
+// settings module; it is re-exported here for the scripts that import it.
+export { HM08_PACK_URL } from './settings'
 
 /** The repo's own cache directory (git-ignored). */
 export const CACHE_DIR = join(import.meta.dir, '..', '..', '.cache', 'cdn')

@@ -14,6 +14,7 @@ import {
   decodeShareLink,
   encodeShareLink,
   fromBase64Url,
+  inflateCapped,
   SHARE_INFLATED_LIMIT,
   toBase64Url,
 } from '.'
@@ -371,6 +372,35 @@ describe('share link: garbage is refused', () => {
   test('a deflate bomb is stopped before it is parsed', () => {
     const bomb = new Uint8Array(SHARE_INFLATED_LIMIT * 8).fill(32)
     refuse(pack(bomb), /inflates past/)
+  })
+
+  test('a payload over the budget is refused before it is decoded', () => {
+    // Valid base64url of zero bytes: without the length check it reaches the
+    // inflater and fails there instead.
+    refuse(`#c=1.${'A'.repeat(SHARE_LINK_BUDGET + 4)}`, /over the 8000 budget/)
+  })
+
+  test('a high-ratio bomb (64 MB of zeros) is refused cheaply', () => {
+    const zeros = new Uint8Array(64 * 1024 * 1024)
+    const link = `#c=1.${toBase64Url(deflateSync(zeros, { level: 9 }))}`
+    Bun.gc(true)
+    const rss = process.memoryUsage().rss
+    const start = performance.now()
+    refuse(link, /share-link:/)
+    const ms = performance.now() - start
+    const grew = process.memoryUsage().rss - rss
+    // Inflating it all took about 270 ms and 270 MB (reviews/0.1.0-pre-minor.md, S1).
+    expect(ms).toBeLessThan(50)
+    expect(grew).toBeLessThan(32 * 1024 * 1024)
+  })
+
+  test('the inflater stops at the cap, not after inflating everything', () => {
+    // The length check above already refuses this payload; this pins the
+    // second guard (the input pushed in slices) on its own.
+    const bomb = deflateSync(new Uint8Array(64 * 1024 * 1024), { level: 9 })
+    const start = performance.now()
+    expect(() => inflateCapped(bomb)).toThrow(/inflates past/)
+    expect(performance.now() - start).toBeLessThan(50)
   })
 
   test('a hand-made link carrying garments or file bodies: not decoded', () => {

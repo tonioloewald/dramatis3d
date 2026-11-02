@@ -95,9 +95,10 @@ mesh morphed by its macro targets, through tosijs-3d's engine-free subpaths:
 
 ```ts
 import { loadHumanPack } from 'tosijs-3d/human-pack'
+import { HM08_PACK_URL } from 'dramatis'
 import { DEFAULT_HUMAN_BODY, morphedBodyGeometry } from 'dramatis/three'
 
-const pack = await loadHumanPack(packUrl)
+const pack = await loadHumanPack(HM08_PACK_URL)
 const geometry = await morphedBodyGeometry(pack, {
   ...DEFAULT_HUMAN_BODY,
   muscle: 0.8,

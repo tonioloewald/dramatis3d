@@ -7,6 +7,7 @@ import type { BuildOptions, BuiltCharacter } from '../contracts/built-character'
 import type { ExportOptions } from '../contracts/export'
 import { characterLicences } from '../contracts/licences'
 import { buildCharacterWith } from './build'
+import { NAMINGS, option } from './options'
 import { writeCharacterGlb } from './write'
 
 export { writeCharacterGlb }
@@ -45,6 +46,14 @@ export async function exportCharacterGlb(
   pack: HumanPack,
   options: ExportOptions = {}
 ): Promise<Uint8Array> {
+  // Checked before the build, which is the slow part.
+  const naming = option(
+    'exportCharacterGlb',
+    'naming',
+    options.naming,
+    NAMINGS,
+    'ue'
+  )
   const built = await buildCharacter(character, pack, {
     ...(options.faceUnits !== undefined
       ? { faceUnits: options.faceUnits }
@@ -52,5 +61,5 @@ export async function exportCharacterGlb(
     ...(options.restPose !== undefined ? { restPose: options.restPose } : {}),
     ...(options.fetch !== undefined ? { fetch: options.fetch } : {}),
   })
-  return writeCharacterGlb(built, { naming: options.naming ?? 'ue' })
+  return writeCharacterGlb(built, { naming })
 }

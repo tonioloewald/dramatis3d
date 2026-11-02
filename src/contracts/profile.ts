@@ -148,6 +148,12 @@ export const MIXAMO_NAMES: Readonly<Record<string, string>> = Object.freeze(
 /** A joint's exported name under a naming profile. */
 export function jointName(ue: string, naming: NamingProfile = 'ue'): string {
   if (naming === 'ue') return ue
+  if (naming !== 'mixamo')
+    throw new Error(
+      `jointName: naming must be 'ue' or 'mixamo', not ${JSON.stringify(
+        naming
+      )}`
+    )
   const m = MIXAMO_NAMES[ue]
   if (m === undefined) throw new Error(`not a profile joint: ${ue}`)
   return m

@@ -43,6 +43,10 @@ export {
   UnlicensedAssetError,
   writeCharacterGlb,
 } from './contracts'
+// What a character file is read with: every setting the build reads, with
+// its default (readCharacter's `defaults.settings`), and the pack it builds
+// from (loadHumanPack's URL).
+export { BUILD_SETTINGS, HM08_PACK_URL } from './build/settings'
 // VRM 1.0 beyond the contract's exportCharacterVrm (site/docs/vrm.md).
 export {
   VRM_HUMAN_BONES,

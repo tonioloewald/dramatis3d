@@ -10,12 +10,22 @@ file. The profile it follows is normative and lives on its own page:
 
 ```ts
 import { loadHumanPack } from 'tosijs-3d/human-pack'
-import { exportCharacterGlb, readCharacter } from 'dramatis'
+import {
+  BUILD_SETTINGS,
+  exportCharacterGlb,
+  HM08_PACK_URL,
+  readCharacter,
+} from 'dramatis'
 
-const pack = await loadHumanPack(packUrl)
-const { character } = readCharacter(json, { settings })
+// json: a character file's text (the creator's Save, a .character.json)
+const pack = await loadHumanPack(HM08_PACK_URL)
+const { character } = readCharacter(json, { settings: BUILD_SETTINGS })
 const glb = await exportCharacterGlb(character, pack) // Uint8Array
 ```
+
+`BUILD_SETTINGS` is every setting the build reads, with its default:
+`readCharacter` keeps only the keys it is given, so pass all of them.
+`HM08_PACK_URL` is the MakeHuman pack the creator loads.
 
 `exportCharacterGlb` is `buildCharacter` then `writeCharacterGlb`. Build once
 and write as often as you like (`writeCharacterGlb` is synchronous): the
@@ -30,6 +40,11 @@ built character is engine-free data, the same shape the
 | `restPose` | `'t-pose'` | The bind pose: UAL's T-pose, or `'source'` (MakeHuman's arms-down rest) |
 | `faceUnits` | `true` | All 59 face units as morph targets, `false` for none, or a list |
 | `fetch` | `fetch` | How textures are read (a cache, a worker, a test) |
+
+A `naming` or `restPose` that is not one of its two values (`'UE'`,
+`'T-Pose'`) is an error naming the allowed values, from `buildCharacter`,
+`writeCharacterGlb` and `exportCharacterGlb` alike, before anything is
+built: it is never taken as the other value.
 
 ## What happens to a character
 

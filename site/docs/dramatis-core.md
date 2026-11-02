@@ -23,9 +23,18 @@ format: `readCharacter`, `writeCharacter`, `CHARACTER_FORMAT`,
 
 ```ts
 import { loadHumanPack } from 'tosijs-3d/human-pack'
-import { buildCharacter, writeCharacterGlb, exportCharacterVrm } from 'dramatis'
+import {
+  BUILD_SETTINGS,
+  buildCharacter,
+  exportCharacterVrm,
+  HM08_PACK_URL,
+  readCharacter,
+  writeCharacterGlb,
+} from 'dramatis'
 
-const pack = await loadHumanPack(packUrl)
+// json: a character file's text (the creator's Save, a .character.json)
+const { character } = readCharacter(json, { settings: BUILD_SETTINGS })
+const pack = await loadHumanPack(HM08_PACK_URL)
 const built = await buildCharacter(character, pack) // engine-free data
 const glb = writeCharacterGlb(built) // Uint8Array, synchronous
 const vrm = await exportCharacterVrm(character, pack)
@@ -33,6 +42,8 @@ const vrm = await exportCharacterVrm(character, pack)
 
 | Export | What it does | Page |
 | --- | --- | --- |
+| `BUILD_SETTINGS` | Every setting the build reads, with its default: `readCharacter`'s `defaults.settings` (it keeps only the keys it is given) | [Export](/export/) |
+| `HM08_PACK_URL` | The MakeHuman pack the creator loads, for `loadHumanPack` | [Export](/export/) |
 | `buildCharacter(character, pack, options?)` | The character as engine-free data (`BuiltCharacter`): meshes, one skeleton, morphs, materials, licences | [Export](/export/) |
 | `writeCharacterGlb(built, options?)` | A built character as GLB bytes, to the profile | [Export](/export/) |
 | `exportCharacterGlb(character, pack, options?)` | `buildCharacter` then `writeCharacterGlb` | [Export](/export/) |
@@ -57,7 +68,8 @@ block `EXTRAS_KEY`, `EXPORT_FORMAT`, `EXPORT_PROFILE_VERSION` and
   `UnlicensedAssetError`.
 - `encodeShareLink(character)` and `decodeShareLink(link, defaults)` put a
   character in a URL fragment and read it back (`SHARE_FRAGMENT_KEY`,
-  `SHARE_LINK_VERSION`, `SHARE_LINK_BUDGET`).
+  `SHARE_LINK_VERSION`, `SHARE_LINK_BUDGET`). `defaults` are
+  `readCharacter`'s: `{ settings: BUILD_SETTINGS }`.
 
 Both are on [Licences and share links](/licences/).
 
