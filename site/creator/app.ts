@@ -49,9 +49,11 @@ import { characterStore, WORKING_CHARACTER } from 'tosijs-3d/character-store'
 import { chooseFile } from 'tosijs-3d/choose-file'
 import { decodeShareLink } from '../../src/contracts/share'
 import type { NamingProfile } from '../../src/contracts/profile'
+import type { HumanPack } from 'tosijs-3d/human-pack'
 import {
   downloadGlb,
   explain,
+  licensedChoice,
   fileNameFor,
   saveBytes,
   shareFragment,
@@ -139,7 +141,12 @@ export async function mountCreator(
     .dramatisPick as unknown as {
     value: Box
   }
-  const choices = (key: string) => ch?.choices(key) ?? ['none']
+  // Only what can ship: the pack's unchecked community assets are left out.
+  let offered: HumanPack | null = null
+  const choices = (key: string) =>
+    (ch?.choices(key) ?? ['none']).filter(
+      (name) => offered === null || licensedChoice(key, name, offered)
+    )
   const slider = (label: string, key: string, min = 0, max = 1, step = 0.01) =>
     slider3d({ label, value: box(key), min, max, step })
   const select = (label: string, key: string, options: string[]) =>
@@ -362,6 +369,7 @@ export async function mountCreator(
 
     const assets = await loadCharacterAssets(scene)
     const pack = assets.pack
+    offered = pack
     const settings = () => ({
       ...Object.fromEntries(KEPT.map((k) => [k, plain(box(k).value)])),
       source: 'MakeHuman',

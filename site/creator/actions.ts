@@ -6,7 +6,11 @@
 import type { Character } from 'tosijs-3d/character-file'
 import type { HumanPack } from 'tosijs-3d/human-pack'
 import { exportCharacterGlb } from '../../src/contracts/export'
-import type { LicenceEntry } from '../../src/contracts/licences'
+import {
+  characterLicences,
+  UnlicensedAssetError,
+  type LicenceEntry,
+} from '../../src/contracts/licences'
 import type { NamingProfile } from '../../src/contracts/profile'
 import { encodeShareLink, SHARE_FRAGMENT_KEY } from '../../src/contracts/share'
 import { VIEWER_PATH, viewerUrl } from '../../src/contracts/handoff'
@@ -42,6 +46,37 @@ export function explain(error: unknown, doing: string): string {
       NOT_YET[lane] ?? `This part (${lane})`
     } isn't in this build yet, so the creator could not ${doing}. Your character is kept.`
   return `Could not ${doing}: ${message}`
+}
+
+/**
+ * Whether the creator may offer `name` for `key` (a slot, or hair, beard,
+ * moustache, brows): the licence manifest has an entry for it. The pack
+ * carries community assets nobody has checked yet; offering them would let a
+ * person design a character that cannot be exported (LANES.md rule 5).
+ * Asked of `characterLicences` itself, so the asset ids stay its business.
+ */
+export function licensedChoice(
+  key: string,
+  name: string,
+  pack: HumanPack
+): boolean {
+  if (name === 'none') return true
+  try {
+    characterLicences(
+      {
+        name: '',
+        settings: { [key]: name },
+        cloth: {},
+        tailor: [],
+        garments: {},
+      },
+      pack
+    )
+    return true
+  } catch (error) {
+    if (error instanceof UnlicensedAssetError) return false
+    throw error
+  }
 }
 
 /** A safe file name from a character's name. */

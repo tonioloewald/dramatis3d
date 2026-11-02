@@ -20,11 +20,10 @@ import {
 } from '../../test/gate1/checks'
 import { clipBytes } from '../../test/gate1/fixture'
 import { readGlb } from '../../test/gate1/glb'
-import { UnlicensedAssetError } from '../contracts/licences'
+import { characterLicences, UnlicensedAssetError } from '../contracts/licences'
 import { UE_JOINT_NAMES } from '../contracts/profile'
 import { buildCharacterWith } from './build'
 import { cachedFetch, HM08_PACK_URL } from './cdn'
-import { provisionalLicences } from './provisional-licences'
 import { BUILD_SETTINGS } from './settings'
 import { writeCharacterGlb } from './write'
 
@@ -38,7 +37,7 @@ const fetcher = cachedFetch()
 let packPromise: Promise<HumanPack> | null = null
 const pack = (): Promise<HumanPack> =>
   (packPromise ??= loadHumanPack(HM08_PACK_URL, fetcher))
-const deps = { licences: provisionalLicences }
+const deps = { licences: characterLicences }
 const OUT = join(import.meta.dir, '..', '..', 'samples', 'out')
 
 describe('build from the CDN', () => {

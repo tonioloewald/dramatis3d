@@ -5,8 +5,8 @@
 //   bun bin/export-sample.ts [name ...]
 //
 // Reads the hm08 pack from the CDN (cached in .cache/cdn/, so a second run is
-// offline). Licences: the provisional table (src/build/provisional-licences.ts)
-// until the share-licence lane's manifest is wired in.
+// offline). Licences: the manifest's characterLicences (src/licences/), the
+// same entries the public buildCharacter carries.
 
 import { mkdirSync } from 'node:fs'
 import { join } from 'node:path'
@@ -15,7 +15,7 @@ import { loadHumanPack } from 'tosijs-3d/human-pack'
 import type { NamingProfile } from '../src/contracts/profile'
 import { buildCharacterWith } from '../src/build/build'
 import { cachedFetch, HM08_PACK_URL } from '../src/build/cdn'
-import { provisionalLicences } from '../src/build/provisional-licences'
+import { characterLicences } from '../src/contracts/licences'
 import { writeCharacterGlb } from '../src/build/write'
 
 interface Sample {
@@ -102,7 +102,7 @@ if (import.meta.main) {
       sample.character,
       pack,
       { fetch: fetcher },
-      { licences: provisionalLicences }
+      { licences: characterLicences }
     )
     const bytes = writeCharacterGlb(built, { naming: sample.naming ?? 'ue' })
     await Bun.write(join(OUT, `${name}.glb`), bytes)
