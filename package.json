@@ -1,6 +1,6 @@
 {
   "name": "dramatis",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "An open 3D character creator for the web: CC0 base data, GLB and VRM out, works in any engine.",
   "license": "Apache-2.0",
   "homepage": "https://dramatis.tosijs.net",

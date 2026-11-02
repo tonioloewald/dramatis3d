@@ -4,6 +4,24 @@ All notable changes to Dramatis. The format follows [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-11-02
+
+The site's release: the library is unchanged from 0.1.1 (the same code; on npm only the version and README differ).
+
+### Added
+
+- **View in Unity** in the creator, beside View in three.js: the export opens in the Unity player (`/unity/`) by the same in-browser handoff. A browser test drives it through Unity's Web player to the character's four gaits.
+- The Dramatis icon, favicon and header logo (Tonio Loewald's), and a home-screen icon on every page.
+- The home page and the three.js demo link the Unity demo.
+
+### Changed
+
+- The site's colours: the icon's brown on pale parchment, light and dark, across the docs, the creator and the demos (the 3D stages keep their neutral grey). tosijs-3d's header link is its icon.
+
+### Fixed
+
+- CI's browser tests left their pages open, so pages kept drawing and starved the tests after them; the site's deploys since the icon went in had been skipped for it.
+
 ## [0.1.1] - 2026-11-02
 
 Dramatis on tosijs-3d 0.12: what it used to copy from tosijs-3d is now imported from its engine-free subpaths. Nothing public changes, and exports are the same.
