@@ -4,6 +4,15 @@ All notable changes to Dramatis. The format follows [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-02
+
+Dramatis on tosijs-3d 0.12: what it used to copy from tosijs-3d is now imported from its engine-free subpaths. Nothing public changes, and exports are the same.
+
+### Changed
+
+- `tosijs-3d` pinned at 0.12.1 (0.1.0 shipped on 0.12.0). 0.12.1 adds `tosijs-3d/skinned-glb`, the skinned GLB writer moved upstream from Dramatis; Dramatis does not use it yet, so its own writer still makes the export.
+- `dramatis` is 665 B gzip smaller (`dist/index.js` 33.4 KB gzip); `dramatis/three` unchanged.
+
 ### Removed
 
 Dramatis's copies of tosijs-3d, now that 0.12.0 promises its character core as engine-free subpaths. Exports are unchanged (every sample in `samples/out/` rebuilds equivalent).

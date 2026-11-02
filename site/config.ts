@@ -60,7 +60,7 @@ function llmsTxt(corpus: Doc[]): string {
     '',
     `> ${DESCRIPTION}`,
     '',
-    'Version 0.1.0, on npm as `dramatis`.',
+    'Version 0.1.1, on npm as `dramatis`.',
     `The creator (${base}/creator/) exports GLB files.`,
     'Verified engines: three.js, Unity 6, Godot 4.5; Babylon.js 9.33 (headless).',
     'Not yet verified: Unreal Engine 5.',

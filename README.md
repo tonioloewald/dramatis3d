@@ -2,7 +2,7 @@
 
 An open 3D character creator for the web. CC0 base data, GLB and VRM out, works in any engine, and nobody can buy it and switch it off. See [PLAN.md](PLAN.md).
 
-**Status: 0.1.0, the first release** ([CHANGELOG](CHANGELOG.md)). `npm install dramatis`; the creator and demos are at [dramatis.tosijs.net](https://dramatis.tosijs.net). What works:
+**Status: 0.1.1** (0.1.0 was the first release) ([CHANGELOG](CHANGELOG.md)). `npm install dramatis`; the creator and demos are at [dramatis.tosijs.net](https://dramatis.tosijs.net). What works:
 
 - **The creator** (`/creator/`): shape and dress a MakeHuman body on tosijs-3d's character system, then **Download GLB**, **View in three.js**, or make a **Share link**.
 - **The three.js viewer** (`/viewer/`): opens any GLB, plays Quaternius' UAL clips on it by name, drives the face units and lists the licences.

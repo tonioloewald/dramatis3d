@@ -1,9 +1,9 @@
 {
-  "version": "0.1.0",
+  "version": "0.1.1",
   "sizes": {
     "dist/index.js": {
-      "raw": 154026,
-      "gz": 34915
+      "raw": 151495,
+      "gz": 34250
     },
     "dist/three/index.js": {
       "raw": 13307,

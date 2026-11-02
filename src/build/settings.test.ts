@@ -50,6 +50,17 @@ describe('readSettings', () => {
     expect(DEFAULTS.eyeStyle).toBe('basic')
   })
 
+  test('every default the build reads exists upstream, of the type the build expects', () => {
+    // Comparing against DEFAULT_CHARACTER alone passes if tosijs-3d renames
+    // or drops a key (undefined === undefined): this catches it.
+    const numbers = new Set(['gender', 'tone', 'redness'])
+    for (const [key, value] of Object.entries(DEFAULTS))
+      expect([key, typeof value]).toEqual([
+        key,
+        numbers.has(key) ? 'number' : 'string',
+      ])
+  })
+
   test("the pack URL is the CDN's, at tosijs-3d's path and version", () => {
     expect(HM08_PACK_URL).toBe(
       `https://cdn.tosijs.net/${HM08_PACK_PATH}?v=${HM08_PACK_VERSION}`

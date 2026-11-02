@@ -7,7 +7,7 @@ VRM) that other engines open with no fixes. These pages cover the
 [creator](/creator/), the library under it, the file it writes, and how to
 import that file into each engine.
 
-Dramatis is at 0.1.0, its first release (`npm install dramatis`). Each page
+Dramatis is at 0.1.1 (0.1.0 was its first release) (`npm install dramatis`). Each page
 says what has been checked and what has not.
 
 ## Start here
