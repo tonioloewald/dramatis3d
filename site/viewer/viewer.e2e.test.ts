@@ -378,6 +378,71 @@ describe.skipIf(!BROWSER)('the viewer in Chromium', () => {
     420_000
   )
 
+  // Babylon forgets every material plugin when its last engine goes (the doc
+  // browser disposes the creator's scene on leaving the page); tosijs-3d 0.12
+  // registers them again, so a second visit still has skin shading.
+  test.skipIf(!NETWORK)(
+    'creator -> another page -> creator again: skin shading, no plugin errors',
+    async () => {
+      const { page, errors } = await newPage()
+      page.on('console', (m) => {
+        if (m.type() === 'error') errors.push(`console: ${m.text()}`)
+      })
+      /** The creator's character is up, and its skin is shaded. */
+      const shaded = async (): Promise<boolean> => {
+        await page.waitForFunction(
+          () =>
+            [...document.querySelectorAll('dramatis-creator button')].some(
+              (b) =>
+                b.textContent === 'View in three.js' &&
+                !(b as HTMLButtonElement).disabled
+            ),
+          undefined,
+          { timeout: 240_000 }
+        )
+        return page.evaluate(() => {
+          type Plugin = { isEnabled: boolean } | null
+          type Mat = {
+            pluginManager?: { getPlugin(n: string): Plugin }
+          }
+          const host = document.querySelector('tosi-b3d') as unknown as {
+            scene?: { materials: Mat[] }
+          } | null
+          return (host?.scene?.materials ?? []).some(
+            (m) => m.pluginManager?.getPlugin('SkinShading')?.isEnabled === true
+          )
+        })
+      }
+      await page.goto(`${base}/creator/`)
+      expect(await shaded()).toBe(true)
+      // Leave by the doc browser's own navigation, which disposes the scene.
+      await page
+        .locator('a[href="/licences/"]')
+        .filter({ visible: true })
+        .first()
+        .click()
+      await page.waitForFunction(
+        () => document.querySelector('dramatis-creator') === null,
+        undefined,
+        { timeout: 60_000 }
+      )
+      await page.waitForTimeout(500)
+      await page.goBack()
+      await page.waitForFunction(
+        () => document.querySelector('dramatis-creator') !== null,
+        undefined,
+        { timeout: 60_000 }
+      )
+      expect(await shaded()).toBe(true)
+      await page.screenshot({ path: join(SHOTS, 'creator-again.png') })
+      expect(errors.filter((e) => /plugin not registered/.test(e))).toEqual([])
+      expect(errors.filter((e) => !e.startsWith('console:'))).toEqual([])
+      if (errors.length) console.log('console errors (not failing):', errors)
+      await page.close()
+    },
+    600_000
+  )
+
   // --- the demo (/demo/): the same server and browser ---------------------------
 
   interface DemoState {

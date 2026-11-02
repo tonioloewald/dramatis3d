@@ -1,8 +1,7 @@
-// UVs for a MakeHuman eyes part on a one-eye texture (assets/tonio/eyes):
-// a port of tosijs-3d's `eyeUvs` and `eyeCentre` (rigged-body.ts), whose
-// module can't be imported from the engine-free core because its .d.ts
-// imports a Babylon type (src/no-babylon.test.ts). Bound for tosijs-3d, where
-// it already lives: what moves is the Babylon-free split (upstream:tosijs-3d).
+// UVs for a MakeHuman eyes part on a one-eye texture (assets/tonio/eyes).
+// Each eye's centre is tosijs-3d's `eyeCentre` (rigged-body); the mapping is
+// Dramatis's own, after tosijs-3d's `eyeUvs` but not a copy: glTF's handedness
+// (+x, not -x), v down, and both eyes in one part mapped onto one picture.
 //
 // AN EYE'S UVS ARE MADE, NOT READ (tosijs-3d's words): each point goes by its
 // angle from straight ahead (+Z, where the body faces) and its direction round
@@ -10,6 +9,8 @@
 // iris disc, the sclera round it, out to a ring where the back of the eye,
 // unseen in the socket, gathers. Both eyes map onto the same picture, the
 // same way round, so a glint sits on the same side of each.
+
+import { eyeCentre } from 'tosijs-3d/rigged-body'
 
 /** Where the texture's iris is: its centre (u, v down from the top) and radius. */
 export interface EyeLayout {
@@ -37,26 +38,21 @@ export function eyeUvs(
   const irisAngle = ((options.irisDeg ?? 29) * Math.PI) / 180
   const back = options.back ?? layout.iris * 2.5
   // Each side's centre: the middle of its bounds (tosijs-3d's eyeCentre).
-  const lo = [
-    [Infinity, Infinity, Infinity],
-    [Infinity, Infinity, Infinity],
-  ]
-  const hi = [
-    [-Infinity, -Infinity, -Infinity],
-    [-Infinity, -Infinity, -Infinity],
-  ]
   const side = (i: number) => (positions[i * 3]! >= 0 ? 0 : 1)
-  for (let i = 0; i < n; i++) {
-    const s = side(i)
-    for (let k = 0; k < 3; k++) {
-      const v = positions[i * 3 + k]!
-      lo[s]![k] = Math.min(lo[s]![k]!, v)
-      hi[s]![k] = Math.max(hi[s]![k]!, v)
-    }
-  }
-  const centre = [0, 1].map((s) =>
-    [0, 1, 2].map((k) => (lo[s]![k]! + hi[s]![k]!) / 2)
-  )
+  const sides: number[][] = [[], []]
+  for (let i = 0; i < n; i++)
+    sides[side(i)]!.push(
+      positions[i * 3]!,
+      positions[i * 3 + 1]!,
+      positions[i * 3 + 2]!
+    )
+  const centre = sides.map((p) => {
+    const { centre: c } = eyeCentre({
+      positions: Float32Array.from(p),
+      indices: new Uint32Array(0),
+    })
+    return [c.x, c.y, c.z]
+  })
   const out = new Float32Array(n * 2)
   for (let i = 0; i < n; i++) {
     const c = centre[side(i)]!

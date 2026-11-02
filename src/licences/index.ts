@@ -16,6 +16,7 @@ import {
   type CommunityAsset,
 } from './manifest'
 import { PACKS } from './packs'
+import { CHARACTER_SLOTS } from 'tosijs-3d/character-settings'
 
 export { UnlicensedAssetError } from './errors'
 export { COMMUNITY, MANIFEST, type CommunityAsset } from './manifest'
@@ -45,22 +46,8 @@ export function communityAssets(): readonly CommunityAsset[] {
   return COMMUNITY
 }
 
-/**
- * The slots a character wears one garment in (tosijs-3d's CHARACTER_SLOTS;
- * restated because `tosijs-3d/character` imports Babylon).
- */
-export const WEARABLE_SLOTS = [
-  'outfit',
-  'bodysuit',
-  'armour',
-  'top',
-  'bottom',
-  'shoes',
-  'gloves',
-  'hat',
-  'mask',
-  'glasses',
-] as const
+/** The slots a character wears one garment in: tosijs-3d's CHARACTER_SLOTS. */
+export const WEARABLE_SLOTS = CHARACTER_SLOTS
 
 /** The settings that pick hair (tosijs-3d's character). */
 const HAIR_SETTINGS = ['hair', 'beard', 'moustache', 'brows'] as const

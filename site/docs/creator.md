@@ -79,7 +79,3 @@ from `cdn.tosijs.net`, cached after the first visit.
   export carries. [Export](/export/) lists what does not travel yet.
 - The creator's bundle carries its own copy of tosijs beside the site's, so
   the console notes a few elements "already defined". It is harmless.
-- Babylon forgets every material plugin when its last engine is disposed,
-  and tosijs-3d registers its skin, hair and cloth shading once, at import.
-  The creator keeps an idle engine alive so it can be opened again after
-  navigating away. The proper fix belongs in tosijs-3d.

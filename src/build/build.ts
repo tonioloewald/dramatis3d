@@ -11,7 +11,8 @@
 //    that body by its `.mhclo` binding (`fitProxy`, proxy-fit) over the body
 //    clothes lie on (`smoothUnder`), and skinned with weights borrowed from
 //    the skin it is bound to (`proxyWeights`).
-// 3. Covered skin is removed and the rest tucked under (cover.ts).
+// 3. Covered skin is removed and the rest tucked under (`coverSkin`,
+//    proxy-cover).
 // 4. The face units are baked as morphs: the pack's `expression/*` deltas, at
 //    each mesh's vertices (`proxyDelta` for what is bound to the face).
 // 5. Everything is skinned once into the T-pose and the skeleton takes UAL's
@@ -23,6 +24,7 @@ import type { Character } from 'tosijs-3d/character-file'
 import { vertexNormals } from 'tosijs-3d/hair-fit'
 import type { HumanPack, HumanProxy } from 'tosijs-3d/human-pack'
 import {
+  coveredTriangles,
   drawnPositions,
   fitProxy,
   nearestWeights,
@@ -31,6 +33,7 @@ import {
   smoothUnder,
   type VertexWeights,
 } from 'tosijs-3d/proxy-fit'
+import { coverSkin } from 'tosijs-3d/proxy-cover'
 import { skinAlbedo } from 'tosijs-3d/skin-tone'
 import type {
   BuildOptions,
@@ -55,8 +58,7 @@ import {
 import { unitNormals } from '../upstream/glb/skinned-glb'
 import { eyeAsset, eyePngUrl, eyeUvs, recolourEyePng } from '../upstream/eyes'
 import { assetIds } from './assets'
-import { coverSkin } from './cover'
-import { humanBodyMaker } from './human-rig.js'
+import { humanBodyMaker } from 'tosijs-3d/human-rig'
 import { inverseRigid, qconj, qmul, qnormalize, qrotate, sub } from './math'
 import {
   PARENTS,
@@ -421,13 +423,15 @@ export async function buildCharacterWith(
       if (p.category === 'clothes')
         drawn.set(p.name, drawnPositions(p, fitProxy(p, clothBody)))
     })
+    // tosijs-3d's coverSkin, the pure half of coverBody: the creator's rules
+    // and numbers, so the export is dressed as the creator shows it.
     const covered = coverSkin(
       rest,
       normals,
       skin.triangles,
       skin.vertices,
       wearing,
-      drawn
+      { drawn }
     )
     const tone = skinAlbedo(s.tone, s.redness)
     parts.push({
@@ -435,7 +439,15 @@ export async function buildCharacterWith(
       role: 'body',
       asset: ids.base,
       positions: covered.positions,
-      triangles: covered.triangles,
+      triangles:
+        covered.deleted.size > 0
+          ? coveredTriangles(
+              skin.triangles,
+              skin.vertices,
+              covered.deleted,
+              'all'
+            )
+          : Uint32Array.from(skin.triangles),
       uvs: null,
       influences: {
         indices: maker.weights.indices,

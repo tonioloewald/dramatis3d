@@ -122,21 +122,11 @@ const START: Record<string, unknown> = {
 
 const plain = <T>(v: T): T => JSON.parse(JSON.stringify(v))
 
-// Babylon unregisters every material plugin when its last engine is disposed
-// (EngineStore.OnEnginesDisposedObservable), and tosijs-3d registers its
-// skin, hair and cloth plugins once, at import. So after the creator's scene
-// goes (the doc browser navigates away) a second one fails with
-// "skin-shading: plugin not registered". An engine that is never disposed
-// (a NullEngine: no canvas, no GL context) keeps the registrations alive.
-// Reported for tosijs-3d (see site/docs/creator.md, Known issues).
-let keepAlive: BABYLON.NullEngine | null = null
-
 export async function mountCreator(
   stage: HTMLElement,
   shell: CreatorShell
 ): Promise<CreatorApp> {
   setAssetBase('https://cdn.tosijs.net')
-  keepAlive ??= new BABYLON.NullEngine()
   const state = tosi({ dramatisCreator: structuredClone(START) })
     .dramatisCreator as unknown as Record<string, Box>
   const box = (k: string): Box => state[k] as Box

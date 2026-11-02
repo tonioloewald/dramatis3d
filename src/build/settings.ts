@@ -1,52 +1,50 @@
 // A character file's settings, read for the build: the body's sliders, the
 // skin, and what it wears. The keys and their defaults are tosijs-3d's
-// `DEFAULT_CHARACTER` (character.ts), which lives in a Babylon module and so
-// cannot be imported here; the defaults below are a copy of its values, and
-// settings.test.ts lists them so a change there is a visible diff here.
+// (`tosijs-3d/character-settings`: `DEFAULT_CHARACTER`, `CHARACTER_SLOTS`,
+// the hm08 pack's path and version); the build reads the subset below.
 
 import type { Character } from 'tosijs-3d/character-file'
+import {
+  CHARACTER_SLOTS,
+  DEFAULT_CHARACTER,
+  HM08_PACK_PATH,
+  HM08_PACK_VERSION,
+} from 'tosijs-3d/character-settings'
 import { DEFAULT_HUMAN_BODY, type MacroBody } from 'tosijs-3d/human-morph'
 import { eyeStyle, type EyeStyle } from '../upstream/eyes'
 
-/** What can be worn, one of each (tosijs-3d's `CHARACTER_SLOTS`). */
-export const SLOTS = [
-  'outfit',
-  'bodysuit',
-  'armour',
-  'top',
-  'bottom',
-  'shoes',
-  'gloves',
-  'hat',
-  'mask',
-  'glasses',
-] as const
+/** What can be worn, one of each: tosijs-3d's `CHARACTER_SLOTS`. */
+export const SLOTS = CHARACTER_SLOTS
 export type Slot = (typeof SLOTS)[number]
 
-/** The non-slider defaults the build reads (tosijs-3d's `DEFAULT_CHARACTER`). */
-export const DEFAULTS = {
-  gender: 1,
-  tone: 0.3,
-  redness: 0.5,
-  hair: 'short02',
-  beard: 'none',
-  moustache: 'none',
-  brows: 'eyebrow001',
-  outfit: 'male_casualsuit02',
-  bodysuit: 'none',
-  armour: 'none',
-  top: 'none',
-  bottom: 'none',
-  shoes: 'shoes01',
-  gloves: 'none',
-  hat: 'none',
-  mask: 'none',
-  glasses: 'none',
-  source: 'MakeHuman',
-  irisColour: '#5a3519',
-  /** Dramatis's own: which eye art (src/upstream/eyes), `basic` or `anime`. */
-  eyeStyle: 'basic',
-} as const
+/** The non-slider settings the build reads, besides the slots. */
+const READ = [
+  'gender',
+  'tone',
+  'redness',
+  'hair',
+  'beard',
+  'moustache',
+  'brows',
+  ...SLOTS,
+  'source',
+  'irisColour',
+] as const
+
+/**
+ * The non-slider defaults the build reads: tosijs-3d's `DEFAULT_CHARACTER`,
+ * plus Dramatis's own `eyeStyle` (which eye art, src/upstream/eyes).
+ */
+export const DEFAULTS = Object.freeze({
+  ...(Object.fromEntries(READ.map((k) => [k, DEFAULT_CHARACTER[k]])) as {
+    gender: number
+    tone: number
+    redness: number
+    source: string
+    irisColour: string
+  } & Record<'hair' | 'beard' | 'moustache' | 'brows' | Slot, string>),
+  eyeStyle: 'basic' as EyeStyle,
+})
 
 /**
  * Every setting the build reads, with its default: `readCharacter`'s
@@ -58,11 +56,11 @@ export const BUILD_SETTINGS: Readonly<Record<string, unknown>> = Object.freeze({
 })
 
 /**
- * The hm08 pack the creator loads (tosijs-3d's `loadCharacterAssets`), for
- * `loadHumanPack`: its manifest's URL, which carries the pack version.
+ * The hm08 pack the creator loads, for `loadHumanPack`: its manifest's URL,
+ * which carries the pack version. tosijs-3d's `hm08PackUrl()` resolves against
+ * a global asset base the library never sets, so the CDN is named here.
  */
-export const HM08_PACK_URL =
-  'https://cdn.tosijs.net/makehuman/hm08/hm08.json?v=17'
+export const HM08_PACK_URL = `https://cdn.tosijs.net/${HM08_PACK_PATH}?v=${HM08_PACK_VERSION}`
 
 /** The proxies every MakeHuman character carries, inside the mouth. */
 export const MOUTH = { teeth: 'teeth_base', tongue: 'tongue01' } as const

@@ -2,6 +2,18 @@
 
 All notable changes to Dramatis. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow [semver](https://semver.org/).
 
+## [Unreleased]
+
+### Removed
+
+Dramatis's copies of tosijs-3d, now that 0.12.0 promises its character core as engine-free subpaths. Exports are unchanged (every sample in `samples/out/` rebuilds equivalent).
+
+- `src/build/settings.ts`'s hand-copied defaults and slots: `DEFAULTS` and `SLOTS` are read from `tosijs-3d/character-settings` (`DEFAULT_CHARACTER`, `CHARACTER_SLOTS`), and `HM08_PACK_URL` is built from its `HM08_PACK_PATH` and `HM08_PACK_VERSION` (the same string). `eyeStyle` stays Dramatis's own. The licence manifest's slots and the extremes sweep's wrapping slots are tosijs-3d's too.
+- `src/build/cover.ts`: the export covers the skin with `tosijs-3d/proxy-cover`'s `coverSkin`.
+- `src/build/human-rig.js` and `human-rig.d.ts` (the Babylon-free type shim, and its test): `tosijs-3d/human-rig` is imported directly.
+- The eyes' own copy of `eyeCentre`: tosijs-3d's (`tosijs-3d/rigged-body`) is used. The UV mapping stays Dramatis's (glTF's handedness, v down, both eyes on one picture).
+- The creator's never-disposed `NullEngine`, kept so Babylon would not forget tosijs-3d's material plugins after navigating away: tosijs-3d 0.12 registers them again.
+
 ## [0.1.0] - 2026-11-02
 
 The first release: make a character in the browser, export it, and it works in three.js, Unity and Godot. Live at [dramatis.tosijs.net](https://dramatis.tosijs.net).

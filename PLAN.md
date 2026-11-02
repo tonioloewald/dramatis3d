@@ -71,8 +71,11 @@ Every arrow points one way. **Work goes where it is general:**
   Dramatis's public API, each has a `dramatis3d` board task tagged `upstream:tosijs-3d`
   naming its destination module, and each moves into tosijs-3d (and is deleted here)
   before Gate 1 closes, so there is never a published second copy. Dramatis imports
-  tosijs-3d at an exact pinned version and runs its own no-Babylon bundle check until
-  Stage A pins the core there.
+  tosijs-3d at an exact pinned version and keeps its own no-Babylon bundle check. Stage A
+  shipped in tosijs-3d 0.12.0 (twenty promised subpaths), so the copies Dramatis kept while
+  the core leaked Babylon types are gone: the settings defaults and slots
+  (`character-settings`), the skin cover (`proxy-cover`), the human-rig type shim, and the
+  eyes' centre (`rigged-body`'s `eyeCentre`).
 - **Character controllers:** in Babylon, tosijs-3d's biped is the controller and its sample.
   In other engines, samples use existing controllers. Dramatis builds none.
 - **One character file.** Dramatis reads and writes `tosijs-character` through tosijs-3d's
@@ -92,9 +95,10 @@ exports, 15 with their own tests. `human-pack`, `human-morph`, `human-rig`, `rig
 `rigged-body`. 22 tosijs-3d modules import from it, among them the biped, the rig tool, spring
 chains and the HUD, so it is engine maths as much as character maths.
 
-**One leak:** `rigged-body.ts` and `human-rig.ts` have `import type { Material } from
-'@babylonjs/core'`. It is erased at runtime but lands in the `.d.ts`, so a three.js consumer's
-type-check needs Babylon installed.
+**One leak** (fixed in 0.12.0): `rigged-body.ts` and `human-rig.ts` had `import type {
+Material } from '@babylonjs/core'`. It was erased at runtime but landed in the `.d.ts`, so a
+three.js consumer's type-check needed Babylon installed. 0.12 types it as `SurfaceMaterial` (a
+name) and promises twenty subpaths, adding `character-settings`, `proxy-cover` and `asset-url`.
 
 **Stage A: promise it (tosijs-3d, additive, a minor).** Nothing moves, nothing is renamed,
 nothing leaves the barrel.

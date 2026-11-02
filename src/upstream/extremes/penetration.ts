@@ -17,21 +17,14 @@ Two measures, both per fitted vertex:
 Pure; positions in the pack's frame (metres).
 */
 
+import { BODY_WRAPPING_SLOTS } from 'tosijs-3d/proxy-cover'
 import { coveredBy } from 'tosijs-3d/proxy-fit'
 import type { MeshSdf } from './inside'
 
 /** coverBody's tuck for listed (deleted) skin, metres. */
 export const LISTED_TUCK = 0.006
-/** Slots whose garments wrap the body, so coverBody tucks what they cover. */
-export const WRAPPING_SLOTS: readonly string[] = [
-  'outfit',
-  'bodysuit',
-  'armour',
-  'top',
-  'bottom',
-  'shoes',
-  'gloves',
-]
+/** Slots whose garments wrap the body, so coverBody tucks what they cover (tosijs-3d's). */
+export const WRAPPING_SLOTS: readonly string[] = BODY_WRAPPING_SLOTS
 
 export interface Penetration {
   /** Vertices tested. */
