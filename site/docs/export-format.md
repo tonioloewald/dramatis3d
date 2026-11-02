@@ -189,7 +189,8 @@ A UAL clip's translation keys hold the **mannequin's** bone lengths, so
 played on another body they stretch it. Play its **rotation** tracks on
 every joint and its **translation** tracks on `root` and `pelvis` only
 (ideally scaling the pelvis's by the ratio of the hips' heights). That is
-what the gate's clip check does (`clipForExport` in `test/gate1/checks.ts`).
+what `characterClip` in `dramatis/three` does (its `translationScale` is the
+ratio), and the gate's clip check plays the clip through it.
 
 ## Morph targets: the face units
 

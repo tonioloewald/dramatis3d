@@ -15,7 +15,7 @@ import { cachedFetch, HM08_PACK_URL } from '../build/cdn'
 import { exportCharacterGlb, exportCharacterVrm } from '../contracts'
 import { validatorErrors } from '../../test/gate1/checks'
 import { vrmFromGlb, vrmProblems } from '.'
-import { readGlbChunks } from './glb'
+import { readGlb } from '../upstream/glb/glb-chunks'
 
 const ON = process.env.DRAMATIS_NETWORK === '1'
 const it = (name: string, fn: () => Promise<void>, timeout = 180_000): void =>
@@ -59,7 +59,7 @@ describe('exportCharacterVrm', () => {
     ).toBe(true)
     expect(vrmProblems(vrm)).toEqual([])
     expect(await validatorErrors(vrm)).toEqual([])
-    const ext = readGlbChunks(vrm).json.extensions.VRMC_vrm
+    const ext = readGlb(vrm).json.extensions.VRMC_vrm
     expect(ext.meta.name).toBe('VRM sample')
     expect(Object.keys(ext.expressions.preset).length).toBe(17)
     expect(ext.lookAt.type).toBe('expression')
@@ -71,7 +71,7 @@ describe('exportCharacterVrm', () => {
       faceUnits: false,
     })
     expect(vrmProblems(vrm)).toEqual([])
-    const ext = readGlbChunks(vrm).json.extensions.VRMC_vrm
+    const ext = readGlb(vrm).json.extensions.VRMC_vrm
     expect(ext.expressions.preset).toEqual({})
     expect(ext.lookAt).toBeUndefined()
   })

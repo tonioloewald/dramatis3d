@@ -4,6 +4,7 @@
 // from the scene so they can be tested under bun.
 
 import type { Character } from 'tosijs-3d/character-file'
+import { parseGlbJson } from 'tosijs-3d/glb-manifest'
 import type { HumanPack } from 'tosijs-3d/human-pack'
 import { exportCharacterGlb } from '../../src/contracts/export'
 import {
@@ -94,20 +95,8 @@ export function fileNameFor(name: string, ext: string): string {
  * it is not a GLB.
  */
 export function glbLicences(glb: Uint8Array): LicenceEntry[] {
-  try {
-    if (glb.byteLength < 20) return []
-    const view = new DataView(glb.buffer, glb.byteOffset, glb.byteLength)
-    if (view.getUint32(0, true) !== 0x46546c67) return [] // 'glTF'
-    const length = view.getUint32(12, true)
-    if (view.getUint32(16, true) !== 0x4e4f534a) return [] // 'JSON'
-    const json = JSON.parse(
-      new TextDecoder().decode(glb.subarray(20, 20 + length))
-    )
-    const licences = json?.asset?.extras?.dramatis?.licences
-    return Array.isArray(licences) ? licences : []
-  } catch {
-    return []
-  }
+  const licences = parseGlbJson(glb)?.asset?.extras?.dramatis?.licences
+  return Array.isArray(licences) ? licences : []
 }
 
 export interface ExportInput {

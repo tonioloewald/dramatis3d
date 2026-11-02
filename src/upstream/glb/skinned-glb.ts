@@ -28,6 +28,7 @@ What it guarantees, so the Khronos validator is clean:
 - `KHR_materials_sheen` is listed in `extensionsUsed` only when a material
   has sheen; nothing is ever required.
 */
+import { BinBuilder, writeGlb } from './glb-chunks'
 
 /** x, y, z. */
 export type GlbVec3 = readonly [number, number, number]
@@ -128,40 +129,6 @@ const ELEMENT_ARRAY_BUFFER = 34963
 
 type Json = Record<string, unknown>
 
-class Bin {
-  private parts: Uint8Array[] = []
-  private length = 0
-  readonly views: Json[] = []
-
-  add(bytes: Uint8Array, target?: number): number {
-    const view: Json = {
-      buffer: 0,
-      byteOffset: this.length,
-      byteLength: bytes.byteLength,
-    }
-    if (target !== undefined) view.target = target
-    this.views.push(view)
-    this.parts.push(bytes)
-    this.length += bytes.byteLength
-    const pad = (4 - (bytes.byteLength % 4)) % 4
-    if (pad > 0) {
-      this.parts.push(new Uint8Array(pad))
-      this.length += pad
-    }
-    return this.views.length - 1
-  }
-
-  bytes(): Uint8Array {
-    const out = new Uint8Array(this.length)
-    let at = 0
-    for (const p of this.parts) {
-      out.set(p, at)
-      at += p.byteLength
-    }
-    return out
-  }
-}
-
 const asBytes = (a: ArrayBufferView): Uint8Array =>
   new Uint8Array(a.buffer, a.byteOffset, a.byteLength)
 
@@ -245,7 +212,7 @@ export function normaliseInfluences(
 
 /** The GLB's bytes. Throws on input glTF could not represent. */
 export function writeSkinnedGlb(g: SkinnedGlb): Uint8Array {
-  const bin = new Bin()
+  const bin = new BinBuilder()
   const accessors: Json[] = []
   const accessor = (a: Json): number => {
     accessors.push(a)
@@ -501,12 +468,12 @@ export function writeSkinnedGlb(g: SkinnedGlb): Uint8Array {
       { magFilter: 9729, minFilter: 9987, wrapS: 10497, wrapT: 10497 },
     ]
   }
-  return glb(json, bytes)
+  return writeGlb(json, bytes)
 }
 
 /** A morph target's POSITION as a sparse accessor over the vertices it moves. */
 function sparseTarget(
-  bin: Bin,
+  bin: BinBuilder,
   accessor: (a: Json) => number,
   delta: Float32Array,
   count: number,
@@ -549,27 +516,4 @@ function sparseTarget(
       values: { bufferView: bin.add(asBytes(values)) },
     },
   })
-}
-
-function glb(json: Json, bin: Uint8Array): Uint8Array {
-  const text = new TextEncoder().encode(JSON.stringify(json))
-  const jsonPad = (4 - (text.byteLength % 4)) % 4
-  const binPad = (4 - (bin.byteLength % 4)) % 4
-  const jsonLength = text.byteLength + jsonPad
-  const binLength = bin.byteLength + binPad
-  const total = 12 + 8 + jsonLength + 8 + binLength
-  const out = new Uint8Array(total)
-  const dv = new DataView(out.buffer)
-  dv.setUint32(0, 0x46546c67, true)
-  dv.setUint32(4, 2, true)
-  dv.setUint32(8, total, true)
-  dv.setUint32(12, jsonLength, true)
-  dv.setUint32(16, 0x4e4f534a, true)
-  out.set(text, 20)
-  out.fill(0x20, 20 + text.byteLength, 20 + jsonLength)
-  const at = 20 + jsonLength
-  dv.setUint32(at, binLength, true)
-  dv.setUint32(at + 4, 0x004e4942, true)
-  out.set(bin, at + 8)
-  return out
 }

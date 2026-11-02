@@ -24,7 +24,8 @@ import {
   type NamingProfile,
   UE_JOINTS,
 } from '../../src/contracts/profile'
-import { readGlb, type Glb } from './glb'
+import { characterClip } from '../../src/three/clip'
+import { readGlb, type Glb } from '../../src/upstream/glb/glb-chunks'
 
 /** The Khronos validator's report, errors only (warnings and infos are allowed). */
 export async function validatorErrors(bytes: Uint8Array): Promise<string[]> {
@@ -221,31 +222,35 @@ const TURNING = MAJOR_JOINTS.filter((j) =>
 )
 const MIN_TURN = (0.5 * Math.PI) / 180
 
+/** A bone's rest height above the floor, from a scene at rest; null when absent. */
+function restHeight(root: Object3D, name: string): number | null {
+  const node = PropertyBinding.findNode(root, name) as Object3D | null
+  if (!node) return null
+  root.updateMatrixWorld(true)
+  return node.getWorldPosition(new Vector3()).y
+}
+
 /**
- * The clip as played on a profile export: UAL's tracks renamed to the
- * export's naming, rotations for every joint, translation only for `root`
- * and `pelvis` (UAL's other translation keys hold UAL's own bone lengths,
- * which would stretch a different body). Profile, "Playing UAL clips".
+ * The clip as played on a profile export: `characterClip` (the public
+ * dramatis/three function, Profile "Playing UAL clips") under the export's
+ * naming, its root and pelvis translations scaled by the hips' rest height
+ * over the clip skeleton's, as the viewer's `fitClip` does. Both scenes at
+ * rest.
  */
-export function clipForExport(
+export function clipOnExport(
   clip: AnimationClip,
+  character: Object3D,
+  source: Object3D,
   naming: NamingProfile
 ): AnimationClip {
-  const tracks = clip.tracks.flatMap((track) => {
-    const parsed = PropertyBinding.parseTrackName(track.name)
-    const ue = parsed.nodeName
-    if (UE_JOINTS.every((r) => r.name !== ue)) return []
-    const keep =
-      parsed.propertyName === 'quaternion' ||
-      (parsed.propertyName === 'position' && (ue === 'root' || ue === 'pelvis'))
-    if (!keep) return []
-    const t = track.clone()
-    t.name = `${PropertyBinding.sanitizeNodeName(jointName(ue, naming))}.${
-      parsed.propertyName
-    }`
-    return [t]
-  })
-  return new AnimationClip(clip.name, clip.duration, tracks)
+  const ours = restHeight(
+    character,
+    PropertyBinding.sanitizeNodeName(jointName('pelvis', naming))
+  )
+  const theirs = restHeight(source, 'pelvis')
+  const translationScale =
+    ours !== null && theirs !== null && theirs > 0 ? ours / theirs : 1
+  return characterClip(clip, { naming, translationScale })
 }
 
 /**
@@ -269,8 +274,8 @@ export async function clipProblems(
   const raw = source.animations[0]
   if (raw === undefined) return ['the clip file has no animation']
   const naming = declaredNaming(readGlb(bytes))
-  const clip = clipForExport(raw, naming)
   const scene = character.scene
+  const clip = clipOnExport(raw, scene, source.scene, naming)
   const bones = new Set<Object3D>()
   scene.traverse((o) => {
     if (o instanceof SkinnedMesh) for (const b of o.skeleton.bones) bones.add(b)

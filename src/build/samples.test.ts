@@ -8,7 +8,7 @@ import { readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { SkinnedMesh, Vector3 } from 'three'
 import { loadWithThree } from '../../test/gate1/checks'
-import { readGlb } from '../../test/gate1/glb'
+import { readGlb } from '../upstream/glb/glb-chunks'
 import {
   EXTRAS_KEY,
   jointName,

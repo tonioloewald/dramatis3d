@@ -21,7 +21,7 @@ What is here now:
 
 | Module | Destination in tosijs-3d | Board task |
 | --- | --- | --- |
-| `glb/` | `skinned-glb` (the skinned GLB writer) | #3662 |
+| `glb/` | `skinned-glb` (the skinned GLB writer), with `glb-chunks` (the one GLB container reader/writer that every Dramatis reader and writer uses) | #3662 |
 | `extremes/` | `fit-extremes` (the slider-extremes sweep) | #3661 |
 
 Until then Dramatis pins tosijs-3d at an exact version and runs its own

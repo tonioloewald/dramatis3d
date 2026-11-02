@@ -18,7 +18,12 @@ import {
   type NamingProfile,
   UE_JOINTS,
 } from '../../src/contracts/profile'
-import { BinBuilder, readGlb, writeGlb, type Glb } from './glb'
+import {
+  BinBuilder,
+  readGlb,
+  writeGlb,
+  type Glb,
+} from '../../src/upstream/glb/glb-chunks'
 
 export const CLIP_PATH = new URL('./fixtures/ual-walk.glb', import.meta.url)
   .pathname

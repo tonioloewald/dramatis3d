@@ -8,6 +8,7 @@ import {
   takeHandoff as contractTake,
 } from '../../src/contracts/handoff'
 import { notImplemented } from '../../src/contracts/lanes'
+import { writeGlb } from '../../src/upstream/glb/glb-chunks'
 import { openHandoffDb, putHandoff, takeHandoff } from './handoff'
 import {
   explain,
@@ -104,21 +105,8 @@ describe('handoff (IndexedDB)', () => {
   })
 })
 
-/** A minimal GLB: header plus a JSON chunk (padded to 4 bytes). */
-function glbWith(json: unknown): Uint8Array {
-  let text = JSON.stringify(json)
-  while (text.length % 4) text += ' '
-  const body = new TextEncoder().encode(text)
-  const out = new Uint8Array(20 + body.length)
-  const view = new DataView(out.buffer)
-  view.setUint32(0, 0x46546c67, true)
-  view.setUint32(4, 2, true)
-  view.setUint32(8, out.length, true)
-  view.setUint32(12, body.length, true)
-  view.setUint32(16, 0x4e4f534a, true)
-  out.set(body, 20)
-  return out
-}
+/** A minimal GLB: header plus a JSON chunk, no binary chunk. */
+const glbWith = (json: unknown): Uint8Array => writeGlb(json, null)
 
 describe('export actions', () => {
   test('a stub reads as "not in this build", not as a crash', () => {
@@ -164,6 +152,11 @@ describe('export actions', () => {
     ).toEqual(licences as never)
     expect(glbLicences(glbWith({ asset: { version: '2.0' } }))).toEqual([])
     expect(glbLicences(new Uint8Array([1, 2, 3]))).toEqual([])
+    // A short read (a download cut off inside the JSON chunk) is not a GLB.
+    const whole = glbWith({
+      asset: { version: '2.0', extras: { dramatis: { licences } } },
+    })
+    expect(glbLicences(whole.subarray(0, whole.byteLength - 8))).toEqual([])
   })
 
   test('file names and share fragments', () => {

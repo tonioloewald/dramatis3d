@@ -6,7 +6,7 @@
 // every export in the tests beside the Khronos validator (which does not
 // read VRMC_vrm) and three-vrm (which reads it leniently).
 
-import { type GltfJson, readGlbChunks } from './glb'
+import { type GltfJson, readGlb } from '../upstream/glb/glb-chunks'
 import { VRM_BONE_NAMES, VRM_REQUIRED_BONES, vrmParents } from './humanoid'
 import { VRMC_VRM } from './spec'
 
@@ -53,7 +53,7 @@ const FLAGS = [
 export function vrmProblems(bytes: Uint8Array): string[] {
   let json: GltfJson
   try {
-    json = readGlbChunks(bytes).json
+    json = readGlb(bytes).json
   } catch (e) {
     return [String(e instanceof Error ? e.message : e)]
   }

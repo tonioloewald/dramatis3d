@@ -19,7 +19,7 @@ import {
   validatorErrors,
 } from '../../test/gate1/checks'
 import { clipBytes } from '../../test/gate1/fixture'
-import { readGlb } from '../../test/gate1/glb'
+import { readGlb } from '../upstream/glb/glb-chunks'
 import { characterLicences, UnlicensedAssetError } from '../contracts/licences'
 import { UE_JOINT_NAMES } from '../contracts/profile'
 import { buildCharacterWith } from './build'
