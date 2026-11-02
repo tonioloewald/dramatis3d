@@ -1,0 +1,13 @@
+# Unity's generated folders.
+Library/
+Temp/
+Logs/
+UserSettings/
+obj/
+*.csproj
+*.sln
+# Characters are copied in from samples/out by tools/engines/unity.ts.
+Assets/Characters/
+Assets/Characters.meta
+# Written by each check run.
+dramatis-results.json
