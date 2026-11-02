@@ -55,7 +55,8 @@ describe('glbDifferences', () => {
     expect(image).toBeDefined()
     const bin = glb.bin!.slice()
     const view = glb.json.bufferViews[image.bufferView]
-    bin[(view.byteOffset ?? 0) + 100] ^= 0xff
+    const at = (view.byteOffset ?? 0) + 100
+    bin[at] = bin[at]! ^ 0xff
     expect(
       glbDifferences(await sample(), writeGlb(glb.json, bin))
     ).toContainEqual(expect.stringContaining('bytes differ'))
