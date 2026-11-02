@@ -54,6 +54,12 @@ namespace Dramatis
         Transform pelvis;
         float hipScale = 1;
         Vector3 lastHips;
+        // Every joint but root and pelvis, at this character's own rest: UAL's
+        // clips carry UAL's bone offsets and scales on every joint, and played
+        // as they are they put the spine, clavicles and neck where UAL's body
+        // has them. Only the rotations (and the hips' travel) are the clip's,
+        // as in dramatis/three's characterClip.
+        readonly List<(Transform t, Vector3 pos, Vector3 scale)> rest = new List<(Transform, Vector3, Vector3)>();
         // A blend shape's full weight is its last frame's: glTFast imports morph
         // targets at 1, not Unity's usual 100 (100 drew the lids 100x over).
         readonly List<(SkinnedMeshRenderer smr, int index, float full)> lids = new List<(SkinnedMeshRenderer, int, float)>();
@@ -209,6 +215,9 @@ namespace Dramatis
             root.SetParent(parent, false);
 
             pelvis = Find(sceneT, "pelvis");
+            rest.Clear();
+            foreach (var t in root.GetComponentsInChildren<Transform>(true))
+                if (t != root && t != pelvis) rest.Add((t, t.localPosition, t.localScale));
             float ours = HipsHeight(sceneT);
             hipScale = ualHips > 0 && ours > 0 ? ours / ualHips : 1;
             lastHips = new Vector3(float.NaN, 0, 0);
@@ -277,6 +286,11 @@ namespace Dramatis
 
         void LateUpdate()
         {
+            foreach (var r in rest)
+            {
+                r.t.localPosition = r.pos;
+                r.t.localScale = r.scale;
+            }
             // The clips carry UAL's hip height; scale it to this character's. Only
             // a value the animation just wrote is scaled (never twice).
             if (pelvis != null && hipScale != 1 && pelvis.localPosition != lastHips)
