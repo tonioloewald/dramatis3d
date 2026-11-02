@@ -6,6 +6,7 @@ import { defineSiteConfig, type Doc } from 'tosijs-ui/site'
 import { buildCreatorApp, CREATOR_STATIC } from './creator/build'
 import { buildViewer, VIEWER_STATIC } from './viewer/build'
 import { buildDemo, DEMO_STATIC } from './demo/build'
+import { buildUnityPage, UNITY_STATIC } from './unity/build'
 
 // One source for the custom domain: site/CNAME. GitHub Pages reads the CNAME the
 // build writes into the output; deriving `domain` from this file keeps them equal.
@@ -126,7 +127,13 @@ export default defineSiteConfig({
   docsJson: 'site/docs.json',
   llmsTxt,
   bundleEntry: './site/hydrate.ts',
-  watchPaths: ['site/hydrate.ts', 'site/creator', 'site/viewer', 'site/demo'],
+  watchPaths: [
+    'site/hydrate.ts',
+    'site/creator',
+    'site/viewer',
+    'site/demo',
+    'site/unity',
+  ],
   // The creator's heavy half (Babylon) is its own bundle, loaded only by the
   // creator page: built first, then copied in as /creator-app/.
   prebuild: async () => {
@@ -135,8 +142,16 @@ export default defineSiteConfig({
     if (!(await buildViewer())) throw new Error('viewer bundle failed')
     // The three.js demo: walk a character round, at /demo/.
     if (!(await buildDemo())) throw new Error('demo bundle failed')
+    // The Unity player's page, at /unity/ (the player itself is committed).
+    if (!(await buildUnityPage())) throw new Error('unity page bundle failed')
   },
-  staticDirs: ['site/static', CREATOR_STATIC, VIEWER_STATIC, DEMO_STATIC],
+  staticDirs: [
+    'site/static',
+    CREATOR_STATIC,
+    VIEWER_STATIC,
+    DEMO_STATIC,
+    UNITY_STATIC,
+  ],
   // Built for GitHub Pages by .github/workflows/pages.yml; not committed.
   outputDir: 'www',
   host: 'github-pages',

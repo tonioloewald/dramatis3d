@@ -57,6 +57,33 @@ is recorded).
    play its clip from the Animation window. (Or **Dramatis > Run engine
    check**, which writes `dramatis-results.json` and logs each result.)
 
+## The Web player (/unity/ on the site)
+
+**Status: written, NOT YET BUILT.** The same project also builds a Unity Web
+player that the site's [/unity/](https://dramatis.tosijs.net/unity/) page
+loads: the three.js demo's walk-round, in Unity. glTFast loads the GLB at
+runtime, as a Unity game would, and UAL's idle, walk, jog and sprint loops
+play on it by name (legacy clips, bound by path; nothing is retargeted).
+
+| Path | What |
+| --- | --- |
+| `Assets/Dramatis/Runtime/DramatisPlayer.cs` | The player: loading, clips, walking, the camera, blinking |
+| `Assets/Dramatis/Runtime/Walk.cs` | Its movement, a port of site/demo/core.ts; checked against it with Mono by `tools/engines/unity-walk.test.ts` |
+| `Assets/Dramatis/Runtime/Bridge.cs`, `Assets/Plugins/WebGL/DramatisBridge.jslib` | Events back to the page |
+| `Assets/Editor/DramatisWebBuild.cs` | The build: keeps glTFast's shader variants, makes the scene in code, builds for the Web |
+
+To build it, add **Web Build Support** to the editor in Unity Hub, then:
+
+```sh
+bun tools/engines/unity.ts --web
+```
+
+It copies the exports in (their glTFast materials are what keeps the shader
+variants), builds, and copies `Build/` to `site/unity/player/Build/`. Commit
+that; the site ships it. On the first run, look for `[dramatis]` lines in
+the log, and expect to fix things: none of this has been compiled by Unity
+yet (the runtime C# was compiled with Mono against stand-in types only).
+
 ## What it checks, per export
 
 - **import**: glTFast makes a GameObject with SkinnedMeshRenderers.

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dramatis in Unity</title>
+    <meta
+      name="description"
+      content="Walk your Dramatis character round a Unity scene in the browser: glTFast loads the export at runtime, as a Unity game would."
+    />
+    <link rel="icon" href="/favicon.svg" />
+    <style>
+      :root {
+        --bg: #fafafa;
+        --stage: #2a3340;
+        --panel: #ffffffee;
+        --text: #222222;
+        --muted: #5d6470;
+        --accent: #7a4bd6;
+        --error: #b3261e;
+        --line: #0000001a;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #15181d;
+          --panel: #1d2128ee;
+          --text: #e8e8ea;
+          --muted: #a1a8b3;
+          --accent: #a78bfa;
+          --error: #ff8a80;
+          --line: #ffffff1f;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: var(--bg);
+        color: var(--text);
+        font: 14px/1.4 system-ui, -apple-system, sans-serif;
+      }
+      #stage {
+        position: fixed;
+        inset: 0;
+        background: var(--stage);
+      }
+      #stage canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        touch-action: none;
+      }
+      #panel {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        width: min(340px, calc(100vw - 32px));
+        max-height: calc(100vh - 24px);
+        overflow: auto;
+        padding: 12px 14px;
+        background: var(--panel);
+        border-radius: 10px;
+        box-shadow: 0 2px 12px #0003;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      #panel > * {
+        /* The panel scrolls; its rows keep their height. */
+        flex-shrink: 0;
+      }
+      @media (max-width: 600px) {
+        #panel {
+          top: auto;
+          bottom: 16px;
+          left: 16px;
+          right: 16px;
+          width: auto;
+          max-height: 45vh;
+        }
+      }
+      h1 {
+        font-size: 16px;
+        margin: 0;
+        overflow-wrap: anywhere;
+      }
+      h1 a,
+      #creator,
+      .link {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+      .row label {
+        color: var(--muted);
+        min-width: 4.5em;
+      }
+      select,
+      button,
+      input[type='range'] {
+        font: inherit;
+      }
+      select {
+        flex: 1 1 8em;
+        min-width: 0;
+        padding: 4px 6px;
+      }
+      input[type='range'] {
+        flex: 1 1 8em;
+        min-width: 0;
+        accent-color: var(--accent);
+      }
+      button {
+        padding: 5px 12px;
+        border-radius: 6px;
+        border: 1px solid var(--accent);
+        background: var(--accent);
+        color: #fff;
+        cursor: pointer;
+      }
+      button.quiet {
+        background: transparent;
+        color: var(--accent);
+      }
+      #status {
+        min-height: 1.4em;
+        overflow-wrap: anywhere;
+      }
+      #status.error {
+        color: var(--error);
+      }
+      #clip-note {
+        color: var(--muted);
+        font-size: 0.92em;
+      }
+      details summary {
+        cursor: pointer;
+        color: var(--muted);
+      }
+      #licences {
+        margin: 6px 0 0;
+        padding-left: 1.1em;
+        font-size: 0.9em;
+      }
+      #licences li {
+        margin: 4px 0;
+        overflow-wrap: anywhere;
+      }
+      #licences a {
+        color: var(--accent);
+      }
+      #drop {
+        position: fixed;
+        inset: 0;
+        display: none;
+        place-items: center;
+        background: #7a4bd655;
+        color: #fff;
+        font-size: 22px;
+        pointer-events: none;
+      }
+      body.dragging #drop {
+        display: grid;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      #stage canvas#unity {
+        outline: none;
+      }
+      #about,
+      #help {
+        color: var(--muted);
+        font-size: 0.92em;
+      }
+      kbd {
+        font: inherit;
+        padding: 0 4px;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage"><canvas id="unity" tabindex="-1"></canvas></div>
+    <div id="panel">
+      <h1><a href="/">Dramatis</a> · <span id="title">in Unity</span></h1>
+      <div id="status" role="status">Starting…</div>
+      <div class="row" id="saves-row" hidden>
+        <label for="saves">Saved</label>
+        <select id="saves"></select>
+        <button id="load" type="button">Load</button>
+      </div>
+      <div class="row">
+        <button id="open" type="button" class="quiet">
+          Open a file (.glb, .vrm, .json)…
+        </button>
+        <input
+          id="file"
+          type="file"
+          accept=".glb,.vrm,.json,model/gltf-binary,application/json"
+          hidden
+        />
+      </div>
+      <div id="help">
+        <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or the arrows to move,
+        <kbd>Shift</kbd> to run; or click the ground to walk there. Drag to look
+        round, scroll or pinch to zoom.
+      </div>
+      <div id="about">
+        Unity's Web player, loading the export at runtime with glTFast (the
+        package Unity users import glTF with), as a game would.
+      </div>
+      <div class="row">
+        <a id="creator" href="/creator/">Make one in the creator</a>
+        <a class="link" href="/demo/">The three.js demo</a>
+      </div>
+      <details id="licence-box" hidden>
+        <summary id="licence-summary">Licences</summary>
+        <ul id="licences"></ul>
+      </details>
+    </div>
+    <div id="drop">Drop a GLB or character file</div>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

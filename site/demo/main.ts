@@ -57,6 +57,7 @@ import {
 } from '../viewer/core'
 import {
   collide,
+  DEFAULT_CHARACTER,
   fileKind,
   GAITS,
   gaitFor,
@@ -146,7 +147,7 @@ scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
 scene.add(new HemisphereLight(0xffffff, 0x404858, 0.5))
 const sun = new DirectionalLight(0xffffff, 1.8)
 sun.castShadow = true
-sun.shadow.mapSize.set(2048, 2048)
+sun.shadow.mapSize.set(1024, 1024) // 12 m across: sharp enough, and cheap
 sun.shadow.camera.left = sun.shadow.camera.bottom = -6
 sun.shadow.camera.right = sun.shadow.camera.top = 6
 sun.shadow.bias = -0.0005
@@ -630,25 +631,7 @@ async function start(): Promise<void> {
   const saved = await listSaves()
   if (saved.length) return fromSave(saved[0]!)
   // Nobody saved yet: a default character, built here like any other.
-  await fromCharacter(
-    {
-      format: 'tosijs-character',
-      version: 1,
-      name: 'Default character',
-      settings: {
-        gender: 0.5,
-        tone: 0.4,
-        outfit: 'male_casualsuit02',
-        shoes: 'shoes01',
-        hair: 'short02',
-        brows: 'eyebrow001',
-      },
-      cloth: {},
-      tailor: [],
-      garments: {},
-    },
-    'a default character'
-  )
+  await fromCharacter(DEFAULT_CHARACTER, 'a default character')
   if (!state.error)
     status(
       'A default character. Make your own in the creator and it shows up here.'

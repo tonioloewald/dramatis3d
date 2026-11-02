@@ -8,6 +8,11 @@ its C# has never been compiled. They run in batch mode the first time an
 editor is installed. This page changes with what that run finds
 (`reports/spike-1.md`).
 
+**Try it (once built):** the [Unity player](/unity/) is the three.js demo's
+walk-round in Unity's Web player, loading your export at runtime with
+glTFast. That is glTFast's runtime path, with legacy clips; a game in the
+editor would more often use the editor import and a Humanoid avatar, below.
+
 ## Import with glTFast
 
 Unity reads GLB through **glTFast** (`com.unity.cloud.gltfast`), Unity's own

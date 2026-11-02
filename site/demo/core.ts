@@ -179,3 +179,21 @@ export function fileKind(name: string): 'glb' | 'gltf' | 'character' | null {
   if (lower.endsWith('.json')) return 'character'
   return null
 }
+
+/** Who the demos stand up when nothing is saved: a character file, built in the page. */
+export const DEFAULT_CHARACTER = Object.freeze({
+  format: 'tosijs-character',
+  version: 1,
+  name: 'Default character',
+  settings: {
+    gender: 0.5,
+    tone: 0.4,
+    outfit: 'male_casualsuit02',
+    shoes: 'shoes01',
+    hair: 'short02',
+    brows: 'eyebrow001',
+  },
+  cloth: {},
+  tailor: [],
+  garments: {},
+})

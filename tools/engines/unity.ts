@@ -4,6 +4,11 @@
 // installed; otherwise print the exact command and report NOT RUN.
 //
 //   bun tools/engines/unity.ts [--prepare-only] [file.glb ...]
+//   bun tools/engines/unity.ts --web      build the Web player for /unity/
+//
+// --web needs the editor's Web build support. It builds samples/unity for the
+// Web (Dramatis.WebBuild.Build) and copies Build/ into site/unity/player/,
+// which the site ships; commit it.
 //
 // UNITY overrides the editor binary; by default the newest editor under
 // /Applications/Unity/Hub/Editor/ is used. Exits 1 when a check fails, 2
@@ -11,6 +16,7 @@
 
 import {
   copyFileSync,
+  cpSync,
   existsSync,
   mkdirSync,
   readdirSync,
@@ -61,6 +67,27 @@ export async function prepareUnity(paths: string[] = []): Promise<string[]> {
   return written
 }
 
+/** The Web player build: into `out`, whose Build/ is then copied to the site. */
+export function unityWebCommand(unity: string, out: string): string[] {
+  return [
+    unity,
+    '-batchmode',
+    '-nographics',
+    '-projectPath',
+    PROJECT,
+    '-buildTarget',
+    'WebGL',
+    '-executeMethod',
+    'Dramatis.WebBuild.Build',
+    '-logFile',
+    '-',
+    '-dramatisWebOut',
+    out,
+  ]
+}
+
+const SITE_PLAYER = join(REPO, 'site/unity/player/Build')
+
 export function unityCommand(unity: string, out: string): string[] {
   return [
     unity,
@@ -84,8 +111,40 @@ if (import.meta.main) {
   console.log(
     `copied ${files.length} files into samples/unity/Assets/Characters/`
   )
-  const out = join(PROJECT, 'dramatis-results.json')
   const unity = findUnity()
+  if (args.includes('--web')) {
+    const built = join(PROJECT, 'Builds/player')
+    const cmd = unityWebCommand(
+      unity ?? `${HUB}/<version>/Unity.app/Contents/MacOS/Unity`,
+      built
+    )
+    if (unity === undefined) {
+      console.log(
+        `NOT RUN: no Unity editor found (set UNITY). Run:\n\n  ${cmd.join(
+          ' '
+        )}\n`
+      )
+      process.exit(2)
+    }
+    rmSync(built, { recursive: true, force: true })
+    const r = await run(cmd)
+    const from = join(built, 'Build')
+    if (r.code !== 0 || !existsSync(from)) {
+      console.error(
+        `The Web build failed (exit ${r.code}):\n${r.out.slice(-4000)}`
+      )
+      process.exit(1)
+    }
+    rmSync(SITE_PLAYER, { recursive: true, force: true })
+    cpSync(from, SITE_PLAYER, { recursive: true })
+    console.log(
+      `Web player built: ${readdirSync(SITE_PLAYER).join(
+        ', '
+      )} in site/unity/player/Build. Commit it.`
+    )
+    process.exit(0)
+  }
+  const out = join(PROJECT, 'dramatis-results.json')
   const cmd = unityCommand(
     unity ?? `${HUB}/<version>/Unity.app/Contents/MacOS/Unity`,
     out

@@ -410,7 +410,11 @@ describe.skipIf(!BROWSER)('the viewer in Chromium', () => {
 
   test('demo: ?glb= stands an export up, W walks it, letting go stops it', async () => {
     const { page, errors } = await newPage()
-    await page.goto(`${base}/demo/?glb=/samples/clothed-casual.glb`)
+    // Not the load event: on CI's SwiftShader the first frames (shadows, the
+    // environment) can hold it past goto's 30 s (run 41401524373).
+    await page.goto(`${base}/demo/?glb=/samples/clothed-casual.glb`, {
+      waitUntil: 'domcontentloaded',
+    })
     const s = await demoReady(page)
     expect(s.error).toBe(false)
     // Offline, only the bundled walk; with the CDN, all four.
@@ -453,7 +457,7 @@ describe.skipIf(!BROWSER)('the viewer in Chromium', () => {
     'demo: with nothing saved, a default character is built here and walks',
     async () => {
       const { page, errors } = await newPage()
-      await page.goto(`${base}/demo/`)
+      await page.goto(`${base}/demo/`, { waitUntil: 'domcontentloaded' })
       const s = await demoReady(page, 240_000)
       expect(s.error).toBe(false)
       expect(s.name).toBe('Default character')

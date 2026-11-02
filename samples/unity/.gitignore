@@ -11,3 +11,8 @@ Assets/Characters/
 Assets/Characters.meta
 # Written by each check run.
 dramatis-results.json
+# The Web build before tools/engines/unity.ts copies it to site/unity/player/.
+Builds/
+# Written by the Web build.
+Assets/Dramatis/Generated/
+Assets/Dramatis/Generated.meta

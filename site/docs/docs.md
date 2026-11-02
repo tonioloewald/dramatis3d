@@ -18,6 +18,8 @@ says what has been checked and what has not.
   its face and read its licences.
 - [three.js demo](/demo/): walk a character round a small scene: one saved
   in this browser, or a GLB or character file you open.
+- [Unity player](/unity/): the same walk-round in Unity's Web player, the
+  export loaded at runtime with glTFast. Not built yet: the page says so.
 
 ## The file you export
 
