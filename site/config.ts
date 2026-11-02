@@ -96,6 +96,8 @@ export default defineSiteConfig({
   baseUrl: `https://${DOMAIN}`,
   domain: DOMAIN,
   favicon: '/favicon.svg',
+  // The app icon (site/static/icon.svg), full-bleed: iOS rounds it.
+  headExtra: '<link rel="apple-touch-icon" href="/apple-touch-icon.png" />',
 
   projectLinks: {
     github: GITHUB,
