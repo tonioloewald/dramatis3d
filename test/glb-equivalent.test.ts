@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import { join } from 'node:path'
-import { readGlb, writeGlb } from '../src/upstream/glb/glb-chunks'
+import { readGlb, writeGlb } from 'tosijs-3d/glb-chunks'
 import { glbDifferences } from './glb-equivalent'
 
 // The network tier's "samples/out/<name>.glb is what its character file builds today" uses

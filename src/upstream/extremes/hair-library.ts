@@ -18,7 +18,7 @@ defaults), and the brow pieces' lash strips (brows are not swept from this
 library; MakeHuman's brows are).
 */
 
-import { accessorValues, readGlb } from '../glb/glb-chunks'
+import { accessorValues, readGlb } from 'tosijs-3d/glb-chunks'
 import { humanJoint } from 'tosijs-3d/human-morph'
 import type { HumanPackManifest } from 'tosijs-3d/human-pack'
 import {

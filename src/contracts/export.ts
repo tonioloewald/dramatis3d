@@ -1,4 +1,4 @@
-// The exporter. GLB lane: skinned-glb (src/build/ and src/upstream/glb/).
+// The exporter. GLB lane: src/build/, over tosijs-3d/skinned-glb.
 // VRM lane: vrm (src/vrm/). Normative profile: site/docs/export-format.md.
 
 import type { BuildOptions } from './built-character'

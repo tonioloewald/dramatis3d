@@ -25,7 +25,7 @@ import {
   UE_JOINTS,
 } from '../../src/contracts/profile'
 import { characterClip } from '../../src/three/clip'
-import { readGlb, type Glb } from '../../src/upstream/glb/glb-chunks'
+import { readGlb, type Glb } from 'tosijs-3d/glb-chunks'
 
 /** The Khronos validator's report, errors only (warnings and infos are allowed). */
 export async function validatorErrors(bytes: Uint8Array): Promise<string[]> {

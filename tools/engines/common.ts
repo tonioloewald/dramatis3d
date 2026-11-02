@@ -11,7 +11,7 @@ import {
   MIXAMO_NAMES,
   UE_JOINTS,
 } from '../../src/contracts/profile'
-import { readGlb } from '../../src/upstream/glb/glb-chunks'
+import { readGlb } from 'tosijs-3d/glb-chunks'
 
 export const REPO = resolve(import.meta.dir, '../..')
 export const SAMPLES_OUT = join(REPO, 'samples/out')

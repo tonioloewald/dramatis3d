@@ -8,7 +8,7 @@
 // ual-rest.test.ts checks the written table against the fixture.
 
 import { UE_JOINTS } from '../contracts/profile'
-import { readGlb } from '../upstream/glb/glb-chunks'
+import { readGlb } from 'tosijs-3d/glb-chunks'
 
 const source =
   process.argv[2] ??

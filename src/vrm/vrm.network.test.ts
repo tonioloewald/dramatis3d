@@ -15,7 +15,7 @@ import { cachedFetch, HM08_PACK_URL } from '../build/cdn'
 import { exportCharacterGlb, exportCharacterVrm } from '../contracts'
 import { validatorErrors } from '../../test/gate1/checks'
 import { vrmFromGlb, vrmProblems } from '.'
-import { readGlb } from '../upstream/glb/glb-chunks'
+import { readGlb } from 'tosijs-3d/glb-chunks'
 
 const ON = process.env.DRAMATIS_NETWORK === '1'
 const it = (name: string, fn: () => Promise<void>, timeout = 180_000): void =>

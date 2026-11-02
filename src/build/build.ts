@@ -55,7 +55,7 @@ import {
   type FaceUnitName,
   UE_JOINT_NAMES,
 } from '../contracts/profile'
-import { unitNormals } from '../upstream/glb/skinned-glb'
+import { unitNormals } from 'tosijs-3d/skinned-glb'
 import { eyeAsset, eyePngUrl, eyeUvs, recolourEyePng } from '../upstream/eyes'
 import { assetIds } from './assets'
 import { humanBodyMaker } from 'tosijs-3d/human-rig'

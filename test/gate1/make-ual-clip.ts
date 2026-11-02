@@ -12,7 +12,7 @@ import {
   BinBuilder,
   readGlb,
   writeGlb,
-} from '../../src/upstream/glb/glb-chunks'
+} from 'tosijs-3d/glb-chunks'
 
 const [source, clipName = 'Walk_Loop'] = process.argv.slice(2)
 if (source === undefined) {

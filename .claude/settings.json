@@ -9,6 +9,26 @@
           }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v virta >/dev/null 2>&1 && virta brief --changes || true"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v virta >/dev/null 2>&1 && virta brief --stop || true"
+          }
+        ]
+      }
     ]
   }
 }

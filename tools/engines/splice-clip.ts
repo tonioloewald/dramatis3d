@@ -19,11 +19,7 @@ import {
   type NamingProfile,
   UE_JOINT_NAMES,
 } from '../../src/contracts/profile'
-import {
-  accessorBytes,
-  readGlb,
-  writeGlb,
-} from '../../src/upstream/glb/glb-chunks'
+import { accessorBytes, readGlb, writeGlb } from 'tosijs-3d/glb-chunks'
 import { UAL_CLIP } from './common'
 
 const UE = new Set(UE_JOINT_NAMES)

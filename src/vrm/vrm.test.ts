@@ -26,7 +26,7 @@ import {
   skeletonProblems,
   validatorErrors,
 } from '../../test/gate1/checks'
-import { readGlb, readVec3 } from '../upstream/glb/glb-chunks'
+import { readGlb, readVec3 } from 'tosijs-3d/glb-chunks'
 import {
   measureEyes,
   VRM_HUMAN_BONES,

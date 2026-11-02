@@ -8,7 +8,7 @@ import {
   validatorErrors,
 } from './checks'
 import { clipBytes, makeFixture } from './fixture'
-import { readGlb, writeGlb } from '../../src/upstream/glb/glb-chunks'
+import { readGlb, writeGlb } from 'tosijs-3d/glb-chunks'
 
 /*
 EVERY GATE-1 CHECK CAN FAIL. The good fixture (a tiny export to the profile)

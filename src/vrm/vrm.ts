@@ -19,12 +19,7 @@ import {
   type FaceUnitName,
 } from '../contracts/profile'
 import { LOOK_PRESETS, VRM_PRESETS, type VrmPresetName } from './expressions'
-import {
-  type Glb,
-  readGlb,
-  readVec3,
-  writeGlb,
-} from '../upstream/glb/glb-chunks'
+import { type Glb, readGlb, readVec3, writeGlb } from 'tosijs-3d/glb-chunks'
 import { VRM_HUMAN_BONES } from './humanoid'
 import { VRM_LICENSE_URL, VRMC_VRM } from './spec'
 

@@ -14,7 +14,7 @@ import {
   loadWithThree,
 } from '../../test/gate1/checks'
 import { clipBytes } from '../../test/gate1/fixture'
-import { readGlb } from '../upstream/glb/glb-chunks'
+import { readGlb } from 'tosijs-3d/glb-chunks'
 
 const W = 600
 const H = 700

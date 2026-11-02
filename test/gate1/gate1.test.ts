@@ -10,7 +10,7 @@ import {
   validatorErrors,
 } from './checks'
 import { clipBytes } from './fixture'
-import { readGlb } from '../../src/upstream/glb/glb-chunks'
+import { readGlb } from 'tosijs-3d/glb-chunks'
 
 /*
 GATE 1, THE AUTOMATED HALF: every GLB in samples/out/ (written by the

@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import type { Vec3 } from '../contracts/built-character'
 import { UE_JOINT_NAMES, UE_JOINTS } from '../contracts/profile'
-import { readGlb } from '../upstream/glb/glb-chunks'
+import { readGlb } from 'tosijs-3d/glb-chunks'
 import { qangle, qaxisAngle, qrotate, sub } from './math'
 import { skinTo, sourcePose, tPose, ualGlobalRest } from './pose'
 import { UAL_REST } from './ual-rest'

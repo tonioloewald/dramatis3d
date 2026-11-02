@@ -2,7 +2,7 @@
 // joints renamed per the naming profile, the face units' names in
 // `mesh.extras.targetNames`, the licences in `asset.extras.dramatis` and as
 // one line in `asset.copyright`. The bytes are written by the general
-// skinned-GLB writer (src/upstream/glb/, bound for tosijs-3d).
+// skinned-GLB writer, tosijs-3d/skinned-glb (moved there from Dramatis).
 
 import type { BuiltCharacter } from '../contracts/built-character'
 import type { LicenceEntry } from '../contracts/licences'
@@ -15,7 +15,7 @@ import {
   type NamingProfile,
   UE_JOINT_NAMES,
 } from '../contracts/profile'
-import { writeSkinnedGlb } from '../upstream/glb/skinned-glb'
+import { writeSkinnedGlb } from 'tosijs-3d/skinned-glb'
 import { NAMINGS, option } from './options'
 import { GENERATOR } from './version'
 

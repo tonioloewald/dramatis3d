@@ -20,7 +20,7 @@ import {
 } from '../../test/gate1/checks'
 import { clipBytes } from '../../test/gate1/fixture'
 import { glbDifferences } from '../../test/glb-equivalent'
-import { readGlb } from '../upstream/glb/glb-chunks'
+import { readGlb } from 'tosijs-3d/glb-chunks'
 import { characterLicences, UnlicensedAssetError } from '../contracts/licences'
 import { UE_JOINT_NAMES } from '../contracts/profile'
 import { buildCharacterWith } from './build'

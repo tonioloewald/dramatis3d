@@ -16,7 +16,7 @@ import {
   type Glb,
   type GltfJson,
   readGlb,
-} from '../src/upstream/glb/glb-chunks'
+} from 'tosijs-3d/glb-chunks'
 
 /** About a tenth of a millimetre on positions, far below anything visible. */
 export const GLB_TOLERANCE = 1e-4

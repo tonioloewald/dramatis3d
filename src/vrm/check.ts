@@ -6,7 +6,7 @@
 // every export in the tests beside the Khronos validator (which does not
 // read VRMC_vrm) and three-vrm (which reads it leniently).
 
-import { type GltfJson, readGlb } from '../upstream/glb/glb-chunks'
+import { type GltfJson, readGlb } from 'tosijs-3d/glb-chunks'
 import { VRM_BONE_NAMES, VRM_REQUIRED_BONES, vrmParents } from './humanoid'
 import { VRMC_VRM } from './spec'
 

@@ -32,7 +32,7 @@ start and a call that reaches a stub fails loudly.
 | Contract | File | Implemented by |
 | --- | --- | --- |
 | The built character (the core/adapter boundary) and `buildCharacter` | `built-character.ts` | skinned-glb, in `src/build/` |
-| `writeCharacterGlb`, `exportCharacterGlb` | `export.ts` | skinned-glb, in `src/build/` over `src/upstream/glb/` |
+| `writeCharacterGlb`, `exportCharacterGlb` | `export.ts` | `src/build/`, over `tosijs-3d/skinned-glb` |
 | `exportCharacterVrm` | `export.ts` | vrm, in `src/vrm/` |
 | `encodeShareLink`, `decodeShareLink` | `share.ts` | share-licence, in `src/share/` |
 | `licenceManifest`, `lookupLicence`, `characterLicences` | `licences.ts` | share-licence, in `src/licences/` |
@@ -57,7 +57,7 @@ harness is `test/gate1/` (`bun run gate1`): it checks every GLB in
 
 | Lane | Territory | Docs page |
 | --- | --- | --- |
-| **skinned-glb** | `src/upstream/glb/` (the general skinned GLB writer, bound for tosijs-3d), `src/build/` (`buildCharacter`, `writeCharacterGlb`, `exportCharacterGlb`), `bin/export-sample.ts`, `samples/out/` | `site/docs/export.md` |
+| **skinned-glb** | `src/build/` (over `tosijs-3d/skinned-glb` and `glb-chunks`) (`buildCharacter`, `writeCharacterGlb`, `exportCharacterGlb`), `bin/export-sample.ts`, `samples/out/` | `site/docs/export.md` |
 | **three** | `src/three/` (the adapter, `characterObject`), `samples/three/` | `site/docs/dramatis-three.md` |
 | **share-licence** | `src/share/`, `src/licences/` | `site/docs/licences.md` |
 | **site-creator** | `site/creator/` and the creator page and its parts; implements `src/contracts/handoff.ts` | `site/docs/creator.md` |

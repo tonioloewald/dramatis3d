@@ -4,6 +4,10 @@ All notable changes to Dramatis. The format follows [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+### Changed
+
+- **The GLB writer is tosijs-3d's.** Exports are written by `tosijs-3d/skinned-glb` and read by `tosijs-3d/glb-chunks` (in tosijs-3d since 0.12.1, the version already pinned); Dramatis's copy in `src/upstream/glb/` is gone. The four sample exports are byte-identical, and `dramatis` is 4.6 KB gzip smaller.
+
 ### Fixed
 
 - **The Unity player's blink tore the face down to the waist.** glTFast imports a morph target at full weight 1, not Unity's usual 100, and the player blinked at 100: every 3.7 s the lids moved 100 times over. The blink now scales to each shape's own full weight.

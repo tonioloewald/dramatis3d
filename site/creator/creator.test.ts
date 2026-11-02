@@ -8,7 +8,7 @@ import {
   takeHandoff as contractTake,
 } from '../../src/contracts/handoff'
 import { notImplemented } from '../../src/contracts/lanes'
-import { writeGlb } from '../../src/upstream/glb/glb-chunks'
+import { writeGlb } from 'tosijs-3d/glb-chunks'
 import { openHandoffDb, putHandoff, takeHandoff } from './handoff'
 import {
   explain,
