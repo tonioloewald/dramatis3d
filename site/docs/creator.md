@@ -49,6 +49,7 @@ tones, which are CC BY 4.0 and credited in every export:
 | Asset | Source | Licence |
 | --- | --- | --- |
 | The body, its shapes, eyes, teeth, hair, brows, clothes | [MakeHuman](http://www.makehumancommunity.org) (hm08 and its system assets) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| More clothes: t-shirts, a sweater, a bodice top, wool trousers, cargo trousers, denim shorts, a dinner suit, a bodysuit, three pairs of shoes, gloves and a cloche hat | MakeHuman community authors (Margaret Toigo, Cortu, Elvaerwyn, Joel Palmius, MatCreator, Aethelraed_Unraed), from MakeHuman's asset packs, each checked one by one | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | The eye art (**eye art**: basic or anime), its iris recoloured | Tonio Loewald, original | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | More hairstyles and brows (not exportable yet) | [Quaternius](https://quaternius.com) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | The skin tones | [Monk Skin Tone Scale](https://skintone.google), by Dr. Ellis Monk and Google | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
@@ -76,6 +77,9 @@ from `cdn.tosijs.net`, cached after the first visit.
   them (they are CC0), but **View in three.js**, **View in Unity** and **Download GLB** then
   stop with "Quaternius hair does not export yet". MakeHuman's hairstyles
   and brows (the default) export.
+- **Layering is not checked yet.** Each garment was tested alone at the
+  slider extremes, not in pairs: the wool trousers' waistband shows through
+  the sweater's hem.
 - The export is plainer than the scene: the skin is one colour (no lips),
   the lashes a dark card, and the creator's skin, hair and cloth shading
   stay behind. The eyes match: the creator paints the same eye art the

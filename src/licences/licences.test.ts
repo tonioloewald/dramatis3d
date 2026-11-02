@@ -17,7 +17,13 @@ import {
   lookupLicence,
   UnlicensedAssetError,
 } from '.'
-import { hairId, lookId, proxyId } from './manifest'
+import {
+  CHECKED_GARMENTS,
+  COMMUNITY,
+  hairId,
+  lookId,
+  proxyId,
+} from './manifest'
 import { PACKS } from './packs'
 import { PAGE, renderPage } from './write-page'
 
@@ -356,5 +362,26 @@ describe('characterLicences', () => {
       expect(base!.kind).toBe('base')
       expect(base!.licence).toBe('CC0-1.0')
     }
+  })
+})
+
+describe('the starter wardrobe', () => {
+  test('every checked garment is in the manifest as CC0 and no longer listed as unchecked', () => {
+    for (const name of Object.keys(CHECKED_GARMENTS)) {
+      const e = lookupLicence(`makehuman:proxy/${name}`)
+      expect([name, e?.licence, e?.kind]).toEqual([name, 'CC0-1.0', 'garment'])
+      expect(COMMUNITY.some((c) => c.asset === `makehuman:proxy/${name}`)).toBe(
+        false
+      )
+    }
+  })
+
+  test('the garments whose own files say AGPL3 stay out, whatever their pack says', () => {
+    for (const name of [
+      'frankyaye_mini_skirt_01',
+      'frankyaye_mini_skirt_02',
+      'jujube_newsboy_cap',
+    ])
+      expect(lookupLicence(`makehuman:proxy/${name}`)).toBeUndefined()
   })
 })

@@ -22,6 +22,7 @@ import { clipBytes } from '../../test/gate1/fixture'
 import { glbDifferences } from '../../test/glb-equivalent'
 import { readGlb } from 'tosijs-3d/glb-chunks'
 import { characterLicences, UnlicensedAssetError } from '../contracts/licences'
+import { CHECKED_GARMENTS } from '../licences/manifest'
 import { UE_JOINT_NAMES } from '../contracts/profile'
 import { buildCharacterWith } from './build'
 import { cachedFetch, HM08_PACK_URL } from './cdn'
@@ -146,6 +147,71 @@ describe('build from the CDN', () => {
       'JawDrop',
     ])
   }, 120_000)
+
+  // The starter wardrobe (src/licences/manifest.ts CHECKED_GARMENTS): every
+  // checked community garment builds, exports clean through gate 1's checks,
+  // and carries its own licence entry. The looks cover all of them.
+  const WARDROBE_LOOKS: Record<string, string>[] = [
+    {
+      top: 'elvs_crude_t-shirt_male',
+      bottom: 'cortu_cargo_pants',
+      shoes: 'toigo_mj_cloth_shoes',
+      gloves: 'toigo_gloves_short',
+      hat: 'aethelraed_unraed_cloche_hat',
+    },
+    {
+      top: 'joepal_crude_t-shirt_female',
+      bottom: 'cortu_jeans_shorts',
+      shoes: 'cortu_t-bar',
+    },
+    {
+      top: 'toigo_bodice-style_top',
+      bottom: 'toigo_wool_pants',
+      shoes: 'toigo_flats',
+    },
+    { top: 'toigo_fisherman_sweater', bottom: 'toigo_wool_pants' },
+    { outfit: 'toigo_suit_with_dinner_jacket' },
+    { bodysuit: 'matcreator_mc-bodysuit-2021' },
+  ]
+
+  it('the looks wear every checked garment', async () => {
+    const worn = new Set(WARDROBE_LOOKS.flatMap((l) => Object.values(l)))
+    expect([...worn].sort()).toEqual(Object.keys(CHECKED_GARMENTS).sort())
+  }, 5_000)
+
+  for (const look of WARDROBE_LOOKS)
+    it(`the starter wardrobe exports: ${Object.values(look).join(
+      ', '
+    )}`, async () => {
+      const base = SAMPLES['clothed-casual']!.character
+      const settings: Record<string, unknown> = {
+        ...base.settings,
+        outfit: 'none',
+      }
+      for (const slot of [
+        'top',
+        'bottom',
+        'shoes',
+        'gloves',
+        'hat',
+        'bodysuit',
+      ])
+        settings[slot] = 'none'
+      const built = await buildCharacterWith(
+        { ...base, settings: { ...settings, ...look } },
+        await pack(),
+        { fetch: fetcher },
+        deps
+      )
+      const ids = built.licences.map((l) => l.asset)
+      for (const name of Object.values(look))
+        expect(ids).toContain(`makehuman:proxy/${name}`)
+      const bytes = writeCharacterGlb(built)
+      expect(await validatorErrors(bytes)).toEqual([])
+      const glb = readGlb(bytes)
+      expect(skeletonProblems(glb)).toEqual([])
+      expect(morphProblems(glb)).toEqual([])
+    }, 120_000)
 
   it('an asset without a licence entry stops the build', async () => {
     const character = {

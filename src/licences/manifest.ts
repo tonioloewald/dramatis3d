@@ -233,7 +233,7 @@ export const CHECKED_GARMENTS: Readonly<Record<string, string>> = Object.freeze(
     'matcreator_mc-bodysuit-2021': '# license: CC0; holds on every body',
     toigo_flats: '# license CC0; holds on every body',
     'cortu_t-bar': '# Cortu Johnstone - CC0; holds on every body',
-    culturalibre_hero_boots_1: '# license CC-0; holds on every body',
+    toigo_mj_cloth_shoes: '# license CC0; holds on every body',
     toigo_gloves_short: '# license CC0; holds on every body',
     aethelraed_unraed_cloche_hat: '# license CC0; holds on every body',
   }
