@@ -14,7 +14,14 @@
 // read twice, half a second apart, and must have moved; the face unit's
 // morph influence must be what the page set.
 
-import { afterAll, beforeAll, describe, expect, test } from 'bun:test'
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  describe,
+  expect,
+  test,
+} from 'bun:test'
 import { existsSync, mkdirSync, readFileSync, statSync } from 'node:fs'
 import { join, normalize } from 'node:path'
 import type { Browser, Page } from 'playwright-core'
@@ -159,6 +166,16 @@ describe.skipIf(!BROWSER)('the viewer in Chromium', () => {
       ],
     })
   }, 120_000)
+
+  // Every test's pages go when it ends, popups too. A page left open keeps
+  // drawing in SwiftShader and starves the next tests: on the CI runner a
+  // creator, its viewer and the Unity player left running made later clicks
+  // and page loads time out (run 41481253117).
+  afterEach(async () => {
+    await Promise.all(
+      (browser?.contexts() ?? []).map((c) => c.close().catch(() => {}))
+    )
+  }, 30_000)
 
   // After the long SwiftShader tests, a graceful close can overrun bun's default 5 s hook
   // timeout on a CI runner (run 41372324731: every test passed, then teardown failed). Give
@@ -424,7 +441,10 @@ describe.skipIf(!BROWSER)('the viewer in Chromium', () => {
       )
       expect([u.error, u.status]).toEqual([false, u.status])
       expect(u.built && u.ready).toBe(true)
-      expect(u.name).toBeTruthy()
+      // The creator's export, not the page's fallback ('Default character',
+      // which it builds when a handoff is missing or expired).
+      expect(u.name).toBe('character')
+      expect(u.status).not.toContain('expired')
       expect(u.clips).toEqual(
         expect.arrayContaining(['idle', 'walk', 'jog', 'sprint'])
       )

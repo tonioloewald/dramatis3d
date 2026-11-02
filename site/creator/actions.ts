@@ -158,6 +158,8 @@ export async function downloadGlb(input: ExportInput): Promise<ActionResult> {
 export interface ViewTarget {
   path: string
   name: string
+  /** What must be on the site for the page to work (default: `path`). */
+  probe?: string
 }
 export const THREE_VIEWER: ViewTarget = {
   path: VIEWER_PATH,
@@ -166,6 +168,8 @@ export const THREE_VIEWER: ViewTarget = {
 export const UNITY_PLAYER: ViewTarget = {
   path: UNITY_PATH,
   name: 'the Unity player',
+  // The page is always there; the player's build may not be.
+  probe: `${UNITY_PATH}player/Build/player.loader.js`,
 }
 
 /** Whether a page is on this site. */
@@ -206,7 +210,7 @@ export async function viewIn(
   } catch (error) {
     return fail(explain(error, `hand the GLB to ${target.name}`))
   }
-  if (!(await pageExists(target.path)))
+  if (!(await pageExists(target.probe ?? target.path)))
     return fail(
       `${target.name[0]!.toUpperCase()}${target.name.slice(
         1
