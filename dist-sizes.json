@@ -1,0 +1,17 @@
+{
+  "version": "0.0.0",
+  "sizes": {
+    "dist/index.js": {
+      "raw": 143033,
+      "gz": 30906
+    },
+    "dist/three/index.js": {
+      "raw": 13307,
+      "gz": 3826
+    },
+    "dist/index-[hash].js": {
+      "raw": 6627,
+      "gz": 2160
+    }
+  }
+}

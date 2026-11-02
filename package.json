@@ -21,6 +21,14 @@
     },
     "./package.json": "./package.json"
   },
+  "files": [
+    "dist",
+    "!dist/**/*.tsbuildinfo",
+    "!dist/**/.*",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "start": "bun bin/site.ts",
     "build": "bun bin/site.ts --build",
@@ -63,5 +71,14 @@
     "tosijs": "^1.10.7",
     "tosijs-ui": "^1.16.38",
     "typescript": "^5.9.3"
+  },
+  "releaseDoctor": {
+    "securityEntries": [
+      "src/share/index.ts",
+      "site/viewer/main.ts"
+    ],
+    "buildOutputs": [
+      "dist"
+    ]
   }
 }
