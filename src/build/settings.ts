@@ -6,6 +6,7 @@
 
 import type { Character } from 'tosijs-3d/character-file'
 import { DEFAULT_HUMAN_BODY, type MacroBody } from 'tosijs-3d/human-morph'
+import { eyeStyle, type EyeStyle } from '../upstream/eyes'
 
 /** What can be worn, one of each (tosijs-3d's `CHARACTER_SLOTS`). */
 export const SLOTS = [
@@ -42,6 +43,9 @@ export const DEFAULTS = {
   mask: 'none',
   glasses: 'none',
   source: 'MakeHuman',
+  irisColour: '#5a3519',
+  /** Dramatis's own: which eye art (src/upstream/eyes), `basic` or `anime`. */
+  eyeStyle: 'basic',
 } as const
 
 /**
@@ -77,6 +81,10 @@ export interface BuildSettings {
   moustache: string | null
   /** `MakeHuman`, or a mesh body's source name (not exportable yet). */
   source: string
+  /** The iris colour, `#rrggbb`. */
+  irisColour: string
+  /** The eye art: `basic` or `anime`. */
+  eyeStyle: EyeStyle
 }
 
 const num = (v: unknown, d: number): number =>
@@ -113,5 +121,8 @@ export function readSettings(character: Character): BuildSettings {
     beard: name(s.beard, DEFAULTS.beard),
     moustache: name(s.moustache, DEFAULTS.moustache),
     source: typeof s.source === 'string' ? s.source : DEFAULTS.source,
+    irisColour:
+      typeof s.irisColour === 'string' ? s.irisColour : DEFAULTS.irisColour,
+    eyeStyle: eyeStyle(s.eyeStyle),
   }
 }

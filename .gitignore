@@ -14,3 +14,4 @@ llms.txt
 tls/*
 !tls/.gitkeep
 .claude/worktrees/
+www.last-good/

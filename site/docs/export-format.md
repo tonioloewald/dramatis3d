@@ -13,9 +13,11 @@ the harness fails it. The same names are in code, in
 **Where today's writer falls short of it** (each is a known bug, tracked on
 the board, and listed on [Export](/export/) under "Not yet"):
 
-- **Materials** are not baked yet: the skin is one flat colour, the eyes
-  are plain white, and `body`, `eyes` and `eyelashes` carry no
-  `TEXCOORD_0`.
+- **Materials** are only partly baked: the skin is one flat colour, and
+  `body` and `eyelashes` carry no `TEXCOORD_0`. The `eyes` are textured:
+  Tonio Loewald's eye art (CC0, `basic` or `anime` by the character's
+  `eyeStyle`), its iris recoloured to `irisColour`, both eyeballs mapped onto
+  one picture with the iris straight ahead.
 - **The floor.** The body is placed so that its whole skin would touch
   y = 0, but where shoes cover the feet that skin is cut away, so the
   exported skin's lowest point is higher and the shoe soles go below the

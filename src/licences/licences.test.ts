@@ -243,6 +243,7 @@ describe('characterLicences', () => {
       'makehuman:proxy/teeth_base',
       'makehuman:proxy/tongue01',
       'monk:skin-tone/monk-skin-tone-scale',
+      'tonio:eye/basic',
       'quaternius:skeleton/ual',
       'makehuman:proxy/short02',
       'makehuman:proxy/eyebrow001',
@@ -263,6 +264,14 @@ describe('characterLicences', () => {
       licences,
     } as never).filter((p) => /licen/.test(p))
     expect(problems).toEqual([])
+  })
+
+  test('the eye art follows eyeStyle, basic unless it names another', () => {
+    const ids = (c: Record<string, unknown>) =>
+      characterLicences(char(c), fakePack()).map((e) => e.asset)
+    expect(ids({ eyeStyle: 'anime' })).toContain('tonio:eye/anime')
+    expect(ids({ eyeStyle: 'anime' })).not.toContain('tonio:eye/basic')
+    expect(ids({ eyeStyle: 'nonsense' })).toContain('tonio:eye/basic')
   })
 
   test('Quaternius hair resolves to its own entry', () => {

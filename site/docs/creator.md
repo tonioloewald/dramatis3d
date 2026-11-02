@@ -46,6 +46,7 @@ tones, which are CC BY 4.0 and credited in every export:
 | Asset | Source | Licence |
 | --- | --- | --- |
 | The body, its shapes, eyes, teeth, hair, brows, clothes | [MakeHuman](http://www.makehumancommunity.org) (hm08 and its system assets) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| The eye art (**eye art**: basic or anime), its iris recoloured | Tonio Loewald, original | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | More hairstyles and brows (not exportable yet) | [Quaternius](https://quaternius.com) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | The skin tones | [Monk Skin Tone Scale](https://skintone.google), by Dr. Ellis Monk and Google | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
 | The skeleton, and the preview's animations (the clips are not exported) | Quaternius' Universal Animation Library | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
@@ -73,8 +74,9 @@ from `cdn.tosijs.net`, cached after the first visit.
   stop with "Quaternius hair does not export yet". MakeHuman's hairstyles
   and brows (the default) export.
 - The export is plainer than the scene: the skin is one colour (no lips),
-  the eyes are plain white, and the creator's skin, hair and cloth shading
-  stay behind. [Export](/export/) lists what does not travel yet.
+  the lashes a dark card, and the creator's skin, hair and cloth shading
+  stay behind. The eyes match: the creator paints the same eye art the
+  export carries. [Export](/export/) lists what does not travel yet.
 - The creator's bundle carries its own copy of tosijs beside the site's, so
   the console notes a few elements "already defined". It is harmless.
 - Babylon forgets every material plugin when its last engine is disposed,

@@ -157,5 +157,19 @@ for (const file of files) {
         expect(json.asset.copyright).toContain(`${e.title}: ${e.licence}`)
       expect(licences[0]).toMatchObject({ kind: 'base', licence: 'CC0-1.0' })
     })
+
+    test("the eyes carry Tonio's eye art, mapped, and credited", async () => {
+      const { json } = readGlb(await bytes())
+      const mesh = json.meshes.find((m: { name: string }) => m.name === 'eyes')
+      const prim = mesh.primitives[0]
+      expect(prim.attributes.TEXCOORD_0).toBeDefined()
+      const pbr = json.materials[prim.material].pbrMetallicRoughness
+      const texture = json.textures[pbr.baseColorTexture.index]
+      expect(json.images[texture.source].mimeType).toBe('image/png')
+      const ids = (
+        json.asset.extras[EXTRAS_KEY].licences as Array<{ asset: string }>
+      ).map((e) => e.asset)
+      expect(ids).toContain('tonio:eye/basic')
+    })
   })
 }

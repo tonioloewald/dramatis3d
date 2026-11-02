@@ -42,7 +42,7 @@ Asset ids are `<source>:<kind>/<name>`, lower case and stable across releases.
 
 <!-- manifest -->
 
-**95 assets shipped**, every one listed here with its source and licence. **132 community assets** are in the packs but unchecked, so they are excluded (below).
+**97 assets shipped**, every one listed here with its source and licence. **132 community assets** are in the packs but unchecked, so they are excluded (below).
 
 ### MakeHuman (core and system assets)
 
@@ -104,6 +104,13 @@ Asset ids are `<source>:<kind>/<name>`, lower case and stable across releases.
 | `monk:skin-tone/monk-skin-tone-scale` | Monk Skin Tone Scale (the ten tones the skin dial runs through) (modified) | skin-tone | [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/) | Dr. Ellis Monk and Google | [source](https://skintone.google) |
 
 > **Credit:** Monk Skin Tone Scale by Dr. Ellis Monk and Google (https://skintone.google), licensed under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Dramatis interpolates between its ten tones.
+
+### tonio
+
+| Asset | What | Kind | Licence | Author | Source |
+| --- | --- | --- | --- | --- | --- |
+| `tonio:eye/basic` | Eye texture, basic (the iris recoloured to the character's) (modified) | texture | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Tonio Loewald | [source](https://github.com/tonioloewald/dramatis3d/blob/main/assets/tonio/eyes/basic-eye.svg) |
+| `tonio:eye/anime` | Eye texture, anime (the iris recoloured to the character's) (modified) | texture | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Tonio Loewald | [source](https://github.com/tonioloewald/dramatis3d/blob/main/assets/tonio/eyes/anime-eye.svg) |
 
 ### Quaternius
 

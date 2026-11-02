@@ -101,9 +101,9 @@ draws it posed on the CPU.
 
 These are known gaps, each tracked on the board:
 
-- **Baked textures.** The skin is one colour (no lips, no stubble), the
-  eyes are plain white, and the lashes a dark opaque card; garment normal
-  maps and colour recipes do not travel yet.
+- **Baked textures.** The skin is one colour (no lips, no stubble) and the
+  lashes a dark opaque card; garment normal maps and colour recipes do not
+  travel yet. (The eyes are textured, in the character's eye colour.)
 - **Quaternius hair and brows**, garments of the character's own, and mesh
   bodies other than MakeHuman's: `buildCharacter` throws, saying which (the
   creator offers Quaternius hair, so its export stops there).

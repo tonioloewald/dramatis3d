@@ -47,6 +47,13 @@ import {
 } from 'tosijs-3d/character-file'
 import { characterStore, WORKING_CHARACTER } from 'tosijs-3d/character-store'
 import { decideName, dialogs } from './naming'
+import { HM08_EYE_UV } from 'tosijs-3d/human-face'
+import {
+  EYE_STYLES,
+  eyeStyle,
+  eyeTexturePng,
+  ONE_EYE_LAYOUT,
+} from '../../src/upstream/eyes'
 import { chooseFile } from 'tosijs-3d/choose-file'
 import { decodeShareLink } from '../../src/contracts/share'
 import type { NamingProfile } from '../../src/contracts/profile'
@@ -100,9 +107,14 @@ const CLIPS = [
 // The settings a character file keeps: tosijs-3d's character settings that
 // describe MakeHuman's body (not mesh sources, rigs or surfaces).
 const NOT_KEPT = new Set(['hideClothes', 'rigs', 'surfaces', 'source'])
-const KEPT = Object.keys(DEFAULT_CHARACTER).filter((k) => !NOT_KEPT.has(k))
+const TOSI_KEPT = Object.keys(DEFAULT_CHARACTER).filter((k) => !NOT_KEPT.has(k))
+// Dramatis's own settings, kept in the file beside tosijs-3d's (the build
+// reads them; tosijs-3d's character ignores them): the eye art.
+const OWN: Record<string, unknown> = { eyeStyle: 'basic' }
+const KEPT = [...TOSI_KEPT, ...Object.keys(OWN)]
 const START: Record<string, unknown> = {
-  ...Object.fromEntries(KEPT.map((k) => [k, DEFAULT_CHARACTER[k]])),
+  ...Object.fromEntries(TOSI_KEPT.map((k) => [k, DEFAULT_CHARACTER[k]])),
+  ...OWN,
   clip: 'Idle_Loop',
   paused: false,
 }
@@ -127,6 +139,46 @@ export async function mountCreator(
   const state = tosi({ dramatisCreator: structuredClone(START) })
     .dramatisCreator as unknown as Record<string, Box>
   const box = (k: string): Box => state[k] as Box
+  /*
+  THE EYES AS EXPORTED. tosijs-3d draws its eyes into a canvas texture named
+  "eye", both eyes on one picture (HM08_EYE_UV). The export uses Tonio's eye
+  art instead (src/upstream/eyes), so the creator paints that art onto the same
+  canvas, at each eye's place and size, so what is seen here is what exports.
+  */
+  let eyePaint = 0
+  const paintEyes = async (scene: BABYLON.Scene): Promise<void> => {
+    const ticket = ++eyePaint
+    const tex = scene.textures.find((t) => t.name === 'eye') as
+      | BABYLON.DynamicTexture
+      | undefined
+    if (!tex || typeof tex.getContext !== 'function') return
+    const png = eyeTexturePng(
+      eyeStyle(box('eyeStyle').value),
+      String(box('irisColour').value)
+    )
+    const img = await createImageBitmap(
+      new Blob([png as BlobPart], { type: 'image/png' })
+    )
+    if (ticket !== eyePaint) return
+    const ctx = tex.getContext() as CanvasRenderingContext2D
+    const size = tex.getSize().width
+    // The art's iris is 48 px of 256; tosijs-3d's is HM08_EYE_UV.iris of the canvas.
+    const scale = (HM08_EYE_UV.iris * size) / (ONE_EYE_LAYOUT.iris * img.width)
+    const w = img.width * scale
+    ctx.fillStyle = '#d8cbc2'
+    ctx.fillRect(0, 0, size, size)
+    for (const e of [HM08_EYE_UV.l, HM08_EYE_UV.r]) {
+      const x = e.u * size
+      const y = (1 - e.v) * size
+      ctx.save()
+      ctx.beginPath()
+      ctx.arc(x, y, HM08_EYE_UV.iris * size * 2.5, 0, Math.PI * 2)
+      ctx.clip()
+      ctx.drawImage(img, x - w / 2, y - w / 2, w, w)
+      ctx.restore()
+    }
+    tex.update()
+  }
   // Every observer this mount adds, removed again on dispose (the state is
   // global, and the page may mount the creator again after navigating).
   const unwatch: Array<() => void> = []
@@ -237,6 +289,7 @@ export async function mountCreator(
       defaultPresets: 'off',
       presets: irisPresets,
     }),
+    select('eye art', 'eyeStyle', [...EYE_STYLES]),
     label3d({ text: 'Face', collapsible: true }),
     toggle3d({ label: 'blink', value: box('blink') }),
     toggle3d({ label: 'talk', value: box('talk') }),
@@ -409,13 +462,20 @@ export async function mountCreator(
       handleStatus: (m) => host.setLoading(m),
       handleMeshes: (meshes) => host.register({ meshes }),
       handleShown: () => {
+        void paintEyes(scene)
         host.refreshScenePanel?.()
         play()
       },
     })
     const character = ch
-    for (const k of KEPT)
+    for (const k of TOSI_KEPT)
       watch(box(k), () => character.set({ [k]: plain(box(k).value) }))
+    // The eyes as the export draws them (src/upstream/eyes), painted over
+    // tosijs-3d's own after it repaints.
+    const eyesLater = () => setTimeout(() => void paintEyes(scene), 0)
+    watch(box('irisColour'), eyesLater)
+    watch(box('eyeStyle'), eyesLater)
+    eyesLater()
     // An outfit replaces a top and bottom, and either replaces an outfit.
     watch(box('outfit'), () => {
       if (box('outfit').value !== 'none') {

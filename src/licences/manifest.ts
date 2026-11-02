@@ -192,12 +192,29 @@ const MONK: LicenceEntry = {
   modified: true,
 }
 
+// ---- Tonio Loewald's eye art ------------------------------------------------
+
+/** The eye textures (assets/tonio/eyes), original art, CC0; the iris is recoloured. */
+const TONIO_EYES: LicenceEntry[] = (['basic', 'anime'] as const).map(
+  (style) => ({
+    asset: `tonio:eye/${style}`,
+    title: `Eye texture, ${style} (the iris recoloured to the character's)`,
+    kind: 'texture',
+    licence: CC0,
+    licenceUrl: CC0_URL,
+    source: `https://github.com/tonioloewald/dramatis3d/blob/main/assets/tonio/eyes/${style}-eye.svg`,
+    author: 'Tonio Loewald',
+    modified: true,
+  })
+)
+
 /** Every asset Dramatis ships or references, checked. */
 export const MANIFEST: readonly LicenceEntry[] = Object.freeze(
   [
     ...MAKEHUMAN_CORE,
     ...MAKEHUMAN_SYSTEM,
     MONK,
+    ...TONIO_EYES,
     ...QUATERNIUS_ENTRIES,
     ...BLENDER_ENTRIES,
   ].map((e) => Object.freeze(e))

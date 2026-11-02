@@ -53,6 +53,7 @@ import {
   UE_JOINT_NAMES,
 } from '../contracts/profile'
 import { unitNormals } from '../upstream/glb/skinned-glb'
+import { eyeAsset, eyeTexturePng, eyeUvs } from '../upstream/eyes'
 import { assetIds } from './assets'
 import { coverSkin } from './cover'
 import { humanBodyMaker } from './human-rig.js'
@@ -108,6 +109,8 @@ interface Part {
   material: PbrMaterial
   /** The texture's URL, fetched and embedded. */
   texture?: string
+  /** A texture made here (baked), embedded as it is, under its own licence id. */
+  image?: { key: string; name: string; bytes: Uint8Array; asset: string }
 }
 
 const flipV = (uvs: Float32Array): Float32Array => {
@@ -450,12 +453,19 @@ export async function buildCharacterWith(
       asset: ids.part('eyes'),
       positions: pick(full, eyePart.vertices),
       triangles: eyePart.triangles,
-      uvs: null,
+      // Mapped onto a one-eye picture, the iris straight ahead.
+      uvs: eyeUvs(pick(full, eyePart.vertices)),
       influences: { indices, weights },
       deltas: new Map(
         units.map((u) => [u, pick(deltas.get(u)!, eyePart.vertices)])
       ),
-      material: plain('eyes', [0.85, 0.85, 0.82], 0.15),
+      material: plain('eyes', [1, 1, 1], 0.15),
+      image: {
+        key: `eye:${s.eyeStyle}:${s.irisColour}`,
+        name: `eye_${s.eyeStyle}`,
+        bytes: eyeTexturePng(s.eyeStyle, s.irisColour),
+        asset: eyeAsset(s.eyeStyle),
+      },
     })
   }
   if (lashPart !== null)
@@ -579,7 +589,20 @@ export async function buildCharacterWith(
     const material = materials.length
     let mat = p.material
     const bytes = textured[pi]
-    if (bytes != null && p.texture !== undefined) {
+    if (p.image !== undefined) {
+      let image = imageFor.get(p.image.key)
+      if (image === undefined) {
+        images.push({
+          name: meshName(p.image.name),
+          mimeType: 'image/png',
+          bytes: p.image.bytes,
+          asset: p.image.asset,
+        })
+        image = images.length - 1
+        imageFor.set(p.image.key, image)
+      }
+      mat = { ...mat, baseColorTexture: { image } }
+    } else if (bytes != null && p.texture !== undefined) {
       let image = imageFor.get(p.texture)
       if (image === undefined) {
         images.push({
