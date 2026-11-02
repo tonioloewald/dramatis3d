@@ -1,17 +1,18 @@
-# Unity (draft)
+# Unity
 
-<!--{"parent": "docs", "order": 13, "description": "Draft, not verified: importing a Dramatis GLB into Unity with glTFast, building a Humanoid avatar, and playing UAL clips."}-->
+<!--{"parent": "docs", "order": 13, "description": "Verified in Unity 6: importing a Dramatis GLB with glTFast, building a Humanoid avatar, and playing UAL clips."}-->
 
-**Draft. Not yet verified in Unity.** The steps below and the sample project
-(`samples/unity`) were written for spike 1 without a Unity editor at hand;
-its C# has never been compiled. They run in batch mode the first time an
-editor is installed. This page changes with what that run finds
-(`reports/spike-1.md`).
+**Verified in Unity 6** (6000.6.7f1, glTFast 6.14.1, 2026-11-02): every
+sample export imports with glTFast's defaults and no fixes, makes a valid
+Humanoid avatar (UE or Mixamo naming) and plays UAL's walk. The run is
+`bun tools/engines/unity.ts` on `samples/unity`; its evidence is in
+`reports/spike-1.md`. Unity's automatic avatar mapping in the editor
+window was not tried: the check maps the bones explicitly, as below.
 
-**Try it (once built):** the [Unity player](/unity/) is the three.js demo's
-walk-round in Unity's Web player, loading your export at runtime with
-glTFast. That is glTFast's runtime path, with legacy clips; a game in the
-editor would more often use the editor import and a Humanoid avatar, below.
+**Try it:** the [Unity player](/unity/) is the three.js demo's walk-round
+in Unity's Web player, loading your export at runtime with glTFast. That
+is glTFast's runtime path, with legacy clips; a game in the editor would
+more often use the editor import and a Humanoid avatar, below.
 
 ## Import with glTFast
 
@@ -20,7 +21,7 @@ glTF package. Add it in Package Manager (Add package by name) or in
 `Packages/manifest.json`:
 
 ```json
-{ "dependencies": { "com.unity.cloud.gltfast": "6.10.1" } }
+{ "dependencies": { "com.unity.cloud.gltfast": "6.14.1" } }
 ```
 
 Then drop the `.glb` into `Assets/`. glTFast makes a prefab: one

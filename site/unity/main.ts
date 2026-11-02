@@ -132,9 +132,9 @@ async function startPlayer(): Promise<boolean> {
   unity = await window.createUnityInstance(
     ui.canvas,
     {
-      dataUrl: `${PLAYER}.data.gz`,
-      frameworkUrl: `${PLAYER}.framework.js.gz`,
-      codeUrl: `${PLAYER}.wasm.gz`,
+      dataUrl: `${PLAYER}.data.unityweb`,
+      frameworkUrl: `${PLAYER}.framework.js.unityweb`,
+      codeUrl: `${PLAYER}.wasm.unityweb`,
       companyName: 'tosijs',
       productName: 'Dramatis',
       productVersion: '0.1',

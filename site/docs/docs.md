@@ -19,7 +19,7 @@ says what has been checked and what has not.
 - [three.js demo](/demo/): walk a character round a small scene: one saved
   in this browser, or a GLB or character file you open.
 - [Unity player](/unity/): the same walk-round in Unity's Web player, the
-  export loaded at runtime with glTFast. Not built yet: the page says so.
+  export loaded at runtime with glTFast.
 
 ## The file you export
 
@@ -39,7 +39,7 @@ Each engine's own glTF importer, default settings, no plugins.
 | three.js | [three.js](/guide-threejs/) | **Verified**: gate 1 under Bun, and in headless Chromium |
 | Godot 4.5 | [Godot](/guide-godot/) | **Verified**: headless import and checks, and rendered frames |
 | Babylon.js 9.33 | [Babylon.js](/guide-babylon/) | **Verified** on a `NullEngine` (no rendering) |
-| Unity | [Unity](/guide-unity/) | **Draft, not verified**: no Unity editor has run it yet |
+| Unity 6 | [Unity](/guide-unity/) | **Verified**: batch import and checks (28/28), Humanoid, and a Web player |
 | Unreal Engine 5 | [Unreal Engine 5](/guide-unreal/) | **Draft, not verified**: a procedure no one has run yet |
 
 Blender 5.2 also imports every sample cleanly; it is a second opinion, with
@@ -81,7 +81,7 @@ This list is written by the build (`bun run build`): don't edit it by hand.
 - [three.js](/guide-threejs/)
 - [Godot](/guide-godot/)
 - [Babylon.js](/guide-babylon/)
-- [Unity (draft)](/guide-unity/)
+- [Unity](/guide-unity/)
 - [Unreal Engine 5 (draft)](/guide-unreal/)
 - [Licences and share links](/licences/)
 - [The extremes sweep](/extremes/)

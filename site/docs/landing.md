@@ -31,7 +31,7 @@ link. It runs on [tosijs-3d](https://3d.tosijs.net)'s character system.
 | [three.js](/guide-threejs/) | Verified: loads, plays UAL's walk by name, face and licences read |
 | [Godot 4.5](/guide-godot/) | Verified: default import, skeleton, blend shapes, walk |
 | [Babylon.js](/guide-babylon/) | Verified headless (`NullEngine`): skeleton, morphs, walk |
-| [Unity](/guide-unity/) | Not verified yet: the steps are written, no editor has run them |
+| [Unity 6](/guide-unity/) | Verified: glTFast import, Humanoid, walk; [Web player](/unity/) |
 | [Unreal Engine 5](/guide-unreal/) | Not verified yet: a procedure, not yet run |
 
 All of this was checked on four sample exports, headless. How the

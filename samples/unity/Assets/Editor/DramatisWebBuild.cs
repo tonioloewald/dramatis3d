@@ -57,7 +57,7 @@ namespace Dramatis
             try
             {
                 AssetDatabase.Refresh();
-                Directory.CreateDirectory(Generated);
+                EnsureFolder(Generated);
                 var variants = KeepVariants();
                 Debug.Log($"[dramatis] {variants.Length} material variants kept: {string.Join(", ", variants.Select(m => m.shader.name + " [" + string.Join(" ", m.shaderKeywords) + "]"))}");
                 if (variants.Length == 0)
@@ -87,6 +87,15 @@ namespace Dramatis
                 Debug.LogError("[dramatis] Web build failed: " + e);
                 return false;
             }
+        }
+
+        /// <summary>A folder the AssetDatabase knows (Directory.CreateDirectory alone it doesn't).</summary>
+        static void EnsureFolder(string path)
+        {
+            if (AssetDatabase.IsValidFolder(path)) return;
+            var parent = Path.GetDirectoryName(path).Replace('\\', '/');
+            EnsureFolder(parent);
+            AssetDatabase.CreateFolder(parent, Path.GetFileName(path));
         }
 
         /// <summary>Copies of every glTFast material under Assets/Characters, one per shader and keyword set.</summary>

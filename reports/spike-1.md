@@ -16,7 +16,7 @@ written by `bin/export-sample.ts` with the real licence manifest) and UAL's
 | **Godot** | 4.5.stable | **ran, headless import + check** | **32/32 pass** on 4 exports; rendered |
 | Blender (second opinion) | 5.2.0 LTS | ran, background | 28/28 pass on 4 exports |
 | Babylon.js | 9.33.1 (NullEngine under Bun) | ran | 28/28 pass on 4 exports |
-| **Unity** | none installed | **NOT RUN** | project and batch command written |
+| **Unity** | 6000.6.7f1, glTFast 6.14.1 | **ran, batch mode** (2026-11-02) | **28/28 pass** on 4 exports; Humanoid valid; Web player built |
 | Unreal 5 | none installed | **NOT RUN** | instructions only (secondary) |
 
 `reports/spike-1/results.json` is the machine-readable run (every check's
@@ -25,9 +25,10 @@ evidence); `reports/spike-1/godot-*.png` are frames rendered by Godot.
 **Answer so far:** in every engine that ran, the exports import with
 default settings and no fixes, the skeleton maps by name, the face units
 arrive as blend shapes, and UAL's walk moves the bones and the skin
-(clothes included). Unity, the owner's priority target, has not run: that
-is the open half of the question. Six findings below, none blocking, three
-of them for the writer.
+(clothes included). Unity, the owner's priority target, ran on 2026-11-02
+and passes too (below), so the three initial targets (three.js, Unity,
+Godot) are all verified. Six findings below, none blocking, three of them
+for the writer.
 
 ## How to rerun
 
@@ -136,28 +137,37 @@ This check plays UAL's pelvis keys **unscaled**, as gate 1 does: on
 `extreme-heavy` (head at 2.23 m) the head travels 55.5 cm instead of 11 cm,
 i.e. the body sinks to the mannequin's hip height (finding 3).
 
-### Unity: NOT RUN
+### Unity: ran, 28/28 (2026-11-02)
 
-No Unity editor is installed (only Unity Hub); per the brief nothing was
-installed. Written for the owner's run:
+Unity 6000.6.7f1 (Unity 6.6) with glTFast 6.14.1, batch mode on macOS:
+`bun tools/engines/unity.ts`. Every export imports with glTFast's defaults
+and no fixes. Per export (evidence in `reports/spike-1/unity-results.json`):
 
-- `samples/unity/`: `Packages/manifest.json` (glTFast 6.10.1 and the
-  animation and image modules) and `Assets/Editor/DramatisEngineCheck.cs`
-  (`Dramatis.EngineCheck.Run`): imports each export with glTFast, checks
-  skeleton, axes, rest skinning (`BakeMesh`), blend shapes, builds a
-  **Humanoid** avatar with `AvatarBuilder` from the profile's bone map,
-  and samples `Walk_Loop` from a spliced `.walk.glb` twin while reading the
-  Humanoid muscles. Results as JSON in the same shape as the other engines.
-- `bun tools/engines/unity.ts` copies the exports in and runs it, or prints
-  the command (exact steps in `samples/unity/README.md`).
+- **import:** 9 skinned meshes (body, eyes, lashes, teeth, tongue, brows,
+  hair, garments); **skeleton:** 65 bones, root `root`; **axes:** head at
+  1.59 m, Y-up, facing +Z.
+- **rest skinning:** `BakeMesh` at rest matches the mesh to 0.001 mm.
+- **morphs:** all 59 face units as blend shapes; JawDrop moves the jaw 32 mm.
+- **humanoid:** `AvatarBuilder` with the profile's bone map makes a valid,
+  human avatar (52 bones, no T-pose fix-up) under **both** namings. So
+  "does Unity Humanoid need Mixamo naming?" is answered: no, given an
+  explicit map (`samples/unity/Assets/Editor/DramatisEngineCheck.cs`).
+  Unity's automatic mapping in the editor's Avatar window was not tried.
+- **clip:** UAL's `Walk_Loop` moves the hands 59-98 cm and the feet 33-61 cm
+  over the loop; the baked skin follows; the Humanoid muscles change by up
+  to 1.2.
 
-**Unverified:** the C# has never been compiled. Known risks: the glTFast
-version pin may not resolve; glTFast's serialised field name for the
-animation setting (`importSettings.animationMethod`) is used only if the
-default import makes no clip; `AvatarBuilder` may reject the avatar for a
-reason the script then reports. The question "does Unity Humanoid need
-Mixamo naming?" is answered by this run, not before: with an explicit bone
-map the expectation is no.
+The first run needed no changes to the check. Unity rewrote
+`Packages/manifest.json` with its template's packages; it is trimmed back to
+glTFast and the modules the project uses.
+
+**The Web player** (`bun tools/engines/unity.ts --web`, the site's
+[/unity/](https://dramatis.tosijs.net/unity/)) also built on its second
+try (the first failed on an asset folder the build script made on disk
+without telling the AssetDatabase). In headless Chromium it loads the
+default character built in the page, binds idle, walk, jog and sprint
+(glTFast's runtime legacy clips, by path), walks on W and stops: 6.5 MB of
+player, about 7 s to a walking character.
 
 ### Unreal 5: NOT RUN
 

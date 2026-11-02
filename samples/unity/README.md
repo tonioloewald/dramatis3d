@@ -5,8 +5,8 @@ A minimal Unity project that imports Dramatis exports with **glTFast**
 **Humanoid** avatar for each, and plays Quaternius' UAL `Walk_Loop` (CC0) on
 it, in batch mode. It is spike 1's Unity check (`reports/spike-1.md`).
 
-**Status: written, NOT YET RUN.** No Unity editor was installed when it
-was written. Treat the first run as the test of the script itself.
+**Status: run, 28/28 pass** (Unity 6000.6.7f1, glTFast 6.14.1, 2026-11-02;
+`reports/spike-1.md`).
 
 ## What is here
 
@@ -49,7 +49,7 @@ is recorded).
    The first run resolves glTFast from the Unity registry (network) and
    imports eight GLBs; expect several minutes. `-logFile -` puts Unity's
    log on stdout; the check's own lines start with `[dramatis]`.
-3. If Package Manager says glTFast `6.10.1` is not available, change the
+3. If Package Manager says glTFast `6.14.1` is not available, change the
    version in `Packages/manifest.json` to the newest 6.x it offers and
    record that in the report.
 4. To look at a character: open the project in the editor, drag
@@ -59,7 +59,7 @@ is recorded).
 
 ## The Web player (/unity/ on the site)
 
-**Status: written, NOT YET BUILT.** The same project also builds a Unity Web
+**Status: built** (2026-11-02, 6.5 MB). The same project also builds a Unity Web
 player that the site's [/unity/](https://dramatis.tosijs.net/unity/) page
 loads: the three.js demo's walk-round, in Unity. glTFast loads the GLB at
 runtime, as a Unity game would, and UAL's idle, walk, jog and sprint loops
@@ -80,9 +80,8 @@ bun tools/engines/unity.ts --web
 
 It copies the exports in (their glTFast materials are what keeps the shader
 variants), builds, and copies `Build/` to `site/unity/player/Build/`. Commit
-that; the site ships it. On the first run, look for `[dramatis]` lines in
-the log, and expect to fix things: none of this has been compiled by Unity
-yet (the runtime C# was compiled with Mono against stand-in types only).
+that; the site ships it. Rebuild it when the export format or the player
+changes.
 
 ## What it checks, per export
 

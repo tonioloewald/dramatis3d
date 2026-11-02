@@ -1,0 +1,293 @@
+{
+  "unity": "6000.6.7f1",
+  "gltfast": "6.14.1",
+  "characters": [
+    {
+      "file": "clothed-casual.glb",
+      "naming": "ue",
+      "checks": [
+        {
+          "check": "import",
+          "ok": true,
+          "evidence": [
+            "9 SkinnedMeshRenderer: body, eyes, eyelashes, teeth, tongue, brows, hair, garment_male_casualsuit02, garment_shoes01"
+          ]
+        },
+        {
+          "check": "skeleton",
+          "ok": true,
+          "evidence": ["65 bones on body; root bone root"]
+        },
+        {
+          "check": "axes",
+          "ok": true,
+          "evidence": [
+            "Head (0.00, 1.59, 0.05), hand_l (-0.71, 1.38, 0.02), foot_l (-0.11, 0.07, -0.05), ball_l (-0.12, 0.03, 0.09) (Unity world)"
+          ]
+        },
+        {
+          "check": "rest-skinning",
+          "ok": true,
+          "evidence": [
+            "body 0.001 mm",
+            "eyes 0.000 mm",
+            "eyelashes 0.000 mm",
+            "teeth 0.000 mm",
+            "tongue 0.000 mm",
+            "brows 0.000 mm",
+            "hair 0.001 mm",
+            "garment_male_casualsuit02 0.000 mm",
+            "garment_shoes01 0.000 mm"
+          ]
+        },
+        {
+          "check": "morphs",
+          "ok": true,
+          "evidence": [
+            "59 distinct blend shapes; JawDrop moves the body up to 32.2 mm",
+            "body: 51",
+            "eyes: 19",
+            "eyelashes: 14",
+            "teeth: 7",
+            "tongue: 35",
+            "brows: 33",
+            "hair: 27",
+            "garment_male_casualsuit02: 7"
+          ]
+        },
+        {
+          "check": "humanoid",
+          "ok": true,
+          "evidence": [
+            "avatar isValid=True isHuman=True; 52 human bones mapped (no T-pose fix-up)"
+          ]
+        },
+        {
+          "check": "clip",
+          "ok": true,
+          "evidence": [
+            "clip Walk_Loop (mecanim generic), 1.33 s",
+            "travel (cm): Head 8.7, hand_l 71.2, hand_r 71.8, foot_l 39.9, foot_r 39.8",
+            "body vertices (baked) travel up to 92.8 cm",
+            "Humanoid muscles change by up to 1.20 over the clip"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "clothed-casual-mixamo.glb",
+      "naming": "mixamo",
+      "checks": [
+        {
+          "check": "import",
+          "ok": true,
+          "evidence": [
+            "9 SkinnedMeshRenderer: body, eyes, eyelashes, teeth, tongue, brows, hair, garment_male_casualsuit02, garment_shoes01"
+          ]
+        },
+        {
+          "check": "skeleton",
+          "ok": true,
+          "evidence": ["65 bones on body; root bone root"]
+        },
+        {
+          "check": "axes",
+          "ok": true,
+          "evidence": [
+            "Head (0.00, 1.59, 0.05), hand_l (-0.71, 1.38, 0.02), foot_l (-0.11, 0.07, -0.05), ball_l (-0.12, 0.03, 0.09) (Unity world)"
+          ]
+        },
+        {
+          "check": "rest-skinning",
+          "ok": true,
+          "evidence": [
+            "body 0.001 mm",
+            "eyes 0.000 mm",
+            "eyelashes 0.000 mm",
+            "teeth 0.000 mm",
+            "tongue 0.000 mm",
+            "brows 0.000 mm",
+            "hair 0.001 mm",
+            "garment_male_casualsuit02 0.000 mm",
+            "garment_shoes01 0.000 mm"
+          ]
+        },
+        {
+          "check": "morphs",
+          "ok": true,
+          "evidence": [
+            "59 distinct blend shapes; JawDrop moves the body up to 32.2 mm",
+            "body: 51",
+            "eyes: 19",
+            "eyelashes: 14",
+            "teeth: 7",
+            "tongue: 35",
+            "brows: 33",
+            "hair: 27",
+            "garment_male_casualsuit02: 7"
+          ]
+        },
+        {
+          "check": "humanoid",
+          "ok": true,
+          "evidence": [
+            "avatar isValid=True isHuman=True; 52 human bones mapped (no T-pose fix-up)"
+          ]
+        },
+        {
+          "check": "clip",
+          "ok": true,
+          "evidence": [
+            "clip Walk_Loop (mecanim generic), 1.33 s",
+            "travel (cm): Head 8.7, hand_l 71.2, hand_r 71.8, foot_l 39.9, foot_r 39.8",
+            "body vertices (baked) travel up to 92.8 cm",
+            "Humanoid muscles change by up to 1.20 over the clip"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "extreme-heavy.glb",
+      "naming": "ue",
+      "checks": [
+        {
+          "check": "import",
+          "ok": true,
+          "evidence": [
+            "9 SkinnedMeshRenderer: body, eyes, eyelashes, teeth, tongue, brows, hair, garment_male_worksuit01, garment_shoes03"
+          ]
+        },
+        {
+          "check": "skeleton",
+          "ok": true,
+          "evidence": ["65 bones on body; root bone root"]
+        },
+        {
+          "check": "axes",
+          "ok": true,
+          "evidence": [
+            "Head (0.00, 2.23, 0.06), hand_l (-0.95, 1.99, 0.00), foot_l (-0.15, 0.10, -0.07), ball_l (-0.17, 0.03, 0.13) (Unity world)"
+          ]
+        },
+        {
+          "check": "rest-skinning",
+          "ok": true,
+          "evidence": [
+            "body 0.001 mm",
+            "eyes 0.000 mm",
+            "eyelashes 0.000 mm",
+            "teeth 0.000 mm",
+            "tongue 0.001 mm",
+            "brows 0.000 mm",
+            "hair 0.001 mm",
+            "garment_male_worksuit01 0.001 mm",
+            "garment_shoes03 0.000 mm"
+          ]
+        },
+        {
+          "check": "morphs",
+          "ok": true,
+          "evidence": [
+            "59 distinct blend shapes; JawDrop moves the body up to 32.2 mm",
+            "body: 51",
+            "eyes: 19",
+            "eyelashes: 14",
+            "teeth: 7",
+            "tongue: 35",
+            "brows: 33",
+            "hair: 24",
+            "garment_male_worksuit01: 7"
+          ]
+        },
+        {
+          "check": "humanoid",
+          "ok": true,
+          "evidence": [
+            "avatar isValid=True isHuman=True; 52 human bones mapped (no T-pose fix-up)"
+          ]
+        },
+        {
+          "check": "clip",
+          "ok": true,
+          "evidence": [
+            "clip Walk_Loop (mecanim generic), 1.33 s",
+            "travel (cm): Head 11.2, hand_l 97.2, hand_r 98.3, foot_l 61.3, foot_r 61.1",
+            "body vertices (baked) travel up to 123.7 cm",
+            "Humanoid muscles change by up to 1.20 over the clip"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "long-hair.glb",
+      "naming": "ue",
+      "checks": [
+        {
+          "check": "import",
+          "ok": true,
+          "evidence": [
+            "9 SkinnedMeshRenderer: body, eyes, eyelashes, teeth, tongue, brows, hair, garment_female_sportsuit01, garment_shoes02"
+          ]
+        },
+        {
+          "check": "skeleton",
+          "ok": true,
+          "evidence": ["65 bones on body; root bone root"]
+        },
+        {
+          "check": "axes",
+          "ok": true,
+          "evidence": [
+            "Head (0.00, 1.40, 0.05), hand_l (-0.58, 1.22, 0.00), foot_l (-0.09, 0.07, -0.03), ball_l (-0.10, 0.02, 0.08) (Unity world)"
+          ]
+        },
+        {
+          "check": "rest-skinning",
+          "ok": true,
+          "evidence": [
+            "body 0.001 mm",
+            "eyes 0.000 mm",
+            "eyelashes 0.000 mm",
+            "teeth 0.000 mm",
+            "tongue 0.000 mm",
+            "brows 0.000 mm",
+            "hair 0.000 mm",
+            "garment_female_sportsuit01 0.001 mm",
+            "garment_shoes02 0.000 mm"
+          ]
+        },
+        {
+          "check": "morphs",
+          "ok": true,
+          "evidence": [
+            "59 distinct blend shapes; JawDrop moves the body up to 32.2 mm",
+            "body: 51",
+            "eyes: 19",
+            "eyelashes: 14",
+            "teeth: 7",
+            "tongue: 35",
+            "brows: 33",
+            "garment_female_sportsuit01: 7"
+          ]
+        },
+        {
+          "check": "humanoid",
+          "ok": true,
+          "evidence": [
+            "avatar isValid=True isHuman=True; 52 human bones mapped (no T-pose fix-up)"
+          ]
+        },
+        {
+          "check": "clip",
+          "ok": true,
+          "evidence": [
+            "clip Walk_Loop (mecanim generic), 1.33 s",
+            "travel (cm): Head 7.1, hand_l 58.8, hand_r 59.4, foot_l 33.5, foot_r 33.4",
+            "body vertices (baked) travel up to 76.1 cm",
+            "Humanoid muscles change by up to 1.20 over the clip"
+          ]
+        }
+      ]
+    }
+  ]
+}

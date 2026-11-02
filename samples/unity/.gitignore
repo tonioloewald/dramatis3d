@@ -16,3 +16,7 @@ Builds/
 # Written by the Web build.
 Assets/Dramatis/Generated/
 Assets/Dramatis/Generated.meta
+.vscode/
+*.slnx
+# Burst output from the Web build.
+Data/

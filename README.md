@@ -16,7 +16,7 @@ Where the export has been checked (on the four samples in `samples/out/`, headle
 | Godot 4.5 | Verified: headless import and checks, rendered frames |
 | Babylon.js 9.33 | Verified on a `NullEngine` (nothing rendered) |
 | Blender 5.2 | Verified (a second opinion, no guide) |
-| Unity | **Not run**: no Unity editor installed. Project and batch command written |
+| Unity 6.6 | Verified: batch import and checks (28/28), Humanoid, Web player |
 | Unreal 5 | **Not run**: no Unreal installed. A manual procedure is written |
 
 Not judged yet: how a character looks on a real GPU, VRM in a VTuber app, browsers other than Chromium. Known gaps (no baked skin or eye textures, Quaternius hair does not export, shoe soles below the floor) are listed on the [Export](site/docs/export.md) page.

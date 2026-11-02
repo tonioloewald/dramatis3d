@@ -19,7 +19,7 @@ export function buildUnityPage(out: string = UNITY_OUT): Promise<boolean> {
     entry: join(import.meta.dir, 'main.ts'),
     html: join(import.meta.dir, 'index.html'),
     out,
-    dirs: { player: join(UNITY_PLAYER, 'Build') },
+    dirs: { 'player/Build': join(UNITY_PLAYER, 'Build') },
   })
 }
 
