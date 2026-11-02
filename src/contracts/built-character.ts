@@ -112,7 +112,8 @@ export interface BuiltMesh {
 
 /**
  * Skin influences, four per vertex (glTF's JOINTS_0 / WEIGHTS_0). Weights
- * are renormalised to sum to 1; unused slots have weight 0 and joint 0.
+ * are renormalised to sum to 1 (a vertex with no weight at all goes wholly
+ * to the pelvis); unused slots have weight 0 and joint 0.
  */
 export interface BuiltSkin {
   /** Joint indices into `BuiltSkeleton.joints`, 4 per vertex. */
