@@ -51,6 +51,7 @@ Not judged yet: how a character looks on a real GPU, VRM in a VTuber app, browse
 | `bun run check` | Typecheck, formatting check, tests |
 | `bun run gate1` | The gate-1 profile checks on `samples/out/` |
 | `bun bin/export-sample.ts` | Re-export the samples in `samples/out/` |
+| `bun run test-consumer` | Pack the tarball, install it with three and without Babylon, import both entries under node and bun |
 | `bun run format` | Prettier (markdown is excluded by `requirePragma`) |
 | `bun run build` | Build the site to `www/` (and `llms.txt`) and the library to `dist/` |
 | `bun start` | Build the site, then serve it with live rebuilds (HTTPS: run `bun run tls` once first; needs mkcert) |
@@ -58,7 +59,7 @@ Not judged yet: how a character looks on a real GPU, VRM in a VTuber app, browse
 
 Test tiers: `DRAMATIS_NETWORK=1` adds the tests that fetch the pack from `cdn.tosijs.net`; `DRAMATIS_BROWSER=1` adds headless Chromium (`bunx playwright-core install chromium` once, and `bun run build` first); `DRAMATIS_ENGINES=1 bun test tools/engines` runs the installed engines.
 
-CI (`.github/workflows/ci.yml`) runs the tests, typecheck, formatting and build. `.github/workflows/pages.yml` builds the site and deploys it to GitHub Pages; Pages must be set to deploy from GitHub Actions.
+CI (`.github/workflows/ci.yml`) runs the typecheck, formatting, tests, gate 1, the packed-tarball smoke and the build, plus the network tier and the headless-browser tier (each fails if its tier skipped anything). The engine tier stays manual. `.github/workflows/pages.yml` runs CI as its first job and deploys the site to GitHub Pages only if it passes; Pages must be set to deploy from GitHub Actions.
 
 Bun is pinned in `.bun-version` to 1.4.2, the version installed where this was scaffolded, though the shared practices name 1.3.14. Nothing is known to break on 1.4.2.
 

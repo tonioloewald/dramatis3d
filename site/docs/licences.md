@@ -332,10 +332,12 @@ have is skipped, one of the wrong type keeps its default, and each is listed
 in `warnings`.
 
 ```javascript
-import { encodeShareLink, decodeShareLink } from 'dramatis'
+import { BUILD_SETTINGS, encodeShareLink, decodeShareLink } from 'dramatis'
 
 const { url, dropped } = encodeShareLink(character)
-const { character, warnings } = decodeShareLink(location.href, defaults)
+const { character, warnings } = decodeShareLink(location.href, {
+  settings: BUILD_SETTINGS,
+})
 ```
 
 **What a link leaves out**, because the bytes do not fit in a URL: garments

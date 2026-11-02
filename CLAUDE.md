@@ -25,6 +25,8 @@ TODO.md; reviews are in `reviews/`, spike and run reports in `reports/`.
   (Godot, Blender, Babylon installed locally; Unity via `bun tools/engines/unity.ts`).
 - `bun run build`: the site to `www/` and the library to `dist/`. `bun start` serves it with
   live rebuilds over HTTPS (run `bun run tls` once; needs mkcert); `bun run stop` stops it.
+- `bun run test-consumer`: packs the tarball, installs it with three and without Babylon, and
+  imports both entries under node and bun. Run it before any publish.
 - `bun run typecheck`, `bun run format` (`bun run format:check` in CI). Prettier never touches markdown.
 - Bun is pinned to 1.4.2 in `.bun-version` (the practices name 1.3.14; nothing breaks on 1.4.2).
 

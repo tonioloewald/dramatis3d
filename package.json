@@ -39,7 +39,8 @@
     "format": "bun --bun prettier --cache --write .",
     "format:check": "bun --bun prettier --check .",
     "check": "bun run typecheck && bun run format:check && bun test",
-    "gate1": "bun test test/gate1"
+    "gate1": "bun test test/gate1",
+    "test-consumer": "bun bin/pack-smoke.ts"
   },
   "dependencies": {
     "fflate": "0.8.3",

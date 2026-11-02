@@ -13,11 +13,9 @@ The profile is normative: [Export format](/export-format/), "What VRM adds".
 
 ```ts
 import { loadHumanPack } from 'tosijs-3d/human-pack'
-import { exportCharacterVrm } from 'dramatis'
+import { exportCharacterVrm, HM08_PACK_URL } from 'dramatis'
 
-const pack = await loadHumanPack(
-  'https://cdn.tosijs.net/makehuman/hm08/hm08.json?v=17'
-)
+const pack = await loadHumanPack(HM08_PACK_URL)
 const vrm = await exportCharacterVrm(character, pack, {
   meta: { name: 'Ada', authors: ['Ada L.'] },
 })
