@@ -159,10 +159,17 @@ describe.skipIf(!BROWSER)('the viewer in Chromium', () => {
     })
   }, 120_000)
 
+  // After the long SwiftShader tests, a graceful close can overrun bun's default 5 s hook
+  // timeout on a CI runner (run 41372324731: every test passed, then teardown failed). Give
+  // it a budget and stop waiting; bun reaps the dangling process ("killed 1 dangling process").
   afterAll(async () => {
-    await browser?.close()
+    const closed = browser?.close().then(() => true) ?? Promise.resolve(true)
+    await Promise.race([
+      closed,
+      new Promise<false>((r) => setTimeout(() => r(false), 20_000)),
+    ])
     server?.stop(true)
-  })
+  }, 30_000)
 
   test('/viewer/ is a page (the creator checks with HEAD)', async () => {
     const r = await fetch(`${base}/viewer/`, { method: 'HEAD' })
