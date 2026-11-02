@@ -18,6 +18,7 @@ defaults), and the brow pieces' lash strips (brows are not swept from this
 library; MakeHuman's brows are).
 */
 
+import { accessorValues, readGlb } from '../glb/glb-chunks'
 import { humanJoint } from 'tosijs-3d/human-morph'
 import type { HumanPackManifest } from 'tosijs-3d/human-pack'
 import {
@@ -111,59 +112,12 @@ const local = (n: any): Mat4 => {
   ]
 }
 
-const COMPONENTS: Record<string, number> = {
-  SCALAR: 1,
-  VEC2: 2,
-  VEC3: 3,
-  VEC4: 4,
-}
-
 /** Read a hair library GLB: each top-level node a piece (its extras' category). */
 export function readHairLibrary(bytes: Uint8Array): HairPiece[] {
-  const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
-  if (dv.getUint32(0, true) !== 0x46546c67)
-    throw new Error('hair library: not a GLB')
-  let offset = 12
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let json: any = null
-  let bin: Uint8Array | null = null
-  while (offset + 8 <= bytes.byteLength) {
-    const length = dv.getUint32(offset, true)
-    const type = dv.getUint32(offset + 4, true)
-    const body = bytes.subarray(offset + 8, offset + 8 + length)
-    if (type === 0x4e4f534a) json = JSON.parse(new TextDecoder().decode(body))
-    else if (type === 0x004e4942 && bin == null) bin = body
-    offset += 8 + length
-  }
-  if (json == null || bin == null)
-    throw new Error('hair library: no JSON or binary chunk')
-  const data = bin
-  const accessor = (i: number): Float64Array => {
-    const a = json.accessors[i]
-    if (a.sparse) throw new Error('hair library: sparse accessors are not read')
-    const view = json.bufferViews[a.bufferView]
-    const n = COMPONENTS[a.type]!
-    const size = { 5120: 1, 5121: 1, 5122: 2, 5123: 2, 5125: 4, 5126: 4 }[
-      a.componentType as 5120
-    ]
-    const stride = view.byteStride ?? n * size
-    const base = data.byteOffset + (view.byteOffset ?? 0) + (a.byteOffset ?? 0)
-    const v = new DataView(data.buffer)
-    const out = new Float64Array(a.count * n)
-    const read: Record<number, (o: number) => number> = {
-      5120: (o) => v.getInt8(o),
-      5121: (o) => v.getUint8(o),
-      5122: (o) => v.getInt16(o, true),
-      5123: (o) => v.getUint16(o, true),
-      5125: (o) => v.getUint32(o, true),
-      5126: (o) => v.getFloat32(o, true),
-    }
-    const r = read[a.componentType]!
-    for (let e = 0; e < a.count; e++)
-      for (let c = 0; c < n; c++)
-        out[e * n + c] = r(base + e * stride + c * size)
-    return out
-  }
+  const glb = readGlb(bytes)
+  if (glb.bin === null) throw new Error('hair library: no binary chunk')
+  const json = glb.json
+  const accessor = (i: number): Float64Array => accessorValues(glb, i)
   const pieces: HairPiece[] = []
   const scene = json.scenes[json.scene ?? 0]
   for (const top of scene.nodes as number[]) {

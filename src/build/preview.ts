@@ -9,12 +9,12 @@
 import { deflateSync } from 'node:zlib'
 import { AnimationMixer, SkinnedMesh, Vector3 } from 'three'
 import {
-  clipForExport,
+  clipOnExport,
   declaredNaming,
   loadWithThree,
 } from '../../test/gate1/checks'
 import { clipBytes } from '../../test/gate1/fixture'
-import { readGlb } from '../../test/gate1/glb'
+import { readGlb } from '../upstream/glb/glb-chunks'
 
 const W = 600
 const H = 700
@@ -27,8 +27,10 @@ export async function preview(
   const scene = (await loadWithThree(bytes)).scene
   if (options.walk !== undefined) {
     const source = await loadWithThree(await clipBytes())
-    const clip = clipForExport(
+    const clip = clipOnExport(
       source.animations[0]!,
+      scene,
+      source.scene,
       declaredNaming(readGlb(bytes))
     )
     const mixer = new AnimationMixer(scene)

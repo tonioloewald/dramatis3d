@@ -9,7 +9,7 @@ import { boneReference, checkBones } from './bones'
 import { summarise, fails, describeCorner } from './report'
 import { readHairLibrary } from './hair-library'
 import type { SweepResult } from './sweep'
-import { writeGlb } from '../../../test/gate1/glb'
+import { writeGlb } from '../glb/glb-chunks'
 
 /** A unit-radius icosphere, counter-clockwise outward. */
 function sphere(

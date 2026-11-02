@@ -7,7 +7,12 @@
 //
 // UAL1.glb is in static-assets (assets/quaternius/UAL1.glb), read-only.
 
-import { accessorBytes, BinBuilder, readGlb, writeGlb } from './glb'
+import {
+  accessorBytes,
+  BinBuilder,
+  readGlb,
+  writeGlb,
+} from '../../src/upstream/glb/glb-chunks'
 
 const [source, clipName = 'Walk_Loop'] = process.argv.slice(2)
 if (source === undefined) {

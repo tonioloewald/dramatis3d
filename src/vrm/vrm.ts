@@ -19,7 +19,12 @@ import {
   type FaceUnitName,
 } from '../contracts/profile'
 import { LOOK_PRESETS, VRM_PRESETS, type VrmPresetName } from './expressions'
-import { type GlbChunks, readGlbChunks, readVec3, writeGlbChunks } from './glb'
+import {
+  type Glb,
+  readGlb,
+  readVec3,
+  writeGlb,
+} from '../upstream/glb/glb-chunks'
 import { VRM_HUMAN_BONES } from './humanoid'
 import { VRM_LICENSE_URL, VRMC_VRM } from './spec'
 
@@ -165,7 +170,7 @@ export interface EyeMeasure {
  * units turn the eye's most-moved vertex about that centre at weight 1.
  * Undefined when the file has no `eyes` mesh.
  */
-export function measureEyes(g: GlbChunks): EyeMeasure | undefined {
+export function measureEyes(g: Glb): EyeMeasure | undefined {
   const node = meshNodes(g.json).find((m) => m.name === 'eyes')
   if (node === undefined) return undefined
   const prim = g.json.meshes[node.mesh].primitives[0]
@@ -252,7 +257,7 @@ const range = (degrees: number | undefined): Json => ({
  * range maps the angle a look preset turns the eyes at weight 1 to weight 1,
  * so a target at that angle gets the full unit and one past it is clamped.
  */
-export function vrmLookAt(g: GlbChunks): Json {
+export function vrmLookAt(g: Glb): Json {
   const nodes = g.json.nodes as Array<{ name?: string }>
   const head = nodes.findIndex((n) => n.name === 'Head')
   if (head < 0) throw new Error('vrm: the GLB has no Head joint')
@@ -349,7 +354,7 @@ export function vrmHumanBones(json: Json): Record<string, { node: number }> {
  * export under `ue` naming in the T-pose, which VRM's humanoid needs.
  */
 export function vrmFromGlb(glb: Uint8Array, meta: VrmMeta = {}): Uint8Array {
-  const g = readGlbChunks(glb)
+  const g = readGlb(glb)
   const json = g.json
   const extras = json.asset?.extras?.[EXTRAS_KEY] as ExportExtras | undefined
   if (extras === undefined)
@@ -378,7 +383,7 @@ export function vrmFromGlb(glb: Uint8Array, meta: VrmMeta = {}): Uint8Array {
     VRMC_VRM,
   ]
   json.extensions = { ...(json.extensions ?? {}), [VRMC_VRM]: vrm }
-  return writeGlbChunks(g)
+  return writeGlb(g.json, g.bin)
 }
 
 /**

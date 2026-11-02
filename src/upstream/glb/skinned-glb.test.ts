@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import { validateBytes } from 'gltf-validator'
 import { SkinnedMesh } from 'three'
 import { loadWithThree } from '../../../test/gate1/checks'
-import { readGlb } from '../../../test/gate1/glb'
+import { readGlb } from './glb-chunks'
 import {
   normaliseInfluences,
   type SkinnedGlb,

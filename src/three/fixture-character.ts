@@ -10,6 +10,7 @@
 // rest, new inverse binds, new vertices.
 
 import { Matrix4, Quaternion, Vector3 } from 'three'
+import { parseGlbJson } from 'tosijs-3d/glb-manifest'
 import type {
   BuiltCharacter,
   BuiltJoint,
@@ -28,14 +29,10 @@ export interface JointRest {
 
 /** The rest transforms of UAL's joints from a UAL GLB (e.g. test/gate1/fixtures/ual-walk.glb). */
 export function ualRest(glb: Uint8Array): Map<string, JointRest> {
-  const dv = new DataView(glb.buffer, glb.byteOffset, glb.byteLength)
-  if (dv.getUint32(0, true) !== 0x46546c67) throw new Error('not a GLB')
-  const length = dv.getUint32(12, true)
-  const json = JSON.parse(
-    new TextDecoder().decode(glb.subarray(20, 20 + length))
-  ) as {
+  const json = parseGlbJson(glb) as {
     nodes: { name?: string; translation?: number[]; rotation?: number[] }[]
-  }
+  } | null
+  if (json === null) throw new Error('not a GLB')
   const out = new Map<string, JointRest>()
   for (const n of json.nodes) {
     if (n.name === undefined) continue

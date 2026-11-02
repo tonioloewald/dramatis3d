@@ -55,7 +55,7 @@ import {
   validatorErrors,
 } from '../gate1/checks'
 import { clipBytes } from '../gate1/fixture'
-import { readGlb } from '../gate1/glb'
+import { readGlb } from '../../src/upstream/glb/glb-chunks'
 
 const ON = process.env.DRAMATIS_NETWORK === '1'
 const it = (name: string, fn: () => Promise<void>, timeout = 180_000): void =>

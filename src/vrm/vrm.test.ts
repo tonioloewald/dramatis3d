@@ -26,7 +26,7 @@ import {
   skeletonProblems,
   validatorErrors,
 } from '../../test/gate1/checks'
-import { readGlb } from '../../test/gate1/glb'
+import { readGlb, readVec3 } from '../upstream/glb/glb-chunks'
 import {
   measureEyes,
   VRM_HUMAN_BONES,
@@ -38,7 +38,6 @@ import {
   vrmProblems,
   writeCharacterVrm,
 } from '.'
-import { readGlbChunks, readVec3 } from './glb'
 
 const ROOT = join(import.meta.dir, '..', '..')
 const OUT = join(ROOT, 'samples', 'out')
@@ -210,9 +209,9 @@ describe('the fixture character', () => {
     const built = fixtureCharacter(rest)
     const glb = writeCharacterGlb(built, { naming: 'ue' })
     const vrm = writeCharacterVrm(built)
-    const a = readGlbChunks(glb)
-    const b = readGlbChunks(vrm)
-    expect(Buffer.from(b.bin).equals(Buffer.from(a.bin))).toBe(true)
+    const a = readGlb(glb)
+    const b = readGlb(vrm)
+    expect(Buffer.from(b.bin!).equals(Buffer.from(a.bin!))).toBe(true)
     const { extensions, extensionsUsed, ...rest2 } = b.json
     const { extensions: e0, extensionsUsed: u0, ...rest1 } = a.json
     expect(rest2).toEqual(rest1)
@@ -225,7 +224,7 @@ describe('the fixture character', () => {
 
   test('it binds only the units the file has', () => {
     const vrm = writeCharacterVrm(fixtureCharacter(rest))
-    const preset = readGlbChunks(vrm).json.extensions.VRMC_vrm.expressions
+    const preset = readGlb(vrm).json.extensions.VRMC_vrm.expressions
       .preset as Record<string, unknown>
     // The fixture has LeftUpperLidClosed, JawDrop and LeftEyeturnLeft.
     expect(Object.keys(preset).sort()).toEqual(
@@ -245,7 +244,7 @@ describe('the fixture character', () => {
     )
     // Only lookLeft of the four: no lookAt rather than a lopsided one.
     expect(vrmProblems(vrm)).toEqual([])
-    const json = readGlbChunks(vrm).json
+    const json = readGlb(vrm).json
     expect(json.extensions.VRMC_vrm.lookAt).toBeUndefined()
   })
 
@@ -262,8 +261,7 @@ describe('the fixture character', () => {
 
 describe('the checker can fail', () => {
   const vrm = vrmFromGlb(glbBytes(UE_SAMPLES[0]!))
-  const json = (): ReturnType<typeof readGlbChunks>['json'] =>
-    readGlbChunks(vrm).json
+  const json = (): ReturnType<typeof readGlb>['json'] => readGlb(vrm).json
 
   test('on a missing required bone, a shared node, a bad hierarchy', () => {
     const j = json()
@@ -301,7 +299,7 @@ describe('the checker can fail', () => {
 })
 
 describe('the face units do what the presets assume (measured on a sample)', () => {
-  const g = readGlbChunks(glbBytes(UE_SAMPLES[0]!))
+  const g = readGlb(glbBytes(UE_SAMPLES[0]!))
   const meshNode = (name: string) => {
     const mesh = g.json.meshes.findIndex(
       (m: { name: string }) => m.name === name
