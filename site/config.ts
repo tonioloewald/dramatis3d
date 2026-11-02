@@ -4,6 +4,7 @@
 
 import { defineSiteConfig } from 'tosijs-ui/site'
 import { buildCreatorApp, CREATOR_STATIC } from './creator/build'
+import { buildViewer, VIEWER_STATIC } from './viewer/build'
 
 // One source for the custom domain: site/CNAME. GitHub Pages reads the CNAME the
 // build writes into the output; deriving `domain` from this file keeps them equal.
@@ -48,13 +49,15 @@ export default defineSiteConfig({
 
   docsJson: 'site/docs.json',
   bundleEntry: './site/hydrate.ts',
-  watchPaths: ['site/hydrate.ts', 'site/creator'],
+  watchPaths: ['site/hydrate.ts', 'site/creator', 'site/viewer'],
   // The creator's heavy half (Babylon) is its own bundle, loaded only by the
   // creator page: built first, then copied in as /creator-app/.
   prebuild: async () => {
     if (!(await buildCreatorApp())) throw new Error('creator bundle failed')
+    // The three.js viewer: its own page at /viewer/, three.js only.
+    if (!(await buildViewer())) throw new Error('viewer bundle failed')
   },
-  staticDirs: ['site/static', CREATOR_STATIC],
+  staticDirs: ['site/static', CREATOR_STATIC, VIEWER_STATIC],
   // Built for GitHub Pages by .github/workflows/pages.yml; not committed.
   outputDir: 'www',
   host: 'github-pages',

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dramatis GLB in three.js</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #2a3340;
+        color: #eee;
+        font: 14px system-ui, sans-serif;
+      }
+      canvas {
+        display: block;
+        touch-action: none;
+      }
+      #info {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        max-width: min(320px, calc(100vw - 32px));
+        max-height: 40vh;
+        overflow: auto;
+        padding: 10px 14px;
+        background: #000a;
+        border-radius: 8px;
+      }
+      #info ul {
+        margin: 6px 0 0;
+        padding-left: 1.1em;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="info">
+      <strong id="name">loading…</strong>
+      <div>Walk_Loop: Quaternius UAL, CC0.</div>
+      <details open>
+        <summary>Licences in the file</summary>
+        <ul id="licences"></ul>
+      </details>
+    </div>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
