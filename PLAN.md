@@ -124,7 +124,10 @@ break Babylon consumers who rely on peer auto-install, so it is not the route.
 ## Export (gate 1)
 
 An exported character imports into three.js, Babylon, Unity, Godot and Unreal 5 with no manual
-fixes and plays an existing third-party animation. In each engine:
+fixes and plays an existing third-party animation. **The initial targets are three.js, Unity
+and Godot** (owner, 2026-11-02; Godot because it is free and open source); Babylon is checked
+where cheap and Unreal 5 is secondary. The first public release needs the site to export a
+character that works in three.js; the rest of gate 1 follows. In each engine:
 
 - **Skeleton maps automatically.** UE mannequin naming is the default (it is what UAL is).
   A Mixamo-named export is an option; spike 1 decides whether Unity Humanoid needs it.
