@@ -15,7 +15,11 @@ export interface ExportOptions {
   faceUnits?: BuildOptions['faceUnits']
   /** The bind pose. Default `t-pose`. */
   restPose?: BuildOptions['restPose']
-  /** Fetches assets the pack does not carry. Default `fetch`. */
+  /**
+   * Fetches assets the pack does not carry: its textures, and the eye art
+   * (`https://cdn.tosijs.net/tonio/eyes/<style>-eye.png?v=…`). Default
+   * `fetch`. If the eye art can't be fetched, the eyes keep a plain material.
+   */
   fetch?: BuildOptions['fetch']
 }
 

@@ -145,11 +145,25 @@ async function startPlayer(): Promise<boolean> {
   return true
 }
 
+// The latest pick wins: a slower earlier one is dropped when it finishes.
+let latest = 0
+const begin = () => ++latest
+
 let lastUrl: string | null = null
-async function hand(glb: Uint8Array, name: string): Promise<void> {
+async function hand(
+  glb: Uint8Array,
+  name: string,
+  ticket = begin()
+): Promise<void> {
+  if (!state.built)
+    return status(
+      'The Unity player isn’t built yet, so it can’t show this. The three.js demo can.',
+      'error'
+    )
+  await ready
+  if (ticket !== latest) return
   showLicences(glb)
   ui.title.textContent = state.name = name.replace(/\.(glb|vrm)$/i, '')
-  await ready
   if (lastUrl) URL.revokeObjectURL(lastUrl)
   lastUrl = URL.createObjectURL(
     new Blob([glb as BlobPart], { type: 'model/gltf-binary' })
@@ -201,15 +215,18 @@ function showLicences(glb: Uint8Array): void {
 
 let pack: Promise<HumanPack> | null = null
 async function fromCharacter(doc: unknown, label: string): Promise<void> {
+  const ticket = begin()
   status(`Building ${label}…`)
   try {
     const { character } = readCharacter(doc, { settings: BUILD_SETTINGS })
     pack ??= loadHumanPack(HM08_PACK_URL)
     const glb = await exportCharacterGlb(character, await pack)
-    await hand(glb, character.name || label)
+    if (ticket !== latest) return
+    await hand(glb, character.name || label, ticket)
   } catch (e) {
     pack = null
-    status(`Couldn’t build ${label}: ${message(e)}`, 'error')
+    if (ticket === latest)
+      status(`Couldn’t build ${label}: ${message(e)}`, 'error')
   }
 }
 

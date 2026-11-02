@@ -390,26 +390,39 @@ function showLicences(model: LoadedModel): void {
 
 let pack: Promise<HumanPack> | null = null
 
+// The latest pick wins: a slower earlier one (a save still building when
+// another is picked) is dropped when it finishes.
+let latest = 0
+const begin = () => ++latest
+
 /** A character file to a GLB, built here with Dramatis's exporter. */
 async function fromCharacter(doc: unknown, label: string): Promise<void> {
+  const ticket = begin()
   status(`Building ${label}…`)
   try {
     const { character } = readCharacter(doc, { settings: BUILD_SETTINGS })
     pack ??= loadHumanPack(HM08_PACK_URL)
     const glb = await exportCharacterGlb(character, await pack)
-    await fromBytes(glb, `${character.name || label}.glb`)
+    if (ticket !== latest) return
+    await fromBytes(glb, `${character.name || label}.glb`, ticket)
   } catch (e) {
     pack = null
-    status(`Couldn’t build ${label}: ${message(e)}`, 'error')
+    if (ticket === latest)
+      status(`Couldn’t build ${label}: ${message(e)}`, 'error')
   }
 }
 
-async function fromBytes(bytes: Uint8Array, name: string): Promise<void> {
+async function fromBytes(
+  bytes: Uint8Array,
+  name: string,
+  ticket = begin()
+): Promise<void> {
   const buffer = bytes.buffer.slice(
     bytes.byteOffset,
     bytes.byteOffset + bytes.byteLength
   ) as ArrayBuffer
   const gltf = await loader.parseAsync(buffer, '')
+  if (ticket !== latest) return
   await show(gltf, name)
 }
 
@@ -428,8 +441,9 @@ async function fromFile(file: File): Promise<void> {
       'error'
     )
   status(`Opening ${file.name}…`)
+  const ticket = begin()
   try {
-    await fromBytes(new Uint8Array(await file.arrayBuffer()), file.name)
+    await fromBytes(new Uint8Array(await file.arrayBuffer()), file.name, ticket)
   } catch (e) {
     status(`${file.name} wouldn’t load: ${message(e)}`, 'error')
   }

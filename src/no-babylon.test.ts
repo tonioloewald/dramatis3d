@@ -17,7 +17,7 @@ NO BABYLON IN THE ENGINE-FREE ENTRIES, pinned.
 engine. A three.js bundle with Babylon in it is a failed build (CLAUDE.md), and
 so is a `.d.ts` that needs Babylon installed to type-check: that one is erased
 from the bundle, so the bundle check alone never sees it (PLAN.md records
-exactly that leak in tosijs-3d's `rigged-body`).
+exactly that leak in tosijs-3d's `rigged-body`, fixed in 0.12.0).
 
 Three checks per entry:
 
@@ -207,9 +207,9 @@ describe('the guard can fail', () => {
 
   test("a dependency's Babylon-typed declarations are caught in the type closure", () => {
     const t = types('test/fixtures/babylon-transitive-type-leak.ts')
-    // Our own emitted .d.ts only names tosijs-3d/rigged-body...
+    // Our own emitted .d.ts only names the dependency...
     expect(t.declarations).toEqual([])
-    // ...but tosijs-3d's rigged-body.d.ts imports Material from Babylon.
+    // ...but its .d.ts imports Material from Babylon.
     expect(t.closure.length).toBeGreaterThan(0)
   }, 60_000)
 })

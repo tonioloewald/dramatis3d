@@ -42,6 +42,43 @@ const deps = { licences: characterLicences }
 const OUT = join(import.meta.dir, '..', '..', 'samples', 'out')
 
 describe('build from the CDN', () => {
+  it('without the eye art (a fetch that serves only the pack), the eyes go plain and the export goes on', async () => {
+    const doc = await Bun.file(
+      join(OUT, 'clothed-casual.character.json')
+    ).text()
+    const { character } = readCharacter(doc, {
+      settings: { ...BUILD_SETTINGS },
+    })
+    const packOnly = async (url: string) => {
+      if (url.includes('/tonio/eyes/')) throw new Error('not in this mirror')
+      return fetcher(url)
+    }
+    const built = await buildCharacterWith(
+      character,
+      await pack(),
+      { fetch: packOnly },
+      deps
+    )
+    const eyes = built.meshes.find((m) => m.name === 'eyes')!
+    expect(eyes.uvs).toBeNull()
+    const material = built.materials[eyes.material]!
+    expect(material.baseColorTexture).toBeUndefined()
+    expect(material.baseColorFactor.slice(0, 3)).toEqual([0.85, 0.85, 0.82])
+    expect(built.images.some((i) => i.asset.startsWith('tonio:eye/'))).toBe(
+      false
+    )
+    // And with it, the eyes are textured.
+    const withArt = await buildCharacterWith(
+      character,
+      await pack(),
+      { fetch: fetcher },
+      deps
+    )
+    const textured = withArt.meshes.find((m) => m.name === 'eyes')!
+    expect(textured.uvs).not.toBeNull()
+    expect(withArt.images.some((i) => i.asset === 'tonio:eye/basic')).toBe(true)
+  }, 120_000)
+
   for (const [name, sample] of Object.entries(SAMPLES))
     it(`samples/out/${name}.glb is what its character file builds today`, async () => {
       const doc = await Bun.file(join(OUT, `${name}.character.json`)).text()

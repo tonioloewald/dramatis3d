@@ -155,16 +155,26 @@ export async function mountCreator(
       | undefined
     if (!tex || typeof tex.getContext !== 'function') return
     const style = eyeStyle(box('eyeStyle').value)
-    eyeArt[style] ??= fetch(eyePngUrl(style)).then(
-      async (r) => new Uint8Array(await r.arrayBuffer())
-    )
-    const png = recolourEyePng(
-      await eyeArt[style]!,
-      String(box('irisColour').value)
-    )
-    const img = await createImageBitmap(
-      new Blob([png as BlobPart], { type: 'image/png' })
-    )
+    let img: ImageBitmap
+    try {
+      eyeArt[style] ??= fetch(eyePngUrl(style)).then(async (r) => {
+        if (!r.ok) throw new Error(`${r.status} ${r.statusText}`)
+        return new Uint8Array(await r.arrayBuffer())
+      })
+      const png = recolourEyePng(
+        await eyeArt[style]!,
+        String(box('irisColour').value)
+      )
+      img = await createImageBitmap(
+        new Blob([png as BlobPart], { type: 'image/png' })
+      )
+    } catch (e) {
+      // Try again next time (a moment offline is not forever); tosijs-3d's
+      // own eyes stay meanwhile, as the export's plain ones would.
+      delete eyeArt[style]
+      console.warn('dramatis creator: the eye art did not load', e)
+      return
+    }
     if (ticket !== eyePaint) return
     const ctx = tex.getContext() as CanvasRenderingContext2D
     const size = tex.getSize().width
@@ -480,6 +490,8 @@ export async function mountCreator(
     // tosijs-3d's own after it repaints.
     const eyesLater = () => setTimeout(() => void paintEyes(scene), 0)
     watch(box('irisColour'), eyesLater)
+    // tosijs-3d repaints the same canvas when its iris dial moves, too.
+    watch(box('iris'), eyesLater)
     watch(box('eyeStyle'), eyesLater)
     eyesLater()
     // An outfit replaces a top and bottom, and either replaces an outfit.

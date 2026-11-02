@@ -119,6 +119,8 @@ interface Part {
     url: string
     asset: string
     make: (fetched: Uint8Array) => Uint8Array
+    /** The material if the bake fails (its texture can't be fetched or read). */
+    fallback: PbrMaterial
   }
 }
 
@@ -475,6 +477,8 @@ export async function buildCharacterWith(
         url: eyePngUrl(s.eyeStyle),
         asset: eyeAsset(s.eyeStyle),
         make: (art) => recolourEyePng(art, s.irisColour),
+        // Without the art: the plain off-white the eyes had before it.
+        fallback: plain('eyes', [0.85, 0.85, 0.82], 0.15),
       },
     })
   }
@@ -563,13 +567,22 @@ export async function buildCharacterWith(
   const imageFor = new Map<string, number>()
   const fetcher = options.fetch ?? defaultFetch
   const textured = await Promise.all(
-    parts.map(async (p) =>
-      p.bake !== undefined
-        ? p.bake.make(new Uint8Array(await fetcher(p.bake.url)))
-        : p.texture === undefined
+    parts.map(async (p) => {
+      if (p.bake !== undefined) {
+        // A baked texture is an improvement, never a requirement: if its
+        // source can't be fetched or read (a fetch that serves only the pack,
+        // a CDN outage), the part keeps its plain material and the export
+        // goes on.
+        try {
+          return p.bake.make(new Uint8Array(await fetcher(p.bake.url)))
+        } catch {
+          return null
+        }
+      }
+      return p.texture === undefined
         ? null
         : new Uint8Array(await fetcher(p.texture))
-    )
+    })
   )
   const present = new Set<FaceUnitName>()
   parts.forEach((p, pi) => {
@@ -603,7 +616,10 @@ export async function buildCharacterWith(
     const material = materials.length
     let mat = p.material
     const bytes = textured[pi]
-    if (p.bake !== undefined && bytes != null) {
+    if (p.bake !== undefined && bytes == null) {
+      // The bake failed: the plain material it would have textured.
+      mat = p.bake.fallback
+    } else if (p.bake !== undefined && bytes != null) {
       let image = imageFor.get(p.bake.key)
       if (image === undefined) {
         images.push({

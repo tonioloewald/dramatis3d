@@ -182,6 +182,14 @@ describe('eye UVs (tosijs-3d’s mapping)', () => {
     expect(v).toBeCloseTo(0.5 - (iris * 30) / 29, 3)
   })
 
+  test('not mirrored: toward +X (the viewer’s right, seen from the front) is toward the picture’s right', () => {
+    const t = (30 * Math.PI) / 180
+    for (const cx of [0.03, -0.03]) {
+      const [u] = at(cx + 0.01 * Math.sin(t), 1.6, 0.08 + 0.01 * Math.cos(t))
+      expect(u).toBeGreaterThan(0.5 + iris * 0.9)
+    }
+  })
+
   test('the back of the eye gathers on a ring inside the picture', () => {
     for (let i = 0; i < uv.length; i++) {
       expect(uv[i]!).toBeGreaterThan(0)

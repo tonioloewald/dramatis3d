@@ -65,8 +65,10 @@ export function eyeUvs(
     const z = positions[i * 3 + 2]! - c[2]!
     const across = Math.hypot(x, y)
     const r = Math.min(back, (layout.iris * Math.atan2(across, z)) / irisAngle)
-    // Left is +X: seen from the front, the eye's +X is the picture's left.
-    const cos = across > 1e-9 ? -x / across : 0
+    // glTF is right-handed: seen from the front, +X (the character's left) is
+    // on the viewer's RIGHT, so +X runs toward the picture's right. (tosijs-3d's
+    // eyeUvs has -x: it maps for Babylon, which is left-handed.)
+    const cos = across > 1e-9 ? x / across : 0
     const sin = across > 1e-9 ? y / across : 0
     out[i * 2] = layout.at.u + r * cos
     out[i * 2 + 1] = layout.at.v - r * sin // v down: up on the eye is up in the picture
