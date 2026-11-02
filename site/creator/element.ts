@@ -20,8 +20,11 @@ dramatis-creator .dc-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items
 dramatis-creator .dc-bar input { flex: 1 1 10em; min-width: 8em; padding: 6px 8px; font: inherit; }
 dramatis-creator .dc-bar select { padding: 5px 6px; font: inherit; }
 dramatis-creator .dc-bar button { padding: 6px 12px; font: inherit; cursor: pointer;
-  border-radius: 6px; border: 1px solid #7a4bd6; background: #7a4bd6; color: #fff; }
-dramatis-creator .dc-bar button.dc-quiet { background: transparent; color: #7a4bd6; }
+  border-radius: 6px; border: 1px solid var(--dc-accent); background: var(--dc-accent); color: #fff; }
+dramatis-creator .dc-bar button.dc-quiet { background: transparent; color: var(--dc-accent); }
+dramatis-creator { --dc-accent: #8c6239; }
+@media (prefers-color-scheme: dark) { dramatis-creator { --dc-accent: #c69d6d; }
+  dramatis-creator .dc-bar button:not(.dc-quiet) { color: #1a1612; } }
 dramatis-creator .dc-bar button:disabled { opacity: 0.45; cursor: progress; }
 dramatis-creator .dc-status { min-height: 1.4em; font-size: 0.92em; overflow-wrap: anywhere; }
 dramatis-creator .dc-status.dc-error { color: #b3261e; }

@@ -112,9 +112,10 @@ export default defineSiteConfig({
   ],
 
   theme: {
-    accent: '#7a4bd6',
-    background: '#fafafa',
-    text: '#222222',
+    // The icon's brown on pale parchment (site/static/icon.svg).
+    accent: '#8c6239',
+    background: '#f6efe3',
+    text: '#2b2118',
   },
 
   // Pages are markdown in site/docs/; the landing page claims the root

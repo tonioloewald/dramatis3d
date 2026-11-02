@@ -5,12 +5,12 @@
 **An open 3D character creator for the web.** Make a person, dress them, and
 take them anywhere: CC0 base data, GLB and VRM out, for any engine.
 
-**[Open the creator](/creator/)** · [three.js demo](/demo/) · [three.js viewer](/viewer/) ·
-[Documentation](/docs/)
+**[Open the creator](/creator/)** · [three.js demo](/demo/) · [Unity demo](/unity/) ·
+[three.js viewer](/viewer/) · [Documentation](/docs/)
 
-Dramatis is in development. The creator works today: shape a body, dress it,
-then download it as a GLB, open it in the three.js viewer, or share it as a
-link. It runs on [tosijs-3d](https://3d.tosijs.net)'s character system.
+Dramatis 0.1 is out (`npm install dramatis`). Shape a body, dress it, then
+download it as a GLB, walk it round the three.js or Unity demo, or share it as
+a link. It runs on [tosijs-3d](https://3d.tosijs.net)'s character system.
 
 ## What it is for
 
