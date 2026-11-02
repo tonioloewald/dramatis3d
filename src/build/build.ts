@@ -63,6 +63,7 @@ import {
   tPose,
   ualGlobalRest,
 } from './pose'
+import { option, REST_POSES } from './options'
 import { MOUTH, readSettings, SLOTS, type Slot } from './settings'
 
 /** What the build needs that is another lane's (wired at integration). */
@@ -340,6 +341,13 @@ export async function buildCharacterWith(
   options: BuildOptions,
   deps: BuildDeps
 ): Promise<BuiltCharacter> {
+  const restPose = option(
+    'buildCharacter',
+    'restPose',
+    options.restPose,
+    REST_POSES,
+    't-pose'
+  )
   const s = readSettings(character)
   const ids = assetIds(pack)
   const worn = wornBy(character, pack)
@@ -510,7 +518,6 @@ export async function buildCharacterWith(
     j.position.z,
   ])
   const ual = ualGlobalRest()
-  const restPose = options.restPose ?? 't-pose'
   const pose: Repose =
     restPose === 't-pose' ? tPose(restJoints, ual) : sourcePose(restJoints)
 

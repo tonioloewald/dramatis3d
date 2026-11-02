@@ -16,6 +16,7 @@ import {
   UE_JOINT_NAMES,
 } from '../contracts/profile'
 import { writeSkinnedGlb } from '../upstream/glb/skinned-glb'
+import { NAMINGS, option } from './options'
 import { GENERATOR } from './version'
 
 /** `asset.copyright`: `<title>: <licence>` per asset, CC BY credit lines word for word. */
@@ -56,7 +57,13 @@ export function writeCharacterGlb(
   built: BuiltCharacter,
   options: { naming?: NamingProfile } = {}
 ): Uint8Array {
-  const naming = options.naming ?? 'ue'
+  const naming = option(
+    'writeCharacterGlb',
+    'naming',
+    options.naming,
+    NAMINGS,
+    'ue'
+  )
   if (built.licences.length === 0)
     throw new Error(
       'writeCharacterGlb: a character with no licence entries cannot be written'

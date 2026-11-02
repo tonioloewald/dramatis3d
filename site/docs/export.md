@@ -41,6 +41,11 @@ built character is engine-free data, the same shape the
 | `faceUnits` | `true` | All 59 face units as morph targets, `false` for none, or a list |
 | `fetch` | `fetch` | How textures are read (a cache, a worker, a test) |
 
+A `naming` or `restPose` that is not one of its two values (`'UE'`,
+`'T-Pose'`) is an error naming the allowed values, from `buildCharacter`,
+`writeCharacterGlb` and `exportCharacterGlb` alike, before anything is
+built: it is never taken as the other value.
+
 ## What happens to a character
 
 1. **The body** is MakeHuman's hm08 base morphed to the character's sliders.
