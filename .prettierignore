@@ -4,3 +4,4 @@ www
 bun.lock
 site/docs.json
 .cache
+.claude
