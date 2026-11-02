@@ -5,6 +5,7 @@
 import { defineSiteConfig, type Doc } from 'tosijs-ui/site'
 import { buildCreatorApp, CREATOR_STATIC } from './creator/build'
 import { buildViewer, VIEWER_STATIC } from './viewer/build'
+import { buildDemo, DEMO_STATIC } from './demo/build'
 
 // One source for the custom domain: site/CNAME. GitHub Pages reads the CNAME the
 // build writes into the output; deriving `domain` from this file keeps them equal.
@@ -66,6 +67,7 @@ function llmsTxt(corpus: Doc[]): string {
     `- Docs: ${base}/docs/`,
     `- Creator: ${base}/creator/`,
     `- three.js viewer: ${base}/viewer/`,
+    `- three.js demo (walk a character round): ${base}/demo/`,
     `- Source: ${GITHUB}`,
     '',
     'Each page below also has a plain markdown copy: append `index.md` to its',
@@ -124,15 +126,17 @@ export default defineSiteConfig({
   docsJson: 'site/docs.json',
   llmsTxt,
   bundleEntry: './site/hydrate.ts',
-  watchPaths: ['site/hydrate.ts', 'site/creator', 'site/viewer'],
+  watchPaths: ['site/hydrate.ts', 'site/creator', 'site/viewer', 'site/demo'],
   // The creator's heavy half (Babylon) is its own bundle, loaded only by the
   // creator page: built first, then copied in as /creator-app/.
   prebuild: async () => {
     if (!(await buildCreatorApp())) throw new Error('creator bundle failed')
     // The three.js viewer: its own page at /viewer/, three.js only.
     if (!(await buildViewer())) throw new Error('viewer bundle failed')
+    // The three.js demo: walk a character round, at /demo/.
+    if (!(await buildDemo())) throw new Error('demo bundle failed')
   },
-  staticDirs: ['site/static', CREATOR_STATIC, VIEWER_STATIC],
+  staticDirs: ['site/static', CREATOR_STATIC, VIEWER_STATIC, DEMO_STATIC],
   // Built for GitHub Pages by .github/workflows/pages.yml; not committed.
   outputDir: 'www',
   host: 'github-pages',

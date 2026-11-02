@@ -16,6 +16,8 @@ says what has been checked and what has not.
   it in three.js, or share it as a link.
 - [three.js viewer](/viewer/): open any GLB, play UAL's clips on it, drive
   its face and read its licences.
+- [three.js demo](/demo/): walk a character round a small scene: one saved
+  in this browser, or a GLB or character file you open.
 
 ## The file you export
 

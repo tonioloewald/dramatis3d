@@ -15,7 +15,10 @@ This page covers a GLB you exported. If you want to build the character in
 the page and keep it live as sliders move, read [dramatis/three](/dramatis-three/).
 
 **Try it:** the [three.js viewer](/viewer/) opens any GLB you drop on it.
-The creator's **View in three.js** button sends its export there.
+The creator's **View in three.js** button sends its export there. The
+[three.js demo](/demo/) walks a character round a scene with UAL's idle,
+walk, jog and sprint loops: a character saved in this browser (built to a
+GLB in the page), or a GLB or character file you open.
 
 ## Load it
 

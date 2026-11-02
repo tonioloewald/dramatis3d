@@ -377,6 +377,93 @@ describe.skipIf(!BROWSER)('the viewer in Chromium', () => {
     },
     420_000
   )
+
+  // --- the demo (/demo/): the same server and browser ---------------------------
+
+  interface DemoState {
+    status: string
+    error: boolean
+    name: string | null
+    gait: string
+    at: { x: number; z: number }
+    clips: string[]
+    frames: number
+  }
+  const demoState = (page: Page) =>
+    page.evaluate(
+      () => (globalThis as unknown as { dramatisDemo: DemoState }).dramatisDemo
+    )
+  /** Wait until the demo has a character with clips (or has failed). */
+  async function demoReady(page: Page, timeout = 90_000): Promise<DemoState> {
+    await page.waitForFunction(
+      () => {
+        const s = (globalThis as Record<string, unknown>).dramatisDemo as
+          | DemoState
+          | undefined
+        return s && (s.error || s.clips.length > 0)
+      },
+      undefined,
+      { timeout }
+    )
+    return demoState(page)
+  }
+
+  test('demo: ?glb= stands an export up, W walks it, letting go stops it', async () => {
+    const { page, errors } = await newPage()
+    await page.goto(`${base}/demo/?glb=/samples/clothed-casual.glb`)
+    const s = await demoReady(page)
+    expect(s.error).toBe(false)
+    // Offline, only the bundled walk; with the CDN, all four.
+    expect(s.clips).toContain('walk')
+    if (NETWORK) expect(s.clips).toEqual(['idle', 'walk', 'jog', 'sprint'])
+    expect(s.at).toEqual({ x: 0, z: 0 })
+    await page.locator('canvas').click({ position: { x: 5, y: 5 } }) // focus, a click off the floor
+    await page.keyboard.down('KeyW')
+    await page.waitForFunction(
+      () => {
+        const d = (globalThis as unknown as { dramatisDemo: DemoState })
+          .dramatisDemo
+        return Math.hypot(d.at.x, d.at.z) > 0.5 && d.gait === 'walk'
+      },
+      undefined,
+      { timeout: 30_000 }
+    )
+    await page.keyboard.up('KeyW')
+    await page.waitForFunction(
+      () =>
+        (globalThis as unknown as { dramatisDemo: DemoState }).dramatisDemo
+          .gait === 'idle',
+      undefined,
+      { timeout: 30_000 }
+    )
+    expect(await page.locator('#licences li').count()).toBeGreaterThan(1)
+    await page.screenshot({ path: join(SHOTS, 'demo-glb.png') })
+    await page.setViewportSize({ width: 390, height: 780 })
+    await page.waitForTimeout(300)
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= window.innerWidth
+      )
+    ).toBe(true)
+    expect(errors).toEqual([])
+    await page.close()
+  }, 120_000)
+
+  test.skipIf(!NETWORK)(
+    'demo: with nothing saved, a default character is built here and walks',
+    async () => {
+      const { page, errors } = await newPage()
+      await page.goto(`${base}/demo/`)
+      const s = await demoReady(page, 240_000)
+      expect(s.error).toBe(false)
+      expect(s.name).toBe('Default character')
+      expect(s.clips).toEqual(['idle', 'walk', 'jog', 'sprint'])
+      expect(s.gait).toBe('idle')
+      expect(errors).toEqual([])
+      await page.close()
+    },
+    300_000
+  )
 })
 
 describe.skipIf(!BROWSER)('samples/three-glb in Chromium', () => {

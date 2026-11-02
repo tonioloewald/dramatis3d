@@ -24,9 +24,13 @@ panel, name your character, and export it.
   settings and nothing else, so it works without an account; the link is
   copied to the clipboard when the browser allows it.
 - **Character** (in the panel) keeps characters in this browser: the one you
-  are working on comes back when you return, and **save** keeps named ones.
-  **Export character file** saves a `tosijs-character` file, which
-  **import** reads back here or in tosijs-3d.
+  are working on comes back when you return. **Save…** asks for a name and
+  keeps it; **rename…** renames the saved one you picked. **Export character
+  (.json)** saves a `tosijs-character` file, which **import character
+  (.json)** reads back here or in tosijs-3d. (To open a GLB, use the
+  [viewer](/viewer/) or the [demo](/demo/).)
+- **[Walk them round](/demo/)**: the three.js demo offers every character
+  saved in this browser, the one you are working on first.
 
 When an export cannot be made, the line under the buttons says why, and
 your character is kept.

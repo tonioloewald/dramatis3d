@@ -5,7 +5,7 @@
 **An open 3D character creator for the web.** Make a person, dress them, and
 take them anywhere: CC0 base data, GLB and VRM out, for any engine.
 
-**[Open the creator](/creator/)** · [three.js viewer](/viewer/) ·
+**[Open the creator](/creator/)** · [three.js demo](/demo/) · [three.js viewer](/viewer/) ·
 [Documentation](/docs/)
 
 Dramatis is in development. The creator works today: shape a body, dress it,
