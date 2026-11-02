@@ -7,6 +7,12 @@ name: Pages
 # tosijs-3d does: www/ is gitignored. Pages must be set to "GitHub Actions" as
 # its source (Settings → Pages) for this to deploy.
 #
+# It deploys only what CI passed: the `ci` job runs .github/workflows/ci.yml
+# (unit suite, gate 1, build, tarball smoke, the network tier and the browser e2e)
+# on this same commit, and the build job needs it. A red CI means no deploy, from a
+# push or from a manual run alike. (reviews/0.1.0-dx.md: Pages used to deploy
+# whatever main built, with the env-gated tiers never run anywhere.)
+#
 # Action pins: by SHA, Node 24 releases. checkout and setup-bun are the pins in
 # tosijs-coding-practices/templates/publish.yml; the three Pages actions are
 # not in that template and are pinned here to their Node 24 releases.
@@ -24,7 +30,13 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+
   build:
+    needs: ci
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
