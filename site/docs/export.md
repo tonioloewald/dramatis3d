@@ -1,0 +1,94 @@
+# Export
+
+<!--{"parent": "docs", "order": 9}-->
+
+A character leaves Dramatis as one **GLB** file that any engine opens with no
+fixes: a skinned body and everything it wears on one skeleton, the face as
+morph targets, plain PBR materials, and the licence of every asset inside the
+file. The profile it follows is normative and lives on its own page:
+[Export format](/export-format/).
+
+```ts
+import { loadHumanPack } from 'tosijs-3d/human-pack'
+import { exportCharacterGlb, readCharacter } from 'dramatis'
+
+const pack = await loadHumanPack(packUrl)
+const { character } = readCharacter(json, { settings })
+const glb = await exportCharacterGlb(character, pack) // Uint8Array
+```
+
+`exportCharacterGlb` is `buildCharacter` then `writeCharacterGlb`. Build once
+and write as often as you like (`writeCharacterGlb` is synchronous): the
+built character is engine-free data, the same shape the
+[three.js embed](/dramatis-three/) draws.
+
+## Options
+
+| Option | Default | What it does |
+| --- | --- | --- |
+| `naming` | `'ue'` | Joint names: UE mannequin as UAL spells them, or `'mixamo'` |
+| `restPose` | `'t-pose'` | The bind pose: UAL's T-pose, or `'source'` (MakeHuman's arms-down rest) |
+| `faceUnits` | `true` | All 59 face units as morph targets, `false` for none, or a list |
+| `fetch` | `fetch` | How textures are read (a cache, a worker, a test) |
+
+## What happens to a character
+
+1. **The body** is MakeHuman's hm08 base morphed to the character's sliders.
+   UAL's 65-joint skeleton is placed inside it from MakeHuman's joint cubes
+   and the skin is bound by bone heat (tosijs-3d's `humanBodyMaker`).
+2. **What it wears** (clothes, shoes, hair, brows, beard, and the teeth and
+   tongue every character has) is fitted to that body by its MakeHuman
+   binding, then skinned to the **same skeleton** with weights borrowed from
+   the skin under it, so clothing deforms with the body.
+3. **Covered skin is removed**: skin a garment lists is dropped where it is
+   wholly covered, and the skin under clothes is tucked in a few millimetres
+   so it cannot poke through, faded in from each garment's edge.
+4. **The face units are baked as morph targets**, named exactly as MakeHuman
+   names them (`JawDrop`, `LeftUpperLidClosed`, ...), on every mesh they move:
+   the body, lashes, brows, teeth, tongue, eyes. One name on several meshes
+   is one unit: drive them together.
+5. **The rest pose is UAL's T-pose with UAL's own joint frames.** MakeHuman
+   stands with its arms angled down; the export lays each arm, hand, finger
+   and leg bone along UAL's, skins every mesh there once, and gives every
+   joint UAL's rest rotation. That is why **UAL's clips play on an export by
+   name, unretargeted**: play their rotation tracks on every joint and their
+   translation tracks on `root` and `pelvis` only.
+6. **Materials are plain glTF PBR.** The skin's colour comes from the Monk
+   Skin Tone Scale (credited in the file); each garment, hair and brow keeps
+   its own texture, hair and lashes cut out (`MASK`). The creator's skin and
+   hair shading does not travel.
+7. **Licences travel in the file**: every asset's source and licence in
+   `asset.extras.dramatis`, and as one line in `asset.copyright`. An asset
+   with no licence entry is never exported: the build throws
+   `UnlicensedAssetError` instead.
+
+The character stands on the floor at the origin, facing +Z, its left hand on
++X, in metres.
+
+## Samples
+
+`samples/out/` holds exported characters, written by
+`bun bin/export-sample.ts`, each with the character file it was made from:
+
+- `clothed-casual.glb`: a man in a casual suit and shoes, short hair;
+- `long-hair.glb`: a woman with long hair and a sports suit, darker skin;
+- `extreme-heavy.glb`: every body slider at its extreme (oldest, heaviest,
+  most muscular, tallest), in a work suit;
+- `clothed-casual-mixamo.glb`: the first, with Mixamo joint names.
+
+Gate 1 (`bun run gate1`) checks each against the profile: the Khronos glTF
+validator, the skeleton, the morph names, the licences, three.js's loader,
+and UAL's `Walk_Loop` (CC0) playing on it by name. To look at one without a
+GPU, `bun src/build/preview.ts <file.glb> <out.png> [walk 0..1] [front|side]`
+draws it posed on the CPU.
+
+## Not yet
+
+These are known gaps, each tracked on the board:
+
+- **Baked textures.** The skin is one colour (no lips, no stubble), the
+  eyes are plain white, and the lashes a dark opaque card; garment normal
+  maps and colour recipes do not travel yet.
+- **Quaternius hair**, garments of the character's own, mesh bodies other
+  than MakeHuman's, and a hat pushing the hair under it.
+- **VRM** (`exportCharacterVrm`) is its own lane.
