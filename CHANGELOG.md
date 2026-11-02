@@ -4,6 +4,12 @@ All notable changes to Dramatis. The format follows [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+### Fixed
+
+- **The Unity player's blink tore the face down to the waist.** glTFast imports a morph target at full weight 1, not Unity's usual 100, and the player blinked at 100: every 3.7 s the lids moved 100 times over. The blink now scales to each shape's own full weight.
+- **The Unity player skinned with two bones a vertex** (WebGL's default quality), creasing the shoulders and hips; it now asks for four, which is what the export carries.
+- **The three.js viewer opens the jaw only a touch** (JawDrop 0.05, was 0.35), so a loaded character's face rests.
+
 ## [0.1.2] - 2026-11-02
 
 The site's release: the library is unchanged from 0.1.1 (the same code; on npm only the version and README differ).

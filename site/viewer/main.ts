@@ -328,8 +328,8 @@ function fillFaceMenu(model: LoadedModel): void {
   ui.faceRow.hidden = names.length === 0
   ui.blinkRow.hidden = !BLINK.every((u) => model.faceUnits.has(u))
   if (names.includes('JawDrop')) ui.unit.value = 'JawDrop'
-  // Open the mouth a little so the unit is seen working.
-  ui.weight.value = names.length ? '0.35' : '0'
+  // Part the lips, barely: the unit is seen working, the face still rests.
+  ui.weight.value = names.length ? '0.05' : '0'
   applyFaceSlider()
   state.faceUnits = names.length
 }

@@ -212,7 +212,7 @@ describe.skipIf(!BROWSER)('the viewer in Chromium', () => {
         }
       ).dramatisViewer.faceUnitWeight('JawDrop')
     )
-    expect(jaw).toBeCloseTo(0.35, 5)
+    expect(jaw).toBeCloseTo(0.05, 5)
     const items = await page.locator('#licences li').count()
     expect(items).toBe(s.licences.length)
     expect(items).toBeGreaterThan(1)

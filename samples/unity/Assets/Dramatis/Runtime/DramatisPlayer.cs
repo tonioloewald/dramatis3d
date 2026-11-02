@@ -54,7 +54,9 @@ namespace Dramatis
         Transform pelvis;
         float hipScale = 1;
         Vector3 lastHips;
-        readonly List<(SkinnedMeshRenderer smr, int index)> lids = new List<(SkinnedMeshRenderer, int)>();
+        // A blend shape's full weight is its last frame's: glTFast imports morph
+        // targets at 1, not Unity's usual 100 (100 drew the lids 100x over).
+        readonly List<(SkinnedMeshRenderer smr, int index, float full)> lids = new List<(SkinnedMeshRenderer, int, float)>();
 
         Flat at;
         double heading, speed;
@@ -73,6 +75,10 @@ namespace Dramatis
             name = "Dramatis"; // SendMessage's target
             pillars = Walk.PillarRing();
             if (cam == null) cam = Camera.main;
+            // WebGL's default quality skins with two bones a vertex; the export
+            // carries four (glTF's JOINTS_0), and two crease the shoulders.
+            if (QualitySettings.skinWeights < SkinWeights.FourBones)
+                QualitySettings.skinWeights = SkinWeights.FourBones;
         }
 
         async void Start()
@@ -168,7 +174,7 @@ namespace Dramatis
                 foreach (var b in Blink)
                 {
                     int i = mesh.GetBlendShapeIndex(b);
-                    if (i >= 0) lids.Add((smr, i));
+                    if (i >= 0) lids.Add((smr, i, mesh.GetBlendShapeFrameWeight(i, mesh.GetBlendShapeFrameCount(i) - 1)));
                 }
             }
 
@@ -279,8 +285,8 @@ namespace Dramatis
                 lastHips = pelvis.localPosition;
             }
             float phase = Time.time % 3.7f;
-            float w = phase < 0.16f ? Mathf.Sin(phase / 0.16f * Mathf.PI) * 100 : 0;
-            foreach (var lid in lids) if (lid.smr != null) lid.smr.SetBlendShapeWeight(lid.index, w);
+            float w = phase < 0.16f ? Mathf.Sin(phase / 0.16f * Mathf.PI) : 0;
+            foreach (var lid in lids) if (lid.smr != null) lid.smr.SetBlendShapeWeight(lid.index, w * lid.full);
         }
 
         static double Axis(KeyCode a, KeyCode b, KeyCode neg, KeyCode neg2) =>
