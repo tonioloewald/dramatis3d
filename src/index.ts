@@ -43,6 +43,16 @@ export {
   UnlicensedAssetError,
   writeCharacterGlb,
 } from './contracts'
+// VRM 1.0 beyond the contract's exportCharacterVrm (site/docs/vrm.md).
+export {
+  VRM_HUMAN_BONES,
+  VRM_PRESETS,
+  vrmFromGlb,
+  vrmProblems,
+  writeCharacterVrm,
+} from './vrm'
+export type { VrmPreset, VrmPresetName } from './vrm'
+
 export type {
   AssetKind,
   BuildOptions,

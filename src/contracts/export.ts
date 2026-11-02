@@ -1,10 +1,7 @@
 // The exporter. GLB lane: skinned-glb (src/build/ and src/upstream/glb/).
 // VRM lane: vrm (src/vrm/). Normative profile: site/docs/export-format.md.
 
-import type { Character } from 'tosijs-3d/character-file'
-import type { HumanPack } from 'tosijs-3d/human-pack'
 import type { BuildOptions } from './built-character'
-import { notImplemented } from './lanes'
 import type { NamingProfile } from './profile'
 
 /** How a character is exported. */
@@ -61,14 +58,7 @@ export interface VrmExportOptions {
  * A character file to VRM 1.0 bytes (a GLB with `VRMC_vrm`): the GLB
  * profile plus a humanoid bone map, expression presets mapped from the face
  * units, look-at from the eye joints, and meta carrying the licences.
+ *
+ * Implemented by lane vrm (src/vrm/), same signature and doc.
  */
-export async function exportCharacterVrm(
-  character: Character,
-  pack: HumanPack,
-  options: VrmExportOptions = {}
-): Promise<Uint8Array> {
-  void character
-  void pack
-  void options
-  return notImplemented('vrm')
-}
+export { exportCharacterVrm } from '../vrm/vrm'
