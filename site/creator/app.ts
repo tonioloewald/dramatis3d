@@ -46,6 +46,7 @@ import {
   type SlotLook,
 } from 'tosijs-3d/character-file'
 import { characterStore, WORKING_CHARACTER } from 'tosijs-3d/character-store'
+import { decideName, dialogs } from './naming'
 import { chooseFile } from 'tosijs-3d/choose-file'
 import { decodeShareLink } from '../../src/contracts/share'
 import type { NamingProfile } from '../../src/contracts/profile'
@@ -154,6 +155,7 @@ export async function mountCreator(
 
   const handlers = {
     save: async () => {},
+    rename: async () => {},
     load: async () => {},
     forget: async () => {},
     exportJson: () => {},
@@ -163,22 +165,23 @@ export async function mountCreator(
   const characterRows = (): Widget3d[] => [
     label3d({ text: 'Character', collapsible: true }),
     button3d({
-      label: 'save in this browser',
+      label: 'save in this browser…',
       handleClick: () => handlers.save(),
     }),
     ...(saved.length
       ? [
           select3d({ label: 'saved', value: pick.value, options: saved }),
           button3d({ label: 'load', handleClick: () => handlers.load() }),
+          button3d({ label: 'rename…', handleClick: () => handlers.rename() }),
           button3d({ label: 'forget', handleClick: () => handlers.forget() }),
         ]
       : []),
     button3d({
-      label: 'export character file',
+      label: 'export character (.json)',
       handleClick: () => handlers.exportJson(),
     }),
     button3d({
-      label: 'import character file…',
+      label: 'import character (.json)…',
       handleClick: () => handlers.importJson(),
     }),
     ...(note ? [text3d({ text: note })] : []),
@@ -346,7 +349,15 @@ export async function mountCreator(
       scene
     )
     const floorMat = new BABYLON.PBRMaterial('floor', scene)
-    floorMat.albedoColor = BABYLON.Color3.FromHexString('#5d6672')
+    // A faint tosijs grid (site/static/creator-ground.svg), 2 m a tile.
+    // Resolved from this bundle (/creator-app/app.js) so any base path works.
+    const grid = new BABYLON.Texture(
+      new URL('../creator-ground.svg', import.meta.url).href,
+      scene
+    )
+    grid.uScale = grid.vScale = 6
+    grid.anisotropicFilteringLevel = 8
+    floorMat.albedoTexture = grid
     floorMat.metallic = 0
     floorMat.roughness = 0.9
     floor.material = floorMat
@@ -501,10 +512,41 @@ export async function mountCreator(
       if (!saved.includes(pick.value.value)) pick.value.value = saved[0] ?? ''
       host.refreshScenePanel?.()
     }
+    // Save and rename ask for the name in a popup (tosijs-ui's dialog), filled
+    // in with the current one, and ask before replacing a different character.
+    const askName = async (
+      title: string,
+      message: string,
+      current: string
+    ): Promise<string | null> => {
+      const ui = dialogs()
+      // Embedded without the site's tosi-* elements: the name box is the input.
+      const typed = ui ? await ui.prompt(message, title, current) : shell.name()
+      const decided = decideName(typed, saved, current, WORKING_CHARACTER)
+      if (decided === null) return null
+      if (!decided.ok) {
+        tell(decided.message)
+        return null
+      }
+      if (
+        decided.overwrites &&
+        !(await (ui?.confirm(
+          `A saved character is already called "${decided.name}". Replace it?`,
+          'Replace?'
+        ) ?? Promise.resolve(true)))
+      )
+        return null
+      return decided.name
+    }
     handlers.save = async () => {
-      const name = shell.name().trim()
-      if (!name || name === WORKING_CHARACTER)
-        return tell('name the character first (top left)')
+      const current = shell.name().trim()
+      const name = await askName(
+        'Save in this browser',
+        'Name this character',
+        current === WORKING_CHARACTER ? '' : current
+      )
+      if (name === null) return
+      shell.setName(name)
       try {
         await store.put(name, doc(name))
       } catch (e) {
@@ -512,6 +554,23 @@ export async function mountCreator(
       }
       pick.value.value = name
       tell(`saved ${name}`)
+      await listSaved()
+    }
+    handlers.rename = async () => {
+      const old = pick.value.value as string
+      const found = old ? await store.get(old).catch(() => null) : null
+      if (!found) return tell(`no character called ${old}`)
+      const name = await askName('Rename', `Rename "${old}" to`, old)
+      if (name === null || name === old) return
+      try {
+        await store.put(name, { ...found, name })
+        await store.delete(old)
+      } catch (e) {
+        return tell(explain(e, 'rename it'))
+      }
+      if (shell.name().trim() === old) shell.setName(name)
+      pick.value.value = name
+      tell(`renamed ${old} to ${name}`)
       await listSaved()
     }
     handlers.load = async () => {

@@ -302,6 +302,12 @@ What each one's pack declares is shown as declared, not as checked. None of thes
 
 <!-- /manifest -->
 
+### The site itself
+
+Not part of any character, and never exported: the creator's floor
+(`site/static/creator-ground.svg`) is tosijs-3d's `tosi-warhol-testgrid.svg`,
+toned down, under tosijs-3d's licence (Apache-2.0, Tonio Loewald).
+
 ## Keeping it true
 
 `src/licences/packs.ts` is a snapshot of every asset the creator's packs
