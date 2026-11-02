@@ -1,0 +1,12 @@
+# Godot's import cache.
+.godot/
+# Characters are copied in from samples/out by tools/engines/godot.ts.
+characters/*.glb
+characters/*.glb.import
+characters/*.png
+characters/*.png.import
+characters/*.jpg
+characters/*.jpg.import
+# Written by each check run.
+expect.json
+results.json

@@ -1,0 +1,905 @@
+{
+  "date": "2026-11-02T00:26:00.655Z",
+  "summary": [
+    {
+      "engine": "godot",
+      "version": "4.5.stable.official.876b29033",
+      "status": "ran",
+      "pass": 32,
+      "fail": 0,
+      "characters": [
+        {
+          "checks": [
+            {
+              "check": "import",
+              "evidence": ["imported as a PackedScene, root Node3D"],
+              "ok": true
+            },
+            {
+              "check": "skeleton",
+              "evidence": [
+                "65 bones",
+                "Godot renamed 64 bones, e.g. mixamorig:Hips -> mixamorig_Hips"
+              ],
+              "ok": true
+            },
+            {
+              "check": "axes",
+              "evidence": [
+                "Head (0.0, 1.585654, 0.046441), hand_l (0.705898, 1.384397, 0.01508), hand_r (-0.705898, 1.384397, 0.01508), foot_l (0.108499, 0.071619, -0.04854), ball_l (0.123079, 0.026955, 0.091663) (metres, Godot world)"
+              ],
+              "ok": true
+            },
+            {
+              "check": "skins",
+              "evidence": [
+                "9 MeshInstance3D: body, eyes, eyelashes, teeth, tongue, brows, hair, garment_male_casualsuit02, garment_shoes01"
+              ],
+              "ok": true
+            },
+            {
+              "check": "rest-skinning",
+              "evidence": [
+                "12070 vertices sampled; worst rest-pose drift 0.0758 mm (body); 4 influences per vertex as Godot stores them"
+              ],
+              "ok": true
+            },
+            {
+              "check": "morphs",
+              "evidence": [
+                "body: 51 blend shapes",
+                "eyes: 19 blend shapes",
+                "eyelashes: 14 blend shapes",
+                "teeth: 7 blend shapes",
+                "tongue: 35 blend shapes",
+                "brows: 33 blend shapes",
+                "hair: 27 blend shapes",
+                "garment_male_casualsuit02: 7 blend shapes",
+                "59 distinct face units as blend shapes (file declares 59); JawDrop moves the body up to 32.2 mm"
+              ],
+              "ok": true
+            },
+            {
+              "check": "materials",
+              "evidence": [
+                "body: StandardMaterial3D albedo d0b09e",
+                "eyes: StandardMaterial3D albedo ededea",
+                "eyelashes: StandardMaterial3D albedo 1d140f",
+                "teeth: StandardMaterial3D albedo ffffff texture 1024x1024 alpha-scissor 0.40",
+                "tongue: StandardMaterial3D albedo ffffff texture 1024x1024",
+                "brows: StandardMaterial3D albedo ffffff texture 1024x1024 alpha-scissor 0.40",
+                "hair: StandardMaterial3D albedo ffffff texture 1024x1024 alpha-scissor 0.40",
+                "garment_male_casualsuit02: StandardMaterial3D albedo ffffff texture 1024x1024",
+                "garment_shoes01: StandardMaterial3D albedo ffffff texture 1024x1024"
+              ],
+              "ok": true
+            },
+            {
+              "check": "clip",
+              "evidence": [
+                "clip Walk, 1.33 s, 67 of 195 tracks kept",
+                "20 of 20 major joints bound",
+                "travel (cm): Head 8.6, hand_l 71.1, hand_r 71.7, foot_l 40.0, foot_r 39.9",
+                "turn (deg): upperarm_l 75.6, lowerarm_l 46.0, thigh_l 47.6, calf_l 83.0, upperarm_r 75.6, lowerarm_r 46.0, thigh_r 47.4, calf_r 83.0",
+                "lowest ankle during the clip: 0.0 cm from its rest height (pelvis translation scaled by the hips' heights)",
+                "50 body vertices most weighted to hand_l (top weight 0.85) travel up to 83.2 cm; the top one drifts 3.89 mm in the hand's frame"
+              ],
+              "ok": true
+            }
+          ],
+          "file": "clothed-casual-mixamo.glb",
+          "naming": "mixamo",
+          "renamed": {
+            "mixamorig:Head": "mixamorig_Head",
+            "mixamorig:Hips": "mixamorig_Hips",
+            "mixamorig:LeftArm": "mixamorig_LeftArm",
+            "mixamorig:LeftFoot": "mixamorig_LeftFoot",
+            "mixamorig:LeftForeArm": "mixamorig_LeftForeArm",
+            "mixamorig:LeftHand": "mixamorig_LeftHand",
+            "mixamorig:LeftHandIndex1": "mixamorig_LeftHandIndex1",
+            "mixamorig:LeftHandIndex2": "mixamorig_LeftHandIndex2",
+            "mixamorig:LeftHandIndex3": "mixamorig_LeftHandIndex3",
+            "mixamorig:LeftHandIndex4": "mixamorig_LeftHandIndex4",
+            "mixamorig:LeftHandMiddle1": "mixamorig_LeftHandMiddle1",
+            "mixamorig:LeftHandMiddle2": "mixamorig_LeftHandMiddle2",
+            "mixamorig:LeftHandMiddle3": "mixamorig_LeftHandMiddle3",
+            "mixamorig:LeftHandMiddle4": "mixamorig_LeftHandMiddle4",
+            "mixamorig:LeftHandPinky1": "mixamorig_LeftHandPinky1",
+            "mixamorig:LeftHandPinky2": "mixamorig_LeftHandPinky2",
+            "mixamorig:LeftHandPinky3": "mixamorig_LeftHandPinky3",
+            "mixamorig:LeftHandPinky4": "mixamorig_LeftHandPinky4",
+            "mixamorig:LeftHandRing1": "mixamorig_LeftHandRing1",
+            "mixamorig:LeftHandRing2": "mixamorig_LeftHandRing2",
+            "mixamorig:LeftHandRing3": "mixamorig_LeftHandRing3",
+            "mixamorig:LeftHandRing4": "mixamorig_LeftHandRing4",
+            "mixamorig:LeftHandThumb1": "mixamorig_LeftHandThumb1",
+            "mixamorig:LeftHandThumb2": "mixamorig_LeftHandThumb2",
+            "mixamorig:LeftHandThumb3": "mixamorig_LeftHandThumb3",
+            "mixamorig:LeftHandThumb4": "mixamorig_LeftHandThumb4",
+            "mixamorig:LeftLeg": "mixamorig_LeftLeg",
+            "mixamorig:LeftShoulder": "mixamorig_LeftShoulder",
+            "mixamorig:LeftToeBase": "mixamorig_LeftToeBase",
+            "mixamorig:LeftToe_End": "mixamorig_LeftToe_End",
+            "mixamorig:LeftUpLeg": "mixamorig_LeftUpLeg",
+            "mixamorig:Neck": "mixamorig_Neck",
+            "mixamorig:RightArm": "mixamorig_RightArm",
+            "mixamorig:RightFoot": "mixamorig_RightFoot",
+            "mixamorig:RightForeArm": "mixamorig_RightForeArm",
+            "mixamorig:RightHand": "mixamorig_RightHand",
+            "mixamorig:RightHandIndex1": "mixamorig_RightHandIndex1",
+            "mixamorig:RightHandIndex2": "mixamorig_RightHandIndex2",
+            "mixamorig:RightHandIndex3": "mixamorig_RightHandIndex3",
+            "mixamorig:RightHandIndex4": "mixamorig_RightHandIndex4",
+            "mixamorig:RightHandMiddle1": "mixamorig_RightHandMiddle1",
+            "mixamorig:RightHandMiddle2": "mixamorig_RightHandMiddle2",
+            "mixamorig:RightHandMiddle3": "mixamorig_RightHandMiddle3",
+            "mixamorig:RightHandMiddle4": "mixamorig_RightHandMiddle4",
+            "mixamorig:RightHandPinky1": "mixamorig_RightHandPinky1",
+            "mixamorig:RightHandPinky2": "mixamorig_RightHandPinky2",
+            "mixamorig:RightHandPinky3": "mixamorig_RightHandPinky3",
+            "mixamorig:RightHandPinky4": "mixamorig_RightHandPinky4",
+            "mixamorig:RightHandRing1": "mixamorig_RightHandRing1",
+            "mixamorig:RightHandRing2": "mixamorig_RightHandRing2",
+            "mixamorig:RightHandRing3": "mixamorig_RightHandRing3",
+            "mixamorig:RightHandRing4": "mixamorig_RightHandRing4",
+            "mixamorig:RightHandThumb1": "mixamorig_RightHandThumb1",
+            "mixamorig:RightHandThumb2": "mixamorig_RightHandThumb2",
+            "mixamorig:RightHandThumb3": "mixamorig_RightHandThumb3",
+            "mixamorig:RightHandThumb4": "mixamorig_RightHandThumb4",
+            "mixamorig:RightLeg": "mixamorig_RightLeg",
+            "mixamorig:RightShoulder": "mixamorig_RightShoulder",
+            "mixamorig:RightToeBase": "mixamorig_RightToeBase",
+            "mixamorig:RightToe_End": "mixamorig_RightToe_End",
+            "mixamorig:RightUpLeg": "mixamorig_RightUpLeg",
+            "mixamorig:Spine": "mixamorig_Spine",
+            "mixamorig:Spine1": "mixamorig_Spine1",
+            "mixamorig:Spine2": "mixamorig_Spine2"
+          }
+        },
+        {
+          "checks": [
+            {
+              "check": "import",
+              "evidence": ["imported as a PackedScene, root Node3D"],
+              "ok": true
+            },
+            {
+              "check": "skeleton",
+              "evidence": ["65 bones"],
+              "ok": true
+            },
+            {
+              "check": "axes",
+              "evidence": [
+                "Head (0.0, 1.585654, 0.046441), hand_l (0.705898, 1.384397, 0.01508), hand_r (-0.705898, 1.384397, 0.01508), foot_l (0.108499, 0.071619, -0.04854), ball_l (0.123079, 0.026955, 0.091663) (metres, Godot world)"
+              ],
+              "ok": true
+            },
+            {
+              "check": "skins",
+              "evidence": [
+                "9 MeshInstance3D: body, eyes, eyelashes, teeth, tongue, brows, hair, garment_male_casualsuit02, garment_shoes01"
+              ],
+              "ok": true
+            },
+            {
+              "check": "rest-skinning",
+              "evidence": [
+                "12070 vertices sampled; worst rest-pose drift 0.0758 mm (body); 4 influences per vertex as Godot stores them"
+              ],
+              "ok": true
+            },
+            {
+              "check": "morphs",
+              "evidence": [
+                "body: 51 blend shapes",
+                "eyes: 19 blend shapes",
+                "eyelashes: 14 blend shapes",
+                "teeth: 7 blend shapes",
+                "tongue: 35 blend shapes",
+                "brows: 33 blend shapes",
+                "hair: 27 blend shapes",
+                "garment_male_casualsuit02: 7 blend shapes",
+                "59 distinct face units as blend shapes (file declares 59); JawDrop moves the body up to 32.2 mm"
+              ],
+              "ok": true
+            },
+            {
+              "check": "materials",
+              "evidence": [
+                "body: StandardMaterial3D albedo d0b09e",
+                "eyes: StandardMaterial3D albedo ededea",
+                "eyelashes: StandardMaterial3D albedo 1d140f",
+                "teeth: StandardMaterial3D albedo ffffff texture 1024x1024 alpha-scissor 0.40",
+                "tongue: StandardMaterial3D albedo ffffff texture 1024x1024",
+                "brows: StandardMaterial3D albedo ffffff texture 1024x1024 alpha-scissor 0.40",
+                "hair: StandardMaterial3D albedo ffffff texture 1024x1024 alpha-scissor 0.40",
+                "garment_male_casualsuit02: StandardMaterial3D albedo ffffff texture 1024x1024",
+                "garment_shoes01: StandardMaterial3D albedo ffffff texture 1024x1024"
+              ],
+              "ok": true
+            },
+            {
+              "check": "clip",
+              "evidence": [
+                "clip Walk, 1.33 s, 67 of 195 tracks kept",
+                "20 of 20 major joints bound",
+                "travel (cm): Head 8.6, hand_l 71.1, hand_r 71.7, foot_l 40.0, foot_r 39.9",
+                "turn (deg): upperarm_l 75.6, lowerarm_l 46.0, thigh_l 47.6, calf_l 83.0, upperarm_r 75.6, lowerarm_r 46.0, thigh_r 47.4, calf_r 83.0",
+                "lowest ankle during the clip: 0.0 cm from its rest height (pelvis translation scaled by the hips' heights)",
+                "50 body vertices most weighted to hand_l (top weight 0.85) travel up to 83.2 cm; the top one drifts 3.89 mm in the hand's frame"
+              ],
+              "ok": true
+            }
+          ],
+          "file": "clothed-casual.glb",
+          "naming": "ue",
+          "renamed": {}
+        },
+        {
+          "checks": [
+            {
+              "check": "import",
+              "evidence": ["imported as a PackedScene, root Node3D"],
+              "ok": true
+            },
+            {
+              "check": "skeleton",
+              "evidence": ["65 bones"],
+              "ok": true
+            },
+            {
+              "check": "axes",
+              "evidence": [
+                "Head (0.0, 2.234371, 0.057394), hand_l (0.952356, 1.994374, 0.002957), hand_r (-0.952356, 1.994373, 0.002957), foot_l (0.14876, 0.098397, -0.070233), ball_l (0.168159, 0.03451, 0.131354) (metres, Godot world)"
+              ],
+              "ok": true
+            },
+            {
+              "check": "skins",
+              "evidence": [
+                "9 MeshInstance3D: body, eyes, eyelashes, teeth, tongue, brows, hair, garment_male_worksuit01, garment_shoes03"
+              ],
+              "ok": true
+            },
+            {
+              "check": "rest-skinning",
+              "evidence": [
+                "12100 vertices sampled; worst rest-pose drift 0.1064 mm (body); 4 influences per vertex as Godot stores them"
+              ],
+              "ok": true
+            },
+            {
+              "check": "morphs",
+              "evidence": [
+                "body: 51 blend shapes",
+                "eyes: 19 blend shapes",
+                "eyelashes: 14 blend shapes",
+                "teeth: 7 blend shapes",
+                "tongue: 35 blend shapes",
+                "brows: 33 blend shapes",
+                "hair: 24 blend shapes",
+                "garment_male_worksuit01: 7 blend shapes",
+                "59 distinct face units as blend shapes (file declares 59); JawDrop moves the body up to 32.2 mm"
+              ],
+              "ok": true
+            },
+            {
+              "check": "materials",
+              "evidence": [
+                "body: StandardMaterial3D albedo ecd5ca",
+                "eyes: StandardMaterial3D albedo ededea",
+                "eyelashes: StandardMaterial3D albedo 1d140f",
+                "teeth: StandardMaterial3D albedo ffffff texture 1024x1024 alpha-scissor 0.40",
+                "tongue: StandardMaterial3D albedo ffffff texture 1024x1024",
+                "brows: StandardMaterial3D albedo ffffff texture 1024x1024 alpha-scissor 0.40",
+                "hair: StandardMaterial3D albedo ffffff texture 1024x1024 alpha-scissor 0.40",
+                "garment_male_worksuit01: StandardMaterial3D albedo ffffff texture 1024x1024",
+                "garment_shoes03: StandardMaterial3D albedo ffffff texture 1024x1024"
+              ],
+              "ok": true
+            },
+            {
+              "check": "clip",
+              "evidence": [
+                "clip Walk, 1.33 s, 67 of 195 tracks kept",
+                "20 of 20 major joints bound",
+                "travel (cm): Head 11.0, hand_l 97.1, hand_r 98.2, foot_l 61.4, foot_r 61.3",
+                "turn (deg): upperarm_l 75.6, lowerarm_l 46.0, thigh_l 47.6, calf_l 83.0, upperarm_r 75.6, lowerarm_r 46.0, thigh_r 47.4, calf_r 83.0",
+                "lowest ankle during the clip: -0.2 cm from its rest height (pelvis translation scaled by the hips' heights)",
+                "50 body vertices most weighted to hand_l (top weight 0.83) travel up to 111.6 cm; the top one drifts 5.62 mm in the hand's frame"
+              ],
+              "ok": true
+            }
+          ],
+          "file": "extreme-heavy.glb",
+          "naming": "ue",
+          "renamed": {}
+        },
+        {
+          "checks": [
+            {
+              "check": "import",
+              "evidence": ["imported as a PackedScene, root Node3D"],
+              "ok": true
+            },
+            {
+              "check": "skeleton",
+              "evidence": ["65 bones"],
+              "ok": true
+            },
+            {
+              "check": "axes",
+              "evidence": [
+                "Head (0.0, 1.402648, 0.045579), hand_l (0.577887, 1.220828, -0.003149), hand_r (-0.577887, 1.220828, -0.003149), foot_l (0.091086, 0.065887, -0.034963), ball_l (0.103523, 0.022797, 0.081719) (metres, Godot world)"
+              ],
+              "ok": true
+            },
+            {
+              "check": "skins",
+              "evidence": [
+                "9 MeshInstance3D: body, eyes, eyelashes, teeth, tongue, brows, hair, garment_female_sportsuit01, garment_shoes02"
+              ],
+              "ok": true
+            },
+            {
+              "check": "rest-skinning",
+              "evidence": [
+                "12478 vertices sampled; worst rest-pose drift 0.0677 mm (hair); 4 influences per vertex as Godot stores them"
+              ],
+              "ok": true
+            },
+            {
+              "check": "morphs",
+              "evidence": [
+                "body: 51 blend shapes",
+                "eyes: 19 blend shapes",
+                "eyelashes: 14 blend shapes",
+                "teeth: 7 blend shapes",
+                "tongue: 35 blend shapes",
+                "brows: 33 blend shapes",
+                "garment_female_sportsuit01: 7 blend shapes",
+                "59 distinct face units as blend shapes (file declares 59); JawDrop moves the body up to 32.2 mm"
+              ],
+              "ok": true
+            },
+            {
+              "check": "materials",
+              "evidence": [
+                "body: StandardMaterial3D albedo 4e4037",
+                "eyes: StandardMaterial3D albedo ededea",
+                "eyelashes: StandardMaterial3D albedo 1d140f",
+                "teeth: StandardMaterial3D albedo ffffff texture 1024x1024 alpha-scissor 0.40",
+                "tongue: StandardMaterial3D albedo ffffff texture 1024x1024",
+                "brows: StandardMaterial3D albedo ffffff texture 1024x1024 alpha-scissor 0.40",
+                "hair: StandardMaterial3D albedo ffffff texture 1024x1024 alpha-scissor 0.40",
+                "garment_female_sportsuit01: StandardMaterial3D albedo ffffff texture 1024x1024",
+                "garment_shoes02: StandardMaterial3D albedo ffffff texture 1024x1024"
+              ],
+              "ok": true
+            },
+            {
+              "check": "clip",
+              "evidence": [
+                "clip Walk, 1.33 s, 67 of 195 tracks kept",
+                "20 of 20 major joints bound",
+                "travel (cm): Head 7.0, hand_l 58.8, hand_r 59.3, foot_l 33.5, foot_r 33.4",
+                "turn (deg): upperarm_l 75.6, lowerarm_l 46.0, thigh_l 47.6, calf_l 83.0, upperarm_r 75.6, lowerarm_r 46.0, thigh_r 47.4, calf_r 83.0",
+                "lowest ankle during the clip: -0.0 cm from its rest height (pelvis translation scaled by the hips' heights)",
+                "50 body vertices most weighted to hand_l (top weight 0.85) travel up to 68.3 cm; the top one drifts 3.03 mm in the hand's frame"
+              ],
+              "ok": true
+            }
+          ],
+          "file": "long-hair.glb",
+          "naming": "ue",
+          "renamed": {}
+        }
+      ],
+      "log": ["336 x ERROR: UVs are required to generate tangents."]
+    },
+    {
+      "engine": "blender",
+      "version": "5.2.0 LTS",
+      "status": "ran",
+      "pass": 28,
+      "fail": 0,
+      "characters": [
+        {
+          "file": "clothed-casual-mixamo.glb",
+          "naming": "mixamo",
+          "checks": [
+            {
+              "check": "import",
+              "ok": true,
+              "evidence": [
+                "1 armature, 9 meshes: body, brows, eyelashes, eyes, garment_male_casualsuit02, garment_shoes01, hair, teeth, tongue"
+              ]
+            },
+            {
+              "check": "armature",
+              "ok": true,
+              "evidence": ["65 bones; names kept as in the file"]
+            },
+            {
+              "check": "axes",
+              "ok": true,
+              "evidence": [
+                "Head (0.0, -0.046, 1.586), hand_l (0.706, -0.015, 1.384), lowest vertex z=-2.6 mm (Blender Z up)"
+              ]
+            },
+            {
+              "check": "weights",
+              "ok": true,
+              "evidence": ["19754 vertices across 9 meshes"]
+            },
+            {
+              "check": "shape-keys",
+              "ok": true,
+              "evidence": [
+                "body: 51 shape keys",
+                "brows: 33 shape keys",
+                "eyelashes: 14 shape keys",
+                "eyes: 19 shape keys",
+                "garment_male_casualsuit02: 7 shape keys",
+                "hair: 27 shape keys",
+                "teeth: 7 shape keys",
+                "tongue: 35 shape keys",
+                "59 distinct face units as shape keys (file declares 59); JawDrop moves the body up to 32.2 mm"
+              ]
+            },
+            {
+              "check": "skinning",
+              "ok": true,
+              "evidence": [
+                "rest drift 0.0006 mm; upperarm_l +45 deg moves 111 hand vertices up to 48.2 cm and the head 0.000 mm"
+              ]
+            },
+            {
+              "check": "clip",
+              "ok": true,
+              "evidence": [
+                "action Walk_Loop, frames 0-32",
+                "travel (cm): Head 8.6, hand_l 71.2, hand_r 71.8, foot_l 41.8, foot_r 40.8",
+                "50 hand_l body vertices travel up to 85.1 cm",
+                "lowest body vertex during the walk 14.5 cm (at rest 15.9 cm)"
+              ]
+            }
+          ]
+        },
+        {
+          "file": "clothed-casual.glb",
+          "naming": "ue",
+          "checks": [
+            {
+              "check": "import",
+              "ok": true,
+              "evidence": [
+                "1 armature, 9 meshes: body, brows, eyelashes, eyes, garment_male_casualsuit02, garment_shoes01, hair, teeth, tongue"
+              ]
+            },
+            {
+              "check": "armature",
+              "ok": true,
+              "evidence": ["65 bones; names kept as in the file"]
+            },
+            {
+              "check": "axes",
+              "ok": true,
+              "evidence": [
+                "Head (0.0, -0.046, 1.586), hand_l (0.706, -0.015, 1.384), lowest vertex z=-2.6 mm (Blender Z up)"
+              ]
+            },
+            {
+              "check": "weights",
+              "ok": true,
+              "evidence": ["19754 vertices across 9 meshes"]
+            },
+            {
+              "check": "shape-keys",
+              "ok": true,
+              "evidence": [
+                "body: 51 shape keys",
+                "brows: 33 shape keys",
+                "eyelashes: 14 shape keys",
+                "eyes: 19 shape keys",
+                "garment_male_casualsuit02: 7 shape keys",
+                "hair: 27 shape keys",
+                "teeth: 7 shape keys",
+                "tongue: 35 shape keys",
+                "59 distinct face units as shape keys (file declares 59); JawDrop moves the body up to 32.2 mm"
+              ]
+            },
+            {
+              "check": "skinning",
+              "ok": true,
+              "evidence": [
+                "rest drift 0.0006 mm; upperarm_l +45 deg moves 111 hand vertices up to 48.2 cm and the head 0.000 mm"
+              ]
+            },
+            {
+              "check": "clip",
+              "ok": true,
+              "evidence": [
+                "action Walk_Loop, frames 0-32",
+                "travel (cm): Head 8.6, hand_l 71.2, hand_r 71.8, foot_l 41.8, foot_r 40.8",
+                "50 hand_l body vertices travel up to 85.1 cm",
+                "lowest body vertex during the walk 14.5 cm (at rest 15.9 cm)"
+              ]
+            }
+          ]
+        },
+        {
+          "file": "extreme-heavy.glb",
+          "naming": "ue",
+          "checks": [
+            {
+              "check": "import",
+              "ok": true,
+              "evidence": [
+                "1 armature, 9 meshes: body, brows, eyelashes, eyes, garment_male_worksuit01, garment_shoes03, hair, teeth, tongue"
+              ]
+            },
+            {
+              "check": "armature",
+              "ok": true,
+              "evidence": ["65 bones; names kept as in the file"]
+            },
+            {
+              "check": "axes",
+              "ok": true,
+              "evidence": [
+                "Head (0.0, -0.057, 2.234), hand_l (0.952, -0.003, 1.994), lowest vertex z=-36.3 mm (Blender Z up)"
+              ]
+            },
+            {
+              "check": "weights",
+              "ok": true,
+              "evidence": ["22860 vertices across 9 meshes"]
+            },
+            {
+              "check": "shape-keys",
+              "ok": true,
+              "evidence": [
+                "body: 51 shape keys",
+                "brows: 33 shape keys",
+                "eyelashes: 14 shape keys",
+                "eyes: 19 shape keys",
+                "garment_male_worksuit01: 7 shape keys",
+                "hair: 24 shape keys",
+                "teeth: 7 shape keys",
+                "tongue: 35 shape keys",
+                "59 distinct face units as shape keys (file declares 59); JawDrop moves the body up to 32.2 mm"
+              ]
+            },
+            {
+              "check": "skinning",
+              "ok": true,
+              "evidence": [
+                "rest drift 0.0006 mm; upperarm_l +45 deg moves 107 hand vertices up to 63.8 cm and the head 0.000 mm"
+              ]
+            },
+            {
+              "check": "clip",
+              "ok": true,
+              "evidence": [
+                "action Walk_Loop, frames 0-32",
+                "travel (cm): Head 11.1, hand_l 97.2, hand_r 98.3, foot_l 63.5, foot_r 62.2",
+                "50 hand_l body vertices travel up to 113.7 cm",
+                "lowest body vertex during the walk 110.5 cm (at rest 190.2 cm)"
+              ]
+            }
+          ]
+        },
+        {
+          "file": "long-hair.glb",
+          "naming": "ue",
+          "checks": [
+            {
+              "check": "import",
+              "ok": true,
+              "evidence": [
+                "1 armature, 9 meshes: body, brows, eyelashes, eyes, garment_female_sportsuit01, garment_shoes02, hair, teeth, tongue"
+              ]
+            },
+            {
+              "check": "armature",
+              "ok": true,
+              "evidence": ["65 bones; names kept as in the file"]
+            },
+            {
+              "check": "axes",
+              "ok": true,
+              "evidence": [
+                "Head (0.0, -0.046, 1.403), hand_l (0.578, 0.003, 1.221), lowest vertex z=-10.6 mm (Blender Z up)"
+              ]
+            },
+            {
+              "check": "weights",
+              "ok": true,
+              "evidence": ["21858 vertices across 9 meshes"]
+            },
+            {
+              "check": "shape-keys",
+              "ok": true,
+              "evidence": [
+                "body: 51 shape keys",
+                "brows: 33 shape keys",
+                "eyelashes: 14 shape keys",
+                "eyes: 19 shape keys",
+                "garment_female_sportsuit01: 7 shape keys",
+                "teeth: 7 shape keys",
+                "tongue: 35 shape keys",
+                "59 distinct face units as shape keys (file declares 59); JawDrop moves the body up to 32.2 mm"
+              ]
+            },
+            {
+              "check": "skinning",
+              "ok": true,
+              "evidence": [
+                "rest drift 0.0007 mm; upperarm_l +45 deg moves 111 hand vertices up to 39.7 cm and the head 0.000 mm"
+              ]
+            },
+            {
+              "check": "clip",
+              "ok": true,
+              "evidence": [
+                "action Walk_Loop, frames 0-32",
+                "travel (cm): Head 7.0, hand_l 58.8, hand_r 59.4, foot_l 35.2, foot_r 34.4",
+                "50 hand_l body vertices travel up to 69.9 cm",
+                "lowest body vertex during the walk 67.6 cm (at rest 79.7 cm)"
+              ]
+            }
+          ]
+        }
+      ],
+      "log": []
+    },
+    {
+      "engine": "babylon",
+      "version": "9.33.1",
+      "status": "ran",
+      "pass": 28,
+      "fail": 0,
+      "characters": [
+        {
+          "file": "clothed-casual-mixamo.glb",
+          "naming": "mixamo",
+          "checks": [
+            {
+              "check": "load",
+              "ok": true,
+              "evidence": [
+                "9 meshes: body, eyes, eyelashes, teeth, tongue, brows, hair, garment_male_casualsuit02, garment_shoes01; 1 skeleton(s)"
+              ]
+            },
+            {
+              "check": "skeleton",
+              "ok": true,
+              "evidence": ["65 bones, names as in the file"]
+            },
+            {
+              "check": "skins",
+              "ok": true,
+              "evidence": ["9 meshes share one skeleton"]
+            },
+            {
+              "check": "rest-skinning",
+              "ok": true,
+              "evidence": ["worst rest-pose drift 0.0004 mm (body, sampled)"]
+            },
+            {
+              "check": "morphs",
+              "ok": true,
+              "evidence": [
+                "59 distinct face units (file declares 59); JawDrop moves the body up to 32.2 mm",
+                "targets per mesh: body: 51, eyes: 19, eyelashes: 14, teeth: 7, tongue: 35, brows: 33, hair: 27, garment_male_casualsuit02: 7"
+              ]
+            },
+            {
+              "check": "materials",
+              "ok": true,
+              "evidence": [
+                "body: PBRMaterial, eyes: PBRMaterial, eyelashes: PBRMaterial, teeth: PBRMaterial, tongue: PBRMaterial, brows: PBRMaterial, hair: PBRMaterial, garment_male_casualsuit02: PBRMaterial, garment_shoes01: PBRMaterial"
+              ]
+            },
+            {
+              "check": "clip",
+              "ok": true,
+              "evidence": [
+                "Walk_Loop: 67 of 195 animations kept, frames 0-80.00000238418579",
+                "travel (cm): Head 9.5, hand_l 72.0, hand_r 72.6, foot_l 39.4, foot_r 39.3",
+                "turn (deg): upperarm_l 75.6, lowerarm_l 46.0, thigh_l 47.6, calf_l 83.0, upperarm_r 75.6, lowerarm_r 46.0, thigh_r 47.4, calf_r 83.0",
+                "50 body vertices most weighted to hand_l travel up to 84.1 cm (CPU-skinned with Babylon's bone matrices)"
+              ]
+            }
+          ]
+        },
+        {
+          "file": "clothed-casual.glb",
+          "naming": "ue",
+          "checks": [
+            {
+              "check": "load",
+              "ok": true,
+              "evidence": [
+                "9 meshes: body, eyes, eyelashes, teeth, tongue, brows, hair, garment_male_casualsuit02, garment_shoes01; 1 skeleton(s)"
+              ]
+            },
+            {
+              "check": "skeleton",
+              "ok": true,
+              "evidence": ["65 bones, names as in the file"]
+            },
+            {
+              "check": "skins",
+              "ok": true,
+              "evidence": ["9 meshes share one skeleton"]
+            },
+            {
+              "check": "rest-skinning",
+              "ok": true,
+              "evidence": ["worst rest-pose drift 0.0004 mm (body, sampled)"]
+            },
+            {
+              "check": "morphs",
+              "ok": true,
+              "evidence": [
+                "59 distinct face units (file declares 59); JawDrop moves the body up to 32.2 mm",
+                "targets per mesh: body: 51, eyes: 19, eyelashes: 14, teeth: 7, tongue: 35, brows: 33, hair: 27, garment_male_casualsuit02: 7"
+              ]
+            },
+            {
+              "check": "materials",
+              "ok": true,
+              "evidence": [
+                "body: PBRMaterial, eyes: PBRMaterial, eyelashes: PBRMaterial, teeth: PBRMaterial, tongue: PBRMaterial, brows: PBRMaterial, hair: PBRMaterial, garment_male_casualsuit02: PBRMaterial, garment_shoes01: PBRMaterial"
+              ]
+            },
+            {
+              "check": "clip",
+              "ok": true,
+              "evidence": [
+                "Walk_Loop: 67 of 195 animations kept, frames 0-80.00000238418579",
+                "travel (cm): Head 9.5, hand_l 72.0, hand_r 72.6, foot_l 39.4, foot_r 39.3",
+                "turn (deg): upperarm_l 75.6, lowerarm_l 46.0, thigh_l 47.6, calf_l 83.0, upperarm_r 75.6, lowerarm_r 46.0, thigh_r 47.4, calf_r 83.0",
+                "50 body vertices most weighted to hand_l travel up to 84.1 cm (CPU-skinned with Babylon's bone matrices)"
+              ]
+            }
+          ]
+        },
+        {
+          "file": "extreme-heavy.glb",
+          "naming": "ue",
+          "checks": [
+            {
+              "check": "load",
+              "ok": true,
+              "evidence": [
+                "9 meshes: body, eyes, eyelashes, teeth, tongue, brows, hair, garment_male_worksuit01, garment_shoes03; 1 skeleton(s)"
+              ]
+            },
+            {
+              "check": "skeleton",
+              "ok": true,
+              "evidence": ["65 bones, names as in the file"]
+            },
+            {
+              "check": "skins",
+              "ok": true,
+              "evidence": ["9 meshes share one skeleton"]
+            },
+            {
+              "check": "rest-skinning",
+              "ok": true,
+              "evidence": ["worst rest-pose drift 0.0004 mm (body, sampled)"]
+            },
+            {
+              "check": "morphs",
+              "ok": true,
+              "evidence": [
+                "59 distinct face units (file declares 59); JawDrop moves the body up to 32.2 mm",
+                "targets per mesh: body: 51, eyes: 19, eyelashes: 14, teeth: 7, tongue: 35, brows: 33, hair: 24, garment_male_worksuit01: 7"
+              ]
+            },
+            {
+              "check": "materials",
+              "ok": true,
+              "evidence": [
+                "body: PBRMaterial, eyes: PBRMaterial, eyelashes: PBRMaterial, teeth: PBRMaterial, tongue: PBRMaterial, brows: PBRMaterial, hair: PBRMaterial, garment_male_worksuit01: PBRMaterial, garment_shoes03: PBRMaterial"
+              ]
+            },
+            {
+              "check": "clip",
+              "ok": true,
+              "evidence": [
+                "Walk_Loop: 67 of 195 animations kept, frames 0-80.00000238418579",
+                "travel (cm): Head 55.5, hand_l 134.5, hand_r 135.0, foot_l 64.6, foot_r 66.6",
+                "turn (deg): upperarm_l 75.6, lowerarm_l 46.0, thigh_l 47.6, calf_l 83.0, upperarm_r 75.6, lowerarm_r 46.0, thigh_r 47.4, calf_r 83.0",
+                "50 body vertices most weighted to hand_l travel up to 149.1 cm (CPU-skinned with Babylon's bone matrices)"
+              ]
+            }
+          ]
+        },
+        {
+          "file": "long-hair.glb",
+          "naming": "ue",
+          "checks": [
+            {
+              "check": "load",
+              "ok": true,
+              "evidence": [
+                "9 meshes: body, eyes, eyelashes, teeth, tongue, brows, hair, garment_female_sportsuit01, garment_shoes02; 1 skeleton(s)"
+              ]
+            },
+            {
+              "check": "skeleton",
+              "ok": true,
+              "evidence": ["65 bones, names as in the file"]
+            },
+            {
+              "check": "skins",
+              "ok": true,
+              "evidence": ["9 meshes share one skeleton"]
+            },
+            {
+              "check": "rest-skinning",
+              "ok": true,
+              "evidence": ["worst rest-pose drift 0.0003 mm (body, sampled)"]
+            },
+            {
+              "check": "morphs",
+              "ok": true,
+              "evidence": [
+                "59 distinct face units (file declares 59); JawDrop moves the body up to 32.2 mm",
+                "targets per mesh: body: 51, eyes: 19, eyelashes: 14, teeth: 7, tongue: 35, brows: 33, garment_female_sportsuit01: 7"
+              ]
+            },
+            {
+              "check": "materials",
+              "ok": true,
+              "evidence": [
+                "body: PBRMaterial, eyes: PBRMaterial, eyelashes: PBRMaterial, teeth: PBRMaterial, tongue: PBRMaterial, brows: PBRMaterial, hair: PBRMaterial, garment_female_sportsuit01: PBRMaterial, garment_shoes02: PBRMaterial"
+              ]
+            },
+            {
+              "check": "clip",
+              "ok": true,
+              "evidence": [
+                "Walk_Loop: 67 of 195 animations kept, frames 0-80.00000238418579",
+                "travel (cm): Head 10.7, hand_l 51.5, hand_r 52.2, foot_l 40.2, foot_r 40.2",
+                "turn (deg): upperarm_l 75.6, lowerarm_l 46.0, thigh_l 47.6, calf_l 83.0, upperarm_r 75.6, lowerarm_r 46.0, thigh_r 47.4, calf_r 83.0",
+                "50 body vertices most weighted to hand_l travel up to 60.8 cm (CPU-skinned with Babylon's bone matrices)"
+              ]
+            }
+          ]
+        }
+      ],
+      "log": []
+    },
+    {
+      "engine": "three.js",
+      "version": "",
+      "status": "NOT RUN",
+      "note": "covered by bun run gate1 (GLTFLoader + AnimationMixer)",
+      "pass": 0,
+      "fail": 0
+    },
+    {
+      "engine": "unity",
+      "version": "",
+      "status": "NOT RUN",
+      "note": "needs the editor: samples/unity/README.md",
+      "pass": 0,
+      "fail": 0
+    },
+    {
+      "engine": "unreal",
+      "version": "",
+      "status": "NOT RUN",
+      "note": "instructions only: site/docs/guide-unreal.md",
+      "pass": 0,
+      "fail": 0
+    }
+  ]
+}
