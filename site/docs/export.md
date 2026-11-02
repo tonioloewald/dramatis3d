@@ -10,12 +10,22 @@ file. The profile it follows is normative and lives on its own page:
 
 ```ts
 import { loadHumanPack } from 'tosijs-3d/human-pack'
-import { exportCharacterGlb, readCharacter } from 'dramatis'
+import {
+  BUILD_SETTINGS,
+  exportCharacterGlb,
+  HM08_PACK_URL,
+  readCharacter,
+} from 'dramatis'
 
-const pack = await loadHumanPack(packUrl)
-const { character } = readCharacter(json, { settings })
+// json: a character file's text (the creator's Save, a .character.json)
+const pack = await loadHumanPack(HM08_PACK_URL)
+const { character } = readCharacter(json, { settings: BUILD_SETTINGS })
 const glb = await exportCharacterGlb(character, pack) // Uint8Array
 ```
+
+`BUILD_SETTINGS` is every setting the build reads, with its default:
+`readCharacter` keeps only the keys it is given, so pass all of them.
+`HM08_PACK_URL` is the MakeHuman pack the creator loads.
 
 `exportCharacterGlb` is `buildCharacter` then `writeCharacterGlb`. Build once
 and write as often as you like (`writeCharacterGlb` is synchronous): the

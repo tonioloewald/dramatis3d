@@ -53,6 +53,13 @@ export const BUILD_SETTINGS: Readonly<Record<string, unknown>> = Object.freeze({
   ...DEFAULTS,
 })
 
+/**
+ * The hm08 pack the creator loads (tosijs-3d's `loadCharacterAssets`), for
+ * `loadHumanPack`: its manifest's URL, which carries the pack version.
+ */
+export const HM08_PACK_URL =
+  'https://cdn.tosijs.net/makehuman/hm08/hm08.json?v=17'
+
 /** The proxies every MakeHuman character carries, inside the mouth. */
 export const MOUTH = { teeth: 'teeth_base', tongue: 'tongue01' } as const
 
