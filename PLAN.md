@@ -9,7 +9,7 @@ This plan serves the owner's launch plan (kept outside the repo). Its one launch
 
 ## Where it starts
 
-Dramatis is built on tosijs-3d's character system (0.11.4 to 0.11.6), which **stays in
+Dramatis is built on tosijs-3d's character system (0.11.4 to 0.12.0), which **stays in
 tosijs-3d**. The biped controller already loads characters (`b3d-biped`, `_loadCharacter`), the
 rig tool and spring chains share its rigging maths, and the builder page is tosijs-3d's demo of
 it. Taking any of it out would either remove a working feature or make tosijs-3d depend on a

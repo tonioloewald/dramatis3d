@@ -7,8 +7,7 @@ to your scene, and keeps them live as the character changes. It never imports
 Babylon: `src/no-babylon.test.ts` fails the build if it does, in the bundle or
 in the emitted types.
 
-`three` is a peer dependency: bring your own (0.160 or later). The package
-is not on npm yet; in a checkout, import from `src/three/index.ts`.
+`three` is a peer dependency: bring your own (0.160 or later).
 
 This page is for building the character in your page. To load a GLB you
 exported, read the [three.js guide](/guide-threejs/) instead.

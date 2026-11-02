@@ -7,8 +7,7 @@ three.js. Everything here runs under plain Bun or Node and in any browser
 bundle. `src/no-babylon.test.ts` bundles it for the browser and fails if
 Babylon reaches the output or its types.
 
-The package is not on npm yet (it is `private`, version 0.0.0). The imports
-below are what it will be; in a checkout, import from `src/index.ts`.
+Install it with `npm install dramatis` (or `bun add dramatis`).
 
 ## The character file
 

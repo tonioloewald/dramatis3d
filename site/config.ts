@@ -24,7 +24,7 @@ const GITHUB = 'https://github.com/tonioloewald/dramatis3d'
 // metadata line: the build fails otherwise, so a new page cannot slip in
 // unindexed. (tosijs-ui's default index lists pages alphabetically with
 // their first line cut at 120 characters, says the docs have live examples
-// this site does not have, and links npm, where Dramatis is not published.)
+// this site does not have, and so on.)
 const LLMS_SECTIONS: Array<[string, string[]]> = [
   ['Start', ['landing.md', 'creator.md', 'docs.md']],
   ['The file you export', ['export.md', 'export-format.md', 'vrm.md']],
@@ -60,10 +60,10 @@ function llmsTxt(corpus: Doc[]): string {
     '',
     `> ${DESCRIPTION}`,
     '',
-    'In development: version 0.0.0, not published to npm.',
+    'Version 0.1.0, on npm as `dramatis`.',
     `The creator (${base}/creator/) exports GLB files.`,
-    'Verified engines: three.js, Godot 4.5, Babylon.js 9.33 (headless).',
-    'Not yet verified: Unity, Unreal Engine 5.',
+    'Verified engines: three.js, Unity 6, Godot 4.5; Babylon.js 9.33 (headless).',
+    'Not yet verified: Unreal Engine 5.',
     '',
     `- Docs: ${base}/docs/`,
     `- Creator: ${base}/creator/`,

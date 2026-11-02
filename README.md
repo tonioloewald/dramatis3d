@@ -2,10 +2,11 @@
 
 An open 3D character creator for the web. CC0 base data, GLB and VRM out, works in any engine, and nobody can buy it and switch it off. See [PLAN.md](PLAN.md).
 
-**Status: in development, not released.** Version 0.0.0; the package is `private` and not on npm. The site is built for [dramatis.tosijs.net](https://dramatis.tosijs.net). What works today:
+**Status: 0.1.0, the first release** ([CHANGELOG](CHANGELOG.md)). `npm install dramatis`; the creator and demos are at [dramatis.tosijs.net](https://dramatis.tosijs.net). What works:
 
 - **The creator** (`/creator/`): shape and dress a MakeHuman body on tosijs-3d's character system, then **Download GLB**, **View in three.js**, or make a **Share link**.
 - **The three.js viewer** (`/viewer/`): opens any GLB, plays Quaternius' UAL clips on it by name, drives the face units and lists the licences.
+- **The demos**: `/demo/` walks your character round a three.js scene; `/unity/` does the same in Unity's Web player.
 - **The library**: `buildCharacter`, `exportCharacterGlb`, `exportCharacterVrm` (VRM 1.0, library only, no creator button yet), share links, the licence manifest, and `dramatis/three` for live three.js objects.
 
 Where the export has been checked (on the four samples in `samples/out/`, headless, default import settings; evidence in [reports/spike-1.md](reports/spike-1.md)):
@@ -45,7 +46,7 @@ Not judged yet: how a character looks on a real GPU, VRM in a VTuber app, browse
 
 | Command | Does |
 | --- | --- |
-| `bun install` | Install (tosijs-3d is pinned exactly, at 0.11.6) |
+| `bun install` | Install (tosijs-3d is pinned exactly, at 0.12.0) |
 | `bun test` | The unit suite, including the no-Babylon check. Network, browser and engine tests are skipped (and say NOT RUN) unless enabled below |
 | `bun run typecheck` | `tsc --noEmit`, strict |
 | `bun run check` | Typecheck, formatting check, tests |
