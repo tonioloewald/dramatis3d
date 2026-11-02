@@ -2,6 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import { IDBFactory } from 'fake-indexeddb'
 import {
   HANDOFF_DB,
+  HANDOFF_ID_MAX,
   HANDOFF_STORE,
   HANDOFF_TTL_MS,
   putHandoff as contractPut,
@@ -9,8 +10,11 @@ import {
 } from '../../src/contracts/handoff'
 import { notImplemented } from '../../src/contracts/lanes'
 import { writeGlb } from 'tosijs-3d/glb-chunks'
+import { readCharacter, writeCharacter } from 'tosijs-3d/character-file'
 import { openHandoffDb, putHandoff, takeHandoff } from './handoff'
 import {
+  CHARACTER_FILE_MAX,
+  importText,
   explain,
   fileNameFor,
   glbLicences,
@@ -165,5 +169,104 @@ describe('export actions', () => {
     expect(shareFragment('#c=1.abc')).toBe('c=1.abc')
     expect(shareFragment('#other')).toBeNull()
     expect(shareFragment('')).toBeNull()
+  })
+})
+
+// The ?handoff= door's hostile-input tests (src/contracts/doors.ts). The id
+// comes from the URL; the store is this origin's own, written only by the
+// creator.
+describe('hostile ?handoff=', () => {
+  /** An IndexedDB that fails the test if it is ever opened. */
+  const untouched = {
+    open() {
+      throw new Error('IndexedDB was opened for a refused id')
+    },
+  } as unknown as IDBFactory
+
+  test('hostile ?handoff=: oversize ids are refused before IndexedDB', async () => {
+    expect(
+      await takeHandoff('a'.repeat(HANDOFF_ID_MAX + 1), {
+        indexedDB: untouched,
+      })
+    ).toBeNull()
+    expect(
+      await takeHandoff('a'.repeat(1_000_000), { indexedDB: untouched })
+    ).toBeNull()
+  })
+
+  test('hostile ?handoff=: malformed ids read as null', async () => {
+    const indexedDB = new IDBFactory()
+    await putHandoff(entry(), { indexedDB })
+    for (const id of ['../../etc', '%00', ' ', '\u0000', '*', '{}'])
+      expect(await takeHandoff(id, { indexedDB })).toBeNull()
+    for (const id of [null, 42, {}, ['x']])
+      expect(
+        await takeHandoff(id as unknown as string, { indexedDB: untouched })
+      ).toBeNull()
+  })
+
+  test('hostile ?handoff=: prototype keys read as null, and pollute nothing', async () => {
+    const indexedDB = new IDBFactory()
+    await putHandoff(entry(), { indexedDB })
+    for (const id of ['__proto__', 'constructor', 'prototype', 'toString'])
+      expect(await takeHandoff(id, { indexedDB })).toBeNull()
+    expect(({} as Record<string, unknown>).glb).toBeUndefined()
+  })
+})
+
+// The file door's hostile-input tests: import character (.json) reads the
+// file through importText, then readCharacter as the creator's applyDoc does.
+describe('hostile import character (.json)', () => {
+  const defaults = { settings: { gender: 1, hair: 'short02' } }
+  const read = async (text: string) =>
+    readCharacter(await importText(new File([text], 'x.json')), defaults)
+
+  test('hostile import character (.json): oversize files are refused unread', async () => {
+    const big = new File([new Uint8Array(CHARACTER_FILE_MAX + 1)], 'big.json')
+    let opened = false
+    Object.defineProperty(big, 'text', {
+      value: () => {
+        opened = true
+        return Promise.resolve('')
+      },
+    })
+    await expect(importText(big)).rejects.toThrow(/over the 16 MB/)
+    expect(opened).toBe(false)
+  })
+
+  test('hostile import character (.json): malformed files throw', async () => {
+    for (const bad of [
+      '',
+      '{not json',
+      '[1,2]',
+      'null',
+      '{"format":"other","version":1}',
+      '{"format":"tosijs-character","version":999,"settings":{}}',
+    ])
+      await expect(read(bad)).rejects.toThrow()
+  })
+
+  test('hostile import character (.json): prototype keys are data, and pollute nothing', async () => {
+    const json = JSON.stringify(
+      writeCharacter({
+        name: 'x',
+        settings: { gender: 0 },
+        cloth: {},
+        tailor: [],
+        garments: {},
+      })
+    )
+      .replace(
+        '"settings":{',
+        '"settings":{"__proto__":{"polluted":"yes"},"constructor":{"prototype":{"polluted":"yes"}},'
+      )
+      .replace('{', '{"__proto__":{"polluted":"yes"},')
+    const { character } = await read(json)
+    expect(({} as Record<string, unknown>).polluted).toBeUndefined()
+    expect(Object.getPrototypeOf(character.settings)).toBe(Object.prototype)
+    expect(
+      (character.settings as Record<string, unknown>).polluted
+    ).toBeUndefined()
+    expect(character.settings.gender).toBe(0)
   })
 })

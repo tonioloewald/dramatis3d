@@ -18,6 +18,7 @@ import {
   GLB_URL_PARAM,
   HANDOFF_PARAM,
   takeHandoff,
+  fetchGlb,
 } from '../../src/contracts/handoff'
 import type { LicenceEntry } from '../../src/contracts/licences'
 import { BUILD_SETTINGS, HM08_PACK_URL } from '../../src/build/settings'
@@ -300,12 +301,7 @@ async function start(): Promise<void> {
   const glbUrl = params.get(GLB_URL_PARAM)
   if (glbUrl) {
     try {
-      const res = await fetch(glbUrl)
-      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
-      return hand(
-        new Uint8Array(await res.arrayBuffer()),
-        glbUrl.split('/').pop()!
-      )
+      return hand(await fetchGlb(glbUrl), glbUrl.split('/').pop()!)
     } catch (e) {
       return status(`${glbUrl} wouldn’t load: ${message(e)}`, 'error')
     }

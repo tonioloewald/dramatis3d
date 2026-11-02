@@ -7,6 +7,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { AnimationMixer, Vector3, type Object3D } from 'three'
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { fetchGlb, GLB_MAX_BYTES } from '../../src/contracts/handoff'
 import { MAJOR_JOINTS, UE_JOINTS } from '../../src/contracts/profile'
 import { BABYLON_MARKERS, buildViewer, WALK_CLIP } from './build'
 import {
@@ -196,6 +197,87 @@ describe('load tickets', () => {
     }
     await Promise.all([load('slow ?glb= fetch', 30), load('dropped file', 5)])
     expect(landed).toEqual(['dropped file'])
+  })
+})
+
+// The ?glb= door's hostile-input tests (src/contracts/doors.ts): the viewer,
+// the demo and the Unity player fetch any URL they are given.
+describe('hostile ?glb=', () => {
+  const respond = (body: BodyInit, headers: Record<string, string> = {}) =>
+    (async () => new Response(body, { headers })) as unknown as typeof fetch
+
+  test('hostile ?glb=: oversize responses stop at the cap', async () => {
+    // Declared too big: refused before reading.
+    await expect(
+      fetchGlb('x', {
+        max: 1000,
+        fetch: respond('', { 'content-length': '5000' }),
+      })
+    ).rejects.toThrow(/not opened/)
+    // Undeclared, and endless: stopped once the cap is passed.
+    let pulled = 0
+    const endless = new ReadableStream<Uint8Array>({
+      pull(c) {
+        pulled++
+        c.enqueue(new Uint8Array(256))
+      },
+    })
+    await expect(
+      fetchGlb('x', { max: 1000, fetch: respond(endless) })
+    ).rejects.toThrow(/not opened/)
+    expect(pulled).toBeLessThan(10)
+    // Under the cap, the bytes come through whole.
+    const ok = await fetchGlb('x', {
+      max: 1000,
+      fetch: respond(new Uint8Array(600).fill(7)),
+    })
+    expect(ok.length).toBe(600)
+    expect(GLB_MAX_BYTES).toBe(128 * 2 ** 20)
+  })
+
+  test('hostile ?glb=: malformed files are refused by the loader, or shown as any glTF', async () => {
+    for (const junk of [
+      new Uint8Array(0),
+      new Uint8Array(64).fill(0xff),
+      new TextEncoder().encode('glTF but not really'),
+    ])
+      await expect(
+        new GLTFLoader().parseAsync(junk.buffer as ArrayBuffer, '')
+      ).rejects.toBeDefined()
+    const gltf = await load(join(OUT, 'clothed-casual.glb'))
+    for (const extras of [
+      'a string',
+      42,
+      [],
+      { dramatis: [] },
+      { dramatis: null },
+    ]) {
+      ;(gltf as unknown as { asset: Record<string, unknown> }).asset.extras =
+        extras
+      const model = describeModel(gltf, 'junk.glb')
+      expect(model.extras).toBeNull()
+      expect(model.licences).toEqual([])
+    }
+  })
+
+  test('hostile ?glb=: prototype keys are data, and pollute nothing', async () => {
+    const gltf = await load(join(OUT, 'clothed-casual.glb'))
+    const asset = gltf.asset as unknown as { extras: Record<string, unknown> }
+    const block = JSON.parse(
+      JSON.stringify(asset.extras.dramatis).replace(
+        '{',
+        '{"__proto__":{"polluted":"yes","licences":[]},"constructor":{"prototype":{"polluted":"yes"}},'
+      )
+    )
+    asset.extras = JSON.parse(
+      '{"__proto__":{"dramatis":{"licences":[]}},"dramatis":' +
+        JSON.stringify(block) +
+        '}'
+    )
+    const model = describeModel(gltf, 'proto.glb')
+    expect(({} as Record<string, unknown>).polluted).toBeUndefined()
+    expect(model.extras).not.toBeNull()
+    expect(model.licences.length).toBeGreaterThan(1)
   })
 })
 

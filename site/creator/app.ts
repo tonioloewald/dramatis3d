@@ -64,6 +64,7 @@ import {
   explain,
   licensedChoice,
   fileNameFor,
+  importText,
   saveBytes,
   shareFragment,
   shareLink,
@@ -679,7 +680,7 @@ export async function mountCreator(
       chooseFile('.json,application/json').then(async (file) => {
         if (!file) return
         try {
-          const warnings = await applyDoc(await file.text())
+          const warnings = await applyDoc(await importText(file))
           tell(
             warnings.length
               ? `imported; ${warnings.length} setting(s) skipped`

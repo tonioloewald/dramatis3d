@@ -266,3 +266,24 @@ export function shareFragment(hash: string): string | null {
   const h = hash.replace(/^#/, '')
   return h.startsWith(`${SHARE_FRAGMENT_KEY}=`) ? h : null
 }
+
+/** The largest character file **import character (.json)** reads. */
+export const CHARACTER_FILE_MAX = 16 * 2 ** 20
+
+/**
+ * An imported file's text, refused unread when it is over
+ * `CHARACTER_FILE_MAX` (a character file is kilobytes; a picked video is not).
+ */
+export async function importText(
+  file: Blob & { name?: string }
+): Promise<string> {
+  if (file.size > CHARACTER_FILE_MAX)
+    throw new Error(
+      `${file.name ?? 'the file'} is ${Math.round(
+        file.size / 2 ** 20
+      )} MB, over the ${
+        CHARACTER_FILE_MAX / 2 ** 20
+      } MB a character file can be`
+    )
+  return file.text()
+}

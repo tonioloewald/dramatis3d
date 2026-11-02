@@ -32,6 +32,7 @@ import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import {
+  fetchGlb,
   GLB_URL_PARAM,
   HANDOFF_PARAM,
   takeHandoff,
@@ -544,9 +545,7 @@ async function fromUrl(url: string): Promise<void> {
   status(`Fetching ${url}…`)
   let bytes: Uint8Array
   try {
-    const r = await fetch(url)
-    if (!r.ok) throw new Error(`HTTP ${r.status}`)
-    bytes = new Uint8Array(await r.arrayBuffer())
+    bytes = await fetchGlb(url)
   } catch (e) {
     if (live()) status(`Couldn’t fetch ${url}: ${message(e)}`, 'error')
     return

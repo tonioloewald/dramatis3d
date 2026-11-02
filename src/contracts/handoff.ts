@@ -28,6 +28,11 @@ export const UNITY_PATH = '/unity/'
 export const HANDOFF_PARAM = 'handoff'
 export const GLB_URL_PARAM = 'glb'
 
+/** The longest handoff id taken (ids are UUIDs, 36 characters). */
+export const HANDOFF_ID_MAX = 64
+/** The most a `?glb=<url>` fetch reads before it gives up (`fetchGlb`). */
+export const GLB_MAX_BYTES = 128 * 2 ** 20
+
 /** Entries older than this are deleted whenever one is put. */
 export const HANDOFF_TTL_MS = 24 * 60 * 60 * 1000
 
@@ -53,9 +58,11 @@ export interface HandoffEntry {
  * Read an export by id (`takeHandoff`); null when it is absent or expired.
  * It is not deleted on read, so a reload of the viewer still finds it.
  *
+ * Fetch a `?glb=` URL's bytes, capped at `GLB_MAX_BYTES` (`fetchGlb`).
+ *
  * Implemented by site-creator in site/creator/handoff.ts.
  */
-export { putHandoff, takeHandoff } from '../../site/creator/handoff'
+export { fetchGlb, putHandoff, takeHandoff } from '../../site/creator/handoff'
 
 /**
  * The viewer's URL for a handoff id, against `origin` (default: the page's);

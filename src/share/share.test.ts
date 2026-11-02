@@ -429,3 +429,60 @@ describe('share link: garbage is refused', () => {
     expect(back.warnings).toHaveLength(2)
   })
 })
+
+// The #c= door's hostile-input tests (src/contracts/doors.ts): what any page
+// that opens a link from a stranger must survive.
+describe('hostile #c=', () => {
+  const packed = (json: string) =>
+    `#c=1.${toBase64Url(deflateSync(new TextEncoder().encode(json)))}`
+  const doc = () =>
+    JSON.parse(JSON.stringify(writeCharacter(typical()))) as Record<
+      string,
+      unknown
+    >
+
+  test('hostile #c=: oversize links are refused before they are decoded', () => {
+    expect(() =>
+      decodeShareLink(`#c=1.${'A'.repeat(SHARE_LINK_BUDGET * 50)}`, defaults)
+    ).toThrow(/over the 8000 budget/)
+    const bomb = new Uint8Array(SHARE_INFLATED_LIMIT * 8).fill(32)
+    expect(() =>
+      decodeShareLink(`#c=1.${toBase64Url(deflateSync(bomb))}`, defaults)
+    ).toThrow(/inflates past/)
+  })
+
+  test('hostile #c=: malformed links throw, never return a half-read character', () => {
+    for (const bad of [
+      '#c=1.%%%',
+      '#c=1.' + toBase64Url(new Uint8Array([0x78, 0x9c, 1, 2, 3])),
+      packed('null'),
+    ])
+      expect(() => decodeShareLink(bad, defaults)).toThrow()
+    // A document of the right kind with nonsense inside reads as the page's
+    // defaults (tosijs-3d's readCharacter): nothing of it is applied.
+    const { character } = decodeShareLink(
+      packed('{"format":"tosijs-character","version":1,"settings":"x"}'),
+      defaults
+    )
+    expect(character.settings).toEqual(defaults.settings)
+  })
+
+  test('hostile #c=: prototype keys are data, and pollute nothing', () => {
+    const d = doc()
+    const json = JSON.stringify(d)
+      .replace(
+        '"settings":{',
+        '"settings":{"__proto__":{"polluted":"yes"},"constructor":{"prototype":{"polluted":"yes"}},'
+      )
+      .replace('{', '{"__proto__":{"polluted":"yes"},')
+    const { character } = decodeShareLink(packed(json), defaults)
+    expect(({} as Record<string, unknown>).polluted).toBeUndefined()
+    expect(Object.getPrototypeOf(character.settings)).toBe(Object.prototype)
+    expect(
+      (character.settings as Record<string, unknown>).polluted
+    ).toBeUndefined()
+    expect(
+      (character as unknown as Record<string, unknown>).polluted
+    ).toBeUndefined()
+  })
+})

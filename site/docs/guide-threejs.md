@@ -160,6 +160,9 @@ bun samples/three-glb/serve.ts                  # a sample export
 bun samples/three-glb/serve.ts --glb my.glb     # yours
 ```
 
+It listens on localhost only; add `--host 0.0.0.0` to open it from a phone
+on your network.
+
 The [demo](/demo/) is the same, with a walk-round controller:
 [`site/demo/`](https://github.com/tonioloewald/dramatis3d/tree/main/site/demo). The clip handling is
 [`src/three/clip.ts`](https://github.com/tonioloewald/dramatis3d/blob/main/src/three/clip.ts).

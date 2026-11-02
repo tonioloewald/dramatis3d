@@ -46,6 +46,7 @@ import {
   GLB_URL_PARAM,
   HANDOFF_PARAM,
   takeHandoff,
+  fetchGlb,
 } from '../../src/contracts/handoff'
 import { BUILD_SETTINGS, HM08_PACK_URL } from '../../src/build/settings'
 import {
@@ -633,9 +634,7 @@ async function start(): Promise<void> {
   if (glbUrl) {
     status(`Opening ${glbUrl}…`)
     try {
-      const res = await fetch(glbUrl)
-      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
-      await fromBytes(new Uint8Array(await res.arrayBuffer()), glbUrl)
+      await fromBytes(await fetchGlb(glbUrl), glbUrl)
     } catch (e) {
       status(`${glbUrl} wouldn’t load: ${message(e)}`, 'error')
     }
