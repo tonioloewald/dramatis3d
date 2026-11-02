@@ -19,6 +19,7 @@ import {
   validatorErrors,
 } from '../../test/gate1/checks'
 import { clipBytes } from '../../test/gate1/fixture'
+import { glbDifferences } from '../../test/glb-equivalent'
 import { readGlb } from '../upstream/glb/glb-chunks'
 import { characterLicences, UnlicensedAssetError } from '../contracts/licences'
 import { UE_JOINT_NAMES } from '../contracts/profile'
@@ -59,8 +60,10 @@ describe('build from the CDN', () => {
       const committed = new Uint8Array(
         await Bun.file(join(OUT, `${name}.glb`)).arrayBuffer()
       )
-      expect(bytes.byteLength).toBe(committed.byteLength)
-      expect(Buffer.compare(bytes, committed)).toBe(0)
+      // Equivalent, not byte-identical: libm differs between macOS and Linux, so
+      // the last float bits (and the printed JSON bounds) can too. See
+      // test/glb-equivalent.ts.
+      expect(glbDifferences(bytes, committed)).toEqual([])
     }, 120_000)
 
   it("restPose 'source' keeps MakeHuman's arms down, and still passes the gate's checks", async () => {
