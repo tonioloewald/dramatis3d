@@ -50,6 +50,7 @@
     "@babylonjs/gui": "^9.16.2",
     "@babylonjs/loaders": "^9.16.2",
     "@babylonjs/materials": "^9.16.2",
+    "@pixiv/three-vrm": "3.5.5",
     "@types/bun": "latest",
     "@types/three": "^0.186.0",
     "chokidar": "^4.0.3",
