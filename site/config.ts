@@ -96,6 +96,7 @@ export default defineSiteConfig({
   baseUrl: `https://${DOMAIN}`,
   domain: DOMAIN,
   favicon: '/favicon.svg',
+  logo: '/favicon.svg',
   // The app icon (site/static/icon.svg), full-bleed: iOS rounds it.
   headExtra: '<link rel="apple-touch-icon" href="/apple-touch-icon.png" />',
 
@@ -103,7 +104,7 @@ export default defineSiteConfig({
     github: GITHUB,
   },
   navbarLinks: [
-    { href: 'https://3d.tosijs.net', label: 'tosijs-3d' },
+    { href: 'https://3d.tosijs.net', label: 'tosijs-3d', icon: 'tosiXr' },
     {
       href: GITHUB,
       label: 'github',
