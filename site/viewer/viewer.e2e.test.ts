@@ -4,6 +4,7 @@
 //   DRAMATIS_BROWSER=1 bun test site/viewer          viewer: URL, picker, drop, handoff
 //   DRAMATIS_BROWSER=1 DRAMATIS_NETWORK=1 bun test site/viewer
 //                                                    + creator -> View in three.js -> viewer
+//                                                    + creator -> View in Unity -> Unity player
 //
 // Without DRAMATIS_BROWSER every test here is skipped: NOT RUN, never passed.
 // The browser is Playwright's Chromium (`bunx playwright-core install
@@ -376,6 +377,65 @@ describe.skipIf(!BROWSER)('the viewer in Chromium', () => {
       if (errors.length) console.log('console errors (not failing):', errors)
     },
     420_000
+  )
+
+  test.skipIf(!NETWORK)(
+    'creator -> View in Unity -> the Unity player loads the character with its gaits',
+    async () => {
+      const { page, errors } = await newPage()
+      await page.goto(`${base}/creator/`)
+      const view = page.getByRole('button', { name: 'View in Unity' })
+      await view.waitFor({ state: 'visible', timeout: 60_000 })
+      await page.waitForFunction(
+        () =>
+          [...document.querySelectorAll('dramatis-creator button')].some(
+            (b) =>
+              b.textContent === 'View in Unity' &&
+              !(b as HTMLButtonElement).disabled
+          ),
+        undefined,
+        { timeout: 240_000 }
+      )
+      const [player] = await Promise.all([
+        page.context().waitForEvent('page', { timeout: 120_000 }),
+        view.click(),
+      ])
+      player.on('pageerror', (e) => errors.push(`unity: ${e.message}`))
+      await player.waitForURL(/\/unity\/\?handoff=/, { timeout: 180_000 })
+      type U = {
+        error: boolean
+        status: string
+        built: boolean
+        ready: boolean
+        name: string | null
+        clips: string[]
+      }
+      await player.waitForFunction(
+        () => {
+          const u = (globalThis as unknown as { dramatisUnity?: U })
+            .dramatisUnity
+          return u && (u.clips.length > 0 || u.error)
+        },
+        undefined,
+        { timeout: 240_000 }
+      )
+      const u = await player.evaluate(
+        () => (globalThis as unknown as { dramatisUnity: U }).dramatisUnity
+      )
+      expect([u.error, u.status]).toEqual([false, u.status])
+      expect(u.built && u.ready).toBe(true)
+      expect(u.name).toBeTruthy()
+      expect(u.clips).toEqual(
+        expect.arrayContaining(['idle', 'walk', 'jog', 'sprint'])
+      )
+      await player.screenshot({ path: join(SHOTS, 'creator-to-unity.png') })
+      const status = await page
+        .locator('dramatis-creator .dc-status')
+        .innerText()
+      expect(status).toContain('in the Unity player')
+      expect(errors.filter((e) => !e.startsWith('console:'))).toEqual([])
+    },
+    600_000
   )
 
   // Babylon forgets every material plugin when its last engine goes (the doc

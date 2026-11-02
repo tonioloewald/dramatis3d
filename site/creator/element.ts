@@ -103,7 +103,12 @@ export class DramatisCreator extends HTMLElement {
         button(
           'View in three.js',
           'Export a GLB and open it in the three.js viewer',
-          () => this.view()
+          () => this.view('view')
+        ),
+        button(
+          'View in Unity',
+          "Export a GLB and walk it round Unity's Web player",
+          () => this.view('unity')
         ),
         button('Download GLB', 'Export a GLB and save it', () =>
           this.run((a) => a.download())
@@ -209,7 +214,7 @@ export class DramatisCreator extends HTMLElement {
     }
   }
 
-  private view() {
+  private view(where: 'view' | 'unity') {
     // Opened now, in the click, or the browser blocks it as a pop-up.
     const opened = window.open('about:blank', '_blank')
     try {
@@ -217,9 +222,9 @@ export class DramatisCreator extends HTMLElement {
         '<title>Dramatis</title><p style="font:16px system-ui;padding:2em">Exporting your character…</p>'
       )
     } catch {
-      // Not ours to write to: it is pointed at the viewer when it is ready.
+      // Not ours to write to: it is pointed at the page when it is ready.
     }
-    void this.run((a) => a.view(opened))
+    void this.run((a) => a[where](opened))
   }
 
   private share() {

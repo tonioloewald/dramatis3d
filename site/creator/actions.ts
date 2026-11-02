@@ -1,4 +1,4 @@
-// The creator's export actions: View in three.js, Download GLB, Share link.
+// The creator's export actions: View in three.js, View in Unity, Download GLB, Share link.
 // No Babylon here: these take a character file and the pack, call the
 // contracts, and say what happened in words a person can act on. Kept apart
 // from the scene so they can be tested under bun.
@@ -14,7 +14,7 @@ import {
 } from '../../src/contracts/licences'
 import type { NamingProfile } from '../../src/contracts/profile'
 import { encodeShareLink, SHARE_FRAGMENT_KEY } from '../../src/contracts/share'
-import { VIEWER_PATH, viewerUrl } from '../../src/contracts/handoff'
+import { UNITY_PATH, VIEWER_PATH, viewerUrl } from '../../src/contracts/handoff'
 import { putHandoff } from './handoff'
 
 /** What an action reports: a line for the status bar, and how it went. */
@@ -154,10 +154,24 @@ export async function downloadGlb(input: ExportInput): Promise<ActionResult> {
   }
 }
 
-/** Whether the viewer page is on this site yet (the three-viewer lane builds it). */
-async function viewerExists(): Promise<boolean> {
+/** Where an export can be opened: the page, and what to call it. */
+export interface ViewTarget {
+  path: string
+  name: string
+}
+export const THREE_VIEWER: ViewTarget = {
+  path: VIEWER_PATH,
+  name: 'the three.js viewer',
+}
+export const UNITY_PLAYER: ViewTarget = {
+  path: UNITY_PATH,
+  name: 'the Unity player',
+}
+
+/** Whether a page is on this site. */
+async function pageExists(path: string): Promise<boolean> {
   try {
-    const r = await fetch(VIEWER_PATH, { method: 'HEAD', cache: 'no-store' })
+    const r = await fetch(path, { method: 'HEAD', cache: 'no-store' })
     return r.ok
   } catch {
     return false
@@ -165,14 +179,15 @@ async function viewerExists(): Promise<boolean> {
 }
 
 /**
- * View in three.js: export, put the GLB in the handoff store, open the
- * viewer on it. `opened` is a window the click opened at once (a popup
- * opened after an await is blocked); it is pointed at the viewer, or closed
+ * View in three.js or Unity: export, put the GLB in the handoff store, open
+ * `target` on it. `opened` is a window the click opened at once (a popup
+ * opened after an await is blocked); it is pointed at the page, or closed
  * when there is nothing to show.
  */
-export async function viewInThree(
+export async function viewIn(
   input: ExportInput,
-  opened: Window | null
+  opened: Window | null,
+  target: ViewTarget = THREE_VIEWER
 ): Promise<ActionResult> {
   const fail = (message: string): ActionResult => {
     opened?.close()
@@ -189,18 +204,28 @@ export async function viewInThree(
       licences: glbLicences(out.glb),
     })
   } catch (error) {
-    return fail(explain(error, 'hand the GLB to the viewer'))
+    return fail(explain(error, `hand the GLB to ${target.name}`))
   }
-  if (!(await viewerExists()))
+  if (!(await pageExists(target.path)))
     return fail(
-      'The three.js viewer is not on this site yet. The export worked: use Download GLB and open it in any glTF viewer.'
+      `${target.name[0]!.toUpperCase()}${target.name.slice(
+        1
+      )} is not on this site. The export worked: use Download GLB and open it in any glTF viewer.`
     )
-  const url = viewerUrl(id)
+  const url = viewerUrl(id, undefined, target.path)
   if (opened) opened.location.href = url
   else if (!window.open(url, '_blank'))
     return { ok: false, message: `Pop-up blocked: open ${url}` }
-  return { ok: true, message: `Opened ${out.fileName} in the three.js viewer.` }
+  return { ok: true, message: `Opened ${out.fileName} in ${target.name}.` }
 }
+
+/** View in three.js: `viewIn` the three.js viewer. */
+export const viewInThree = (input: ExportInput, opened: Window | null) =>
+  viewIn(input, opened, THREE_VIEWER)
+
+/** View in Unity: `viewIn` the Unity player (Unity 6's Web player). */
+export const viewInUnity = (input: ExportInput, opened: Window | null) =>
+  viewIn(input, opened, UNITY_PLAYER)
 
 /** Share link: made, copied to the clipboard when the browser lets it. */
 export async function shareLink(

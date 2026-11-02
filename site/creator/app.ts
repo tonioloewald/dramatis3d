@@ -68,6 +68,7 @@ import {
   shareFragment,
   shareLink,
   viewInThree,
+  viewInUnity,
   type ActionResult,
 } from './actions'
 
@@ -86,6 +87,8 @@ export interface CreatorShell {
 /** What the app gives the shell: the toolbar's actions. */
 export interface CreatorApp {
   view(opened: Window | null): Promise<ActionResult>
+  /** The same, in the Unity player. */
+  unity(opened: Window | null): Promise<ActionResult>
   download(): Promise<ActionResult>
   share(): Promise<ActionResult>
   /** The character as a file, now. */
@@ -731,6 +734,7 @@ export async function mountCreator(
     })
     resolveApp({
       view: (w) => viewInThree(input(), w),
+      unity: (w) => viewInUnity(input(), w),
       download: () => downloadGlb(input()),
       share: () => shareLink(snapshot(), shell.shareBase()),
       character: () => snapshot(),

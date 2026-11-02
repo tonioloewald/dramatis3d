@@ -19,7 +19,7 @@ import {
   writeCharacterGlb,
 } from '../index'
 import { characterObject } from '../three/index'
-import { putHandoff, takeHandoff, viewerUrl } from './handoff'
+import { putHandoff, takeHandoff, UNITY_PATH, viewerUrl } from './handoff'
 
 /*
 THE CONTRACTS' DATA IS PINNED TO ITS SOURCES. The profile's joint table is
@@ -160,6 +160,9 @@ describe('stubs throw "not implemented: <lane>" until their lane lands', () => {
   test('viewerUrl is implemented', () => {
     expect(viewerUrl('a b', 'https://dramatis.tosijs.net')).toBe(
       'https://dramatis.tosijs.net/viewer/?handoff=a%20b'
+    )
+    expect(viewerUrl('x', 'https://dramatis.tosijs.net', UNITY_PATH)).toBe(
+      'https://dramatis.tosijs.net/unity/?handoff=x'
     )
   })
 })

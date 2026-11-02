@@ -4,7 +4,7 @@ An open 3D character creator for the web. CC0 base data, GLB and VRM out, works 
 
 **Status: 0.1.1** (0.1.0 was the first release) ([CHANGELOG](CHANGELOG.md)). `npm install dramatis`; the creator and demos are at [dramatis.tosijs.net](https://dramatis.tosijs.net). What works:
 
-- **The creator** (`/creator/`): shape and dress a MakeHuman body on tosijs-3d's character system, then **Download GLB**, **View in three.js**, or make a **Share link**.
+- **The creator** (`/creator/`): shape and dress a MakeHuman body on tosijs-3d's character system, then **Download GLB**, **View in three.js** or **View in Unity**, or make a **Share link**.
 - **The three.js viewer** (`/viewer/`): opens any GLB, plays Quaternius' UAL clips on it by name, drives the face units and lists the licences.
 - **The demos**: `/demo/` walks your character round a three.js scene; `/unity/` does the same in Unity's Web player.
 - **The library**: `buildCharacter`, `exportCharacterGlb`, `exportCharacterVrm` (VRM 1.0, library only, no creator button yet), share links, the licence manifest, and `dramatis/three` for live three.js objects.

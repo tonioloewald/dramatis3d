@@ -22,6 +22,8 @@ export const HANDOFF_DB_VERSION = 1
 
 /** The viewer page, relative to the site root. */
 export const VIEWER_PATH = '/viewer/'
+/** The Unity player's page, which takes the same `?handoff=<id>`. */
+export const UNITY_PATH = '/unity/'
 /** The viewer's query parameters: a handoff id, or a GLB's URL. */
 export const HANDOFF_PARAM = 'handoff'
 export const GLB_URL_PARAM = 'glb'
@@ -55,8 +57,15 @@ export interface HandoffEntry {
  */
 export { putHandoff, takeHandoff } from '../../site/creator/handoff'
 
-/** The viewer's URL for a handoff id, against `origin` (default: the page's). */
-export function viewerUrl(id: string, origin?: string): string {
+/**
+ * The viewer's URL for a handoff id, against `origin` (default: the page's);
+ * `path` names another page that takes a handoff (`UNITY_PATH`).
+ */
+export function viewerUrl(
+  id: string,
+  origin?: string,
+  path: string = VIEWER_PATH
+): string {
   const base = origin ?? globalThis.location?.origin ?? ''
-  return `${base}${VIEWER_PATH}?${HANDOFF_PARAM}=${encodeURIComponent(id)}`
+  return `${base}${path}?${HANDOFF_PARAM}=${encodeURIComponent(id)}`
 }

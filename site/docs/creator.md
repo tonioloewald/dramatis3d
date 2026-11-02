@@ -16,6 +16,9 @@ panel, name your character, and export it.
 - **View in three.js** exports a GLB and opens it in Dramatis's three.js
   viewer in a new tab. The file goes to the viewer through this browser's
   storage, not over the network, and is deleted after a day.
+- **View in Unity** does the same in the [Unity player](/unity/): Unity 6's
+  Web player loads the export with glTFast, and you walk the character
+  round, as in the three.js demo.
 - **Download GLB** saves the same file. It follows the
   [export format](/export-format/): metres, Y-up, a UE-named skeleton (or
   Mixamo names, from the menu at the end of the toolbar) and the face's
@@ -70,7 +73,7 @@ from `cdn.tosijs.net`, cached after the first visit.
 ## Known issues
 
 - **Quaternius hairstyles and brows do not export yet.** The panel offers
-  them (they are CC0), but **View in three.js** and **Download GLB** then
+  them (they are CC0), but **View in three.js**, **View in Unity** and **Download GLB** then
   stop with "Quaternius hair does not export yet". MakeHuman's hairstyles
   and brows (the default) export.
 - The export is plainer than the scene: the skin is one colour (no lips),
