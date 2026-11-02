@@ -84,6 +84,7 @@ interface ViewerState {
   playing: boolean
   faceUnits: number
   licences: { asset: string; kind: string; attribution?: string }[]
+  origin: string | null
   frames: number
 }
 
@@ -233,6 +234,38 @@ describe.skipIf(!BROWSER)('the viewer in Chromium', () => {
     await page.screenshot({ path: join(SHOTS, 'viewer-phone.png') })
     expect(errors).toEqual([])
     await page.close()
+  }, 90_000)
+
+  test('?glb= from another site: its licences are labelled as that site’s claims', async () => {
+    // A second origin (another port) that serves a forged Dramatis export,
+    // as anyone can, with CORS open.
+    const other = Bun.serve({
+      port: 0,
+      fetch: () =>
+        new Response(Bun.file(join(SAMPLES, 'clothed-casual.glb')), {
+          headers: { 'access-control-allow-origin': '*' },
+        }),
+    })
+    try {
+      const { page, errors } = await newPage()
+      const url = `${other.url.href}forged.glb`
+      await page.goto(`${base}/viewer/?glb=${encodeURIComponent(url)}`)
+      const s = await playing(page)
+      const origin = other.url.origin
+      expect(s.origin).toBe(origin)
+      expect(s.status).toContain(`from ${origin}`)
+      expect(s.status).toContain('its file says')
+      expect(await page.locator('#licences li.note').innerText()).toContain(
+        'This site has not checked them'
+      )
+      expect(await page.locator('#licence-summary').innerText()).toContain(
+        'as the file states them'
+      )
+      expect(errors).toEqual([])
+      await page.close()
+    } finally {
+      other.stop(true)
+    }
   }, 90_000)
 
   test('file picker: a Mixamo-named export, the clip renamed, not retargeted', async () => {

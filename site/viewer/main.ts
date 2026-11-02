@@ -42,7 +42,9 @@ import {
   describeModel,
   faceUnitNames,
   fitClip,
+  foreignOrigin,
   licenceLine,
+  loadTickets,
   setFaceUnit,
   type ClipFit,
   type LoadedModel,
@@ -133,6 +135,8 @@ interface ViewerState {
   playing: boolean
   faceUnits: number
   licences: LicenceEntry[]
+  /** The site a URL-loaded file came from, when it isn't this one. */
+  origin: string | null
   frames: number
 }
 const state: ViewerState = {
@@ -148,6 +152,7 @@ const state: ViewerState = {
   playing: false,
   faceUnits: 0,
   licences: [],
+  origin: null,
   frames: 0,
 }
 
@@ -366,10 +371,31 @@ function safeUrl(url: string): string | null {
   }
 }
 
-function showLicences(model: LoadedModel): void {
+function note(text: string): void {
+  const li = document.createElement('li')
+  li.className = 'note'
+  li.textContent = text
+  ui.licences.append(li)
+}
+
+/**
+ * The file's licence entries. They are the file's own claims: a valid block
+ * from this site's creator, or (flagged) an invalid block's entries, or a
+ * file from another site, whose entries this site has not checked.
+ */
+function showLicences(model: LoadedModel, origin: string | null): void {
   ui.licences.replaceChildren()
-  const entries = model.extras?.licences ?? []
+  const entries = model.licences
   state.licences = entries
+  const invalid = !model.extras && entries.length > 0
+  if (origin)
+    note(
+      `From ${origin}: the licences as that file states them. This site has not checked them.`
+    )
+  if (invalid)
+    note(
+      `The file’s Dramatis block is invalid (${model.extrasProblems[0]}): these are its entries as stated.`
+    )
   for (const entry of entries) {
     const li = document.createElement('li')
     li.append(licenceLine(entry), ' ')
@@ -385,15 +411,20 @@ function showLicences(model: LoadedModel): void {
     ui.licences.append(li)
   }
   if (entries.length === 0) {
+    const notOurs = model.extrasProblems[0]?.includes('not a Dramatis export')
     const li = document.createElement('li')
-    li.textContent = model.copyright
+    li.textContent = !notOurs
+      ? `The file’s Dramatis block is invalid (${model.extrasProblems[0]}) and names no licences. Check them before you use it.`
+      : model.copyright
       ? `Not a Dramatis export, so no licence entries. The file says: ${model.copyright}`
       : 'Not a Dramatis export: the file names no licences. Check them before you use it.'
     ui.licences.append(li)
   }
-  ui.licenceSummary.textContent = entries.length
-    ? `Licences: ${entries.length} assets, from the file’s asset.extras`
-    : 'Licences'
+  ui.licenceSummary.textContent = !entries.length
+    ? 'Licences'
+    : origin || invalid
+    ? `Licences: ${entries.length} assets, as the file states them`
+    : `Licences: ${entries.length} assets, from the file’s asset.extras`
   ui.licenceBox.hidden = false
   // On a phone the list would cover the character: folded, one tap away.
   ui.licenceBox.open = window.innerWidth > 600
@@ -440,11 +471,17 @@ function frame(root: Object3D): void {
   controls.update()
 }
 
+/** Each load takes a ticket; a load overtaken by a newer one stops. */
+const nextLoad = loadTickets()
+
 async function show(
+  live: () => boolean,
   bytes: Uint8Array,
   fileName: string,
-  source: string
+  source: string,
+  origin: string | null = null
 ): Promise<void> {
+  if (!live()) return
   status(`Loading ${fileName}…`)
   let gltf: GLTF
   try {
@@ -454,7 +491,15 @@ async function show(
     ) as ArrayBuffer
     gltf = await loader.parseAsync(buffer, '')
   } catch (e) {
-    status(`${fileName} isn’t a GLB three.js can open: ${message(e)}`, 'error')
+    if (live())
+      status(
+        `${fileName} isn’t a GLB three.js can open: ${message(e)}`,
+        'error'
+      )
+    return
+  }
+  if (!live()) {
+    dispose(gltf.scene)
     return
   }
   if (current) {
@@ -471,26 +516,31 @@ async function show(
   Object.assign(state, {
     name: model.name,
     source,
+    origin,
     naming: model.naming,
     dramatis: model.extras !== null,
   })
   ui.title.textContent = model.name || fileName
   document.title = `${model.name || fileName} · Dramatis three.js viewer`
   fillFaceMenu(model)
-  showLicences(model)
+  showLicences(model, origin)
   ui.clipRow.hidden = false
   let coreClips: AnimationClip[] = []
   if (core) coreClips = await core.then((s) => s.clips).catch(() => [])
+  if (!live()) return
   fillClipMenu(model, coreClips)
   status(
-    model.extras
-      ? `${model.name}: a Dramatis export (${model.naming} names, ${model.extras.generator}).`
-      : `${fileName}: ${model.extrasProblems[0]}. Shown as any glTF.`
+    !model.extras
+      ? `${fileName}: ${model.extrasProblems[0]}. Shown as any glTF.`
+      : origin
+      ? `${model.name}, from ${origin}: its file says it is a Dramatis export (${model.naming} names, ${model.extras.generator}).`
+      : `${model.name}: a Dramatis export (${model.naming} names, ${model.extras.generator}).`
   )
   await playSelected()
 }
 
 async function fromUrl(url: string): Promise<void> {
+  const live = nextLoad()
   status(`Fetching ${url}…`)
   let bytes: Uint8Array
   try {
@@ -498,26 +548,37 @@ async function fromUrl(url: string): Promise<void> {
     if (!r.ok) throw new Error(`HTTP ${r.status}`)
     bytes = new Uint8Array(await r.arrayBuffer())
   } catch (e) {
-    status(`Couldn’t fetch ${url}: ${message(e)}`, 'error')
+    if (live()) status(`Couldn’t fetch ${url}: ${message(e)}`, 'error')
     return
   }
   const name = decodeURIComponent(url.split(/[?#]/)[0]!.split('/').pop() || '')
-  await show(bytes, name || 'model.glb', 'url')
+  await show(
+    live,
+    bytes,
+    name || 'model.glb',
+    'url',
+    foreignOrigin(url, location.href)
+  )
 }
 
 async function fromFile(file: File): Promise<void> {
-  await show(new Uint8Array(await file.arrayBuffer()), file.name, 'file')
+  const live = nextLoad()
+  const bytes = new Uint8Array(await file.arrayBuffer())
+  await show(live, bytes, file.name, 'file')
 }
 
 async function fromHandoff(id: string): Promise<void> {
+  const live = nextLoad()
   status('Opening the character from the creator…')
   let entry
   try {
     entry = await takeHandoff(id)
   } catch (e) {
-    status(`Couldn’t read the creator’s export: ${message(e)}`, 'error')
+    if (live())
+      status(`Couldn’t read the creator’s export: ${message(e)}`, 'error')
     return
   }
+  if (!live()) return
   if (!entry) {
     status(
       'That export isn’t here: exports are kept a day, in the browser that made them. Export again from the creator, or open a GLB.',
@@ -525,7 +586,7 @@ async function fromHandoff(id: string): Promise<void> {
     )
     return
   }
-  await show(entry.glb, entry.fileName, 'handoff')
+  await show(live, entry.glb, entry.fileName, 'handoff')
 }
 
 ui.open.addEventListener('click', () => ui.file.click())

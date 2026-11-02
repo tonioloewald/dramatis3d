@@ -13,8 +13,10 @@ import {
   describeModel,
   faceUnitNames,
   fitClip,
+  foreignOrigin,
   guessNaming,
   licenceLine,
+  loadTickets,
   setFaceUnit,
 } from './core'
 
@@ -125,6 +127,75 @@ describe('viewer on a file that is not a Dramatis export', () => {
     expect(fit.ok).toBe(false)
     expect(fit.missing).toEqual(['hand_l'])
     expect(fit.summary).toContain('retargeting')
+  })
+})
+
+describe('licences the file states', () => {
+  const withExtras = async (edit: (d: Record<string, unknown>) => void) => {
+    const gltf = await load(join(OUT, 'clothed-casual.glb'))
+    const asset = gltf.asset as { extras: Record<string, unknown> }
+    const block = structuredClone(asset.extras.dramatis) as Record<
+      string,
+      unknown
+    >
+    edit(block)
+    asset.extras = { ...asset.extras, dramatis: block }
+    return describeModel(gltf, 'edited.glb')
+  }
+
+  test('a valid block: its entries', async () => {
+    const model = await withExtras(() => {})
+    expect(model.extras).not.toBeNull()
+    expect(model.licences).toBe(model.extras!.licences)
+  })
+
+  test('a later version: invalid, and its entries are still listed', async () => {
+    const valid = await withExtras(() => {})
+    const model = await withExtras((d) => {
+      d.version = 2
+    })
+    expect(model.extras).toBeNull()
+    expect(model.extrasProblems[0]).toContain('version')
+    expect(model.licences.map((l) => l.asset)).toEqual(
+      valid.licences.map((l) => l.asset)
+    )
+  })
+
+  test('an invalid block keeps only entries with every field', async () => {
+    const model = await withExtras((d) => {
+      d.faceUnits = ['NotAUnit']
+      const list = d.licences as Record<string, unknown>[]
+      list.push({ asset: 'x', title: 'no licence field' }, null as never)
+    })
+    expect(model.extras).toBeNull()
+    expect(model.licences.some((l) => l.asset === 'x')).toBe(false)
+    expect(model.licences.length).toBeGreaterThan(0)
+  })
+
+  test('a URL from another site is labelled with its origin', () => {
+    const page = 'https://dramatis.tosijs.net/viewer/?glb=x'
+    expect(foreignOrigin('https://evil.example/forged.glb', page)).toBe(
+      'https://evil.example'
+    )
+    expect(foreignOrigin('/samples/clothed-casual.glb', page)).toBeNull()
+    expect(foreignOrigin('data:model/gltf-binary;base64,AA==', page)).toBe(
+      'a data: URL'
+    )
+    expect(foreignOrigin('https://dramatis.tosijs.net/a.glb', page)).toBeNull()
+  })
+})
+
+describe('load tickets', () => {
+  test('two overlapping loads, resolved out of order: only the later one lands', async () => {
+    const next = loadTickets()
+    const landed: string[] = []
+    const load = async (name: string, ms: number) => {
+      const live = next()
+      await Bun.sleep(ms)
+      if (live()) landed.push(name)
+    }
+    await Promise.all([load('slow ?glb= fetch', 30), load('dropped file', 5)])
+    expect(landed).toEqual(['dropped file'])
   })
 })
 

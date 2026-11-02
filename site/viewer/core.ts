@@ -19,6 +19,7 @@ import {
   checkExportExtras,
   EXTRAS_KEY,
   jointName,
+  LICENCE_FIELDS,
   MAJOR_JOINTS,
   UE_JOINTS,
   type ExportExtras,
@@ -44,6 +45,29 @@ export interface LoadedModel {
   ownClips: AnimationClip[]
   /** The character's name: the extras', else the file's. */
   name: string
+  /**
+   * The licence entries the file states: the valid block's, or, when the
+   * block is invalid (a later version, a unit this viewer doesn't know),
+   * every entry in it that still has its fields. Empty when there are none.
+   */
+  licences: LicenceEntry[]
+}
+
+/** The entries of `raw.licences` that have every field a line needs. */
+function statedLicences(raw: unknown): LicenceEntry[] {
+  if (raw === null || typeof raw !== 'object') return []
+  const list = (raw as Record<string, unknown>).licences
+  if (!Array.isArray(list)) return []
+  return list.filter(
+    (e): e is LicenceEntry =>
+      e !== null &&
+      typeof e === 'object' &&
+      LICENCE_FIELDS.every(
+        (f) =>
+          typeof (e as Record<string, unknown>)[f] === 'string' &&
+          (e as Record<string, unknown>)[f] !== ''
+      )
+  )
 }
 
 /** The asset's extras and copyright, as GLTFLoader keeps them. */
@@ -85,6 +109,37 @@ export function describeModel(gltf: GLTF, fileName = 'model'): LoadedModel {
     faceUnits,
     ownClips: gltf.animations ?? [],
     name: extras?.character || fileName.replace(/\.(glb|gltf|vrm)$/i, ''),
+    licences: extras ? extras.licences : statedLicences(raw),
+  }
+}
+
+/**
+ * The origin a URL-loaded file came from, when it is not the page's own:
+ * its licence entries are then that site's claims, not this site's. Null
+ * for a same-origin URL.
+ */
+export function foreignOrigin(url: string, pageHref: string): string | null {
+  try {
+    const page = new URL(pageHref)
+    const from = new URL(url, page)
+    if (from.origin === page.origin) return null
+    // data: and blob: URLs have the opaque origin "null": name the scheme.
+    return from.origin === 'null' ? `a ${from.protocol} URL` : from.origin
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Load tickets: each load takes one, and checks it after every await. Only
+ * the latest load is current, so a slower, earlier one stops instead of
+ * landing its model and menus on top of the newer one.
+ */
+export function loadTickets(): () => () => boolean {
+  let latest = 0
+  return () => {
+    const mine = ++latest
+    return () => mine === latest
   }
 }
 

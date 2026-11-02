@@ -18,6 +18,8 @@ All notable changes to Dramatis. The format follows [Keep a Changelog](https://k
 - **The Unity player's blink tore the face down to the waist.** glTFast imports a morph target at full weight 1, not Unity's usual 100, and the player blinked at 100: every 3.7 s the lids moved 100 times over. The blink now scales to each shape's own full weight.
 - **The Unity player skinned with two bones a vertex** (WebGL's default quality), creasing the shoulders and hips; it now asks for four, which is what the export carries.
 - **The three.js viewer opens the jaw only a touch** (JawDrop 0.05, was 0.35), so a loaded character's face rests.
+- **The three.js viewer: the latest load wins.** Two overlapping loads (a drop during a `?glb=` fetch) let the slower one land, and its menus and status went to the other model. Each load now takes a ticket and stops once a newer one starts; an overtaken model is disposed (#3665).
+- **The three.js viewer's licence panel:** a Dramatis block it can't validate (a later version, an unknown face unit) still lists its entries, flagged as invalid, instead of "names no licences"; and a `?glb=` file from another site is labelled with that site's origin and "the licences as that file states them", so a third party can't show its claims as this site's (#3664).
 
 ## [0.1.2] - 2026-11-02
 
