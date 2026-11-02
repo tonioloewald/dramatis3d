@@ -33,6 +33,7 @@
     "start": "bun bin/site.ts",
     "build": "bun bin/site.ts --build",
     "stop": "bun bin/site.ts --stop",
+    "tunnel": "TOSIJS_SITE_CONFIG=site/config.ts tosijs-tunnel",
     "tls": "tosijs-dev-certs",
     "test": "bun test",
     "typecheck": "bunx tsc -p tsconfig.json --noEmit",

@@ -136,7 +136,20 @@ export default defineSiteConfig({
   // Built for GitHub Pages by .github/workflows/pages.yml; not committed.
   outputDir: 'www',
   host: 'github-pages',
-  port: 8040,
+  // 8060 and its tunnel listener 8061 (port + 1) are used by no sibling project
+  // (ariosto has 8040, tosijs-3d 8030/8031, the ensemble 8032).
+  port: 8060,
+
+  // Remote access: `bun run tunnel` (tosijs-ui's tosijs-tunnel) publishes THIS dev
+  // server at an authenticated URL; a session is required even to view
+  // (requireToken defaults to true). The host comes from PREVIEW_HOST
+  // (~/local-secrets/tosijs-preview.env), never the repo. remotePort is pinned
+  // because the name-derived one (9876) is taken; 9788/9789 are tosijs-3d and the
+  // ensemble.
+  preview: {
+    host: process.env.PREVIEW_HOST ?? '',
+    tunnel: { remotePort: 9790, url: 'https://dramatis.edit.dev.tosijs.net' },
+  },
 
   // The library: bun build bundles the public entries into dist/ (dependencies and
   // peers stay imports), tsc emits their declarations (tsconfig.build.json).

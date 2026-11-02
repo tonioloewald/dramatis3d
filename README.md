@@ -56,6 +56,7 @@ Not judged yet: how a character looks on a real GPU, VRM in a VTuber app, browse
 | `bun run build` | Build the site to `www/` (and `llms.txt`) and the library to `dist/` |
 | `bun start` | Build the site, then serve it with live rebuilds (HTTPS: run `bun run tls` once first; needs mkcert) |
 | `bun run stop` | Stop this project's dev server, and nothing else |
+| `bun run tunnel` | Expose the running dev server at https://dramatis.edit.dev.tosijs.net (needs `PREVIEW_HOST`; a session is required to view) |
 
 Test tiers: `DRAMATIS_NETWORK=1` adds the tests that fetch the pack from `cdn.tosijs.net`; `DRAMATIS_BROWSER=1` adds headless Chromium (`bunx playwright-core install chromium` once, and `bun run build` first); `DRAMATIS_ENGINES=1 bun test tools/engines` runs the installed engines.
 

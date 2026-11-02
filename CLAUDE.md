@@ -24,7 +24,9 @@ TODO.md; reviews are in `reviews/`, spike and run reports in `reports/`.
   install chromium` once, `bun run build` first), `DRAMATIS_ENGINES=1 bun test tools/engines`
   (Godot, Blender, Babylon installed locally; Unity via `bun tools/engines/unity.ts`).
 - `bun run build`: the site to `www/` and the library to `dist/`. `bun start` serves it with
-  live rebuilds over HTTPS (run `bun run tls` once; needs mkcert); `bun run stop` stops it.
+  live rebuilds over HTTPS (run `bun run tls` once; needs mkcert); `bun run stop` stops it. Dev port 8060 (tunnel listener 8061).
+  `bun run tunnel` exposes it at `dramatis.edit.dev.tosijs.net` (host from `PREVIEW_HOST` in
+  `~/local-secrets/tosijs-preview.env`; `bun run tunnel --link` prints a login link).
 - `bun run test-consumer`: packs the tarball, installs it with three and without Babylon, and
   imports both entries under node and bun. Run it before any publish.
 - `bun run typecheck`, `bun run format` (`bun run format:check` in CI). Prettier never touches markdown.

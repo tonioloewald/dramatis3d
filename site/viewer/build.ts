@@ -7,8 +7,9 @@
 // The bundle must hold no Babylon: the viewer is the proof that an export
 // needs nothing of the creator's engine. The build fails if it finds any.
 
-import { copyFileSync, mkdirSync, rmSync, statSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { buildOutputs, syncDir } from '../sync-dir'
 
 const ROOT = join(import.meta.dir, '..', '..')
 /** The static dir site/config.ts copies into the site root. */
@@ -22,11 +23,9 @@ export const WALK_CLIP = join(ROOT, 'test', 'gate1', 'fixtures', 'ual-walk.glb')
 export const BABYLON_MARKERS = ['@babylonjs', 'BABYLON.', 'babylonjs.com']
 
 export async function buildViewer(out: string = VIEWER_OUT): Promise<boolean> {
-  rmSync(out, { recursive: true, force: true })
-  mkdirSync(out, { recursive: true })
+  // Built in memory and synced: `out` is under a watched static dir (sync-dir.ts).
   const result = await Bun.build({
     entrypoints: [join(import.meta.dir, 'main.ts')],
-    outdir: out,
     target: 'browser',
     format: 'esm',
     minify: true,
@@ -37,23 +36,28 @@ export async function buildViewer(out: string = VIEWER_OUT): Promise<boolean> {
     for (const log of result.logs) console.error(log)
     return false
   }
-  for (const o of result.outputs) {
-    if (!o.path.endsWith('.js')) continue
-    const text = await Bun.file(o.path).text()
+  const files = await buildOutputs(result.outputs)
+  for (const [path, bytes] of files) {
+    if (!path.endsWith('.js')) continue
+    const text = new TextDecoder().decode(bytes)
     const leak = BABYLON_MARKERS.find((m) => text.includes(m))
     if (leak) {
-      console.error(`viewer: ${o.path} contains "${leak}": Babylon leaked in`)
+      console.error(`viewer: ${path} contains "${leak}": Babylon leaked in`)
       return false
     }
-    const gz = Bun.gzipSync(new TextEncoder().encode(text)).byteLength
+  }
+  files.set('index.html', readFileSync(join(import.meta.dir, 'index.html')))
+  files.set('ual-walk.glb', readFileSync(WALK_CLIP))
+  const written = await syncDir(out, files)
+  for (const [path, bytes] of files) {
+    if (!path.endsWith('.js') || !written.includes(path)) continue
+    const gz = Bun.gzipSync(bytes).byteLength
     console.log(
-      `viewer: ${o.path.slice(out.length + 1)} ${(
-        statSync(o.path).size / 1e3
-      ).toFixed(0)} KB (${(gz / 1e3).toFixed(0)} KB gzip)`
+      `viewer: ${path} ${(bytes.byteLength / 1e3).toFixed(0)} KB (${(
+        gz / 1e3
+      ).toFixed(0)} KB gzip)`
     )
   }
-  copyFileSync(join(import.meta.dir, 'index.html'), join(out, 'index.html'))
-  copyFileSync(WALK_CLIP, join(out, 'ual-walk.glb'))
   return true
 }
 
