@@ -50,9 +50,10 @@ import { decideName, dialogs } from './naming'
 import { HM08_EYE_UV } from 'tosijs-3d/human-face'
 import {
   EYE_STYLES,
+  eyePngUrl,
   eyeStyle,
-  eyeTexturePng,
   ONE_EYE_LAYOUT,
+  recolourEyePng,
 } from '../../src/upstream/eyes'
 import { chooseFile } from 'tosijs-3d/choose-file'
 import { decodeShareLink } from '../../src/contracts/share'
@@ -146,14 +147,19 @@ export async function mountCreator(
   canvas, at each eye's place and size, so what is seen here is what exports.
   */
   let eyePaint = 0
+  const eyeArt: Partial<Record<string, Promise<Uint8Array>>> = {}
   const paintEyes = async (scene: BABYLON.Scene): Promise<void> => {
     const ticket = ++eyePaint
     const tex = scene.textures.find((t) => t.name === 'eye') as
       | BABYLON.DynamicTexture
       | undefined
     if (!tex || typeof tex.getContext !== 'function') return
-    const png = eyeTexturePng(
-      eyeStyle(box('eyeStyle').value),
+    const style = eyeStyle(box('eyeStyle').value)
+    eyeArt[style] ??= fetch(eyePngUrl(style)).then(
+      async (r) => new Uint8Array(await r.arrayBuffer())
+    )
+    const png = recolourEyePng(
+      await eyeArt[style]!,
       String(box('irisColour').value)
     )
     const img = await createImageBitmap(

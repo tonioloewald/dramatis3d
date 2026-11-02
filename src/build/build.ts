@@ -53,7 +53,7 @@ import {
   UE_JOINT_NAMES,
 } from '../contracts/profile'
 import { unitNormals } from '../upstream/glb/skinned-glb'
-import { eyeAsset, eyeTexturePng, eyeUvs } from '../upstream/eyes'
+import { eyeAsset, eyePngUrl, eyeUvs, recolourEyePng } from '../upstream/eyes'
 import { assetIds } from './assets'
 import { coverSkin } from './cover'
 import { humanBodyMaker } from './human-rig.js'
@@ -109,8 +109,17 @@ interface Part {
   material: PbrMaterial
   /** The texture's URL, fetched and embedded. */
   texture?: string
-  /** A texture made here (baked), embedded as it is, under its own licence id. */
-  image?: { key: string; name: string; bytes: Uint8Array; asset: string }
+  /**
+   * A texture baked here from a fetched source (the eye art, recoloured),
+   * embedded under its own licence id.
+   */
+  bake?: {
+    key: string
+    name: string
+    url: string
+    asset: string
+    make: (fetched: Uint8Array) => Uint8Array
+  }
 }
 
 const flipV = (uvs: Float32Array): Float32Array => {
@@ -460,11 +469,12 @@ export async function buildCharacterWith(
         units.map((u) => [u, pick(deltas.get(u)!, eyePart.vertices)])
       ),
       material: plain('eyes', [1, 1, 1], 0.15),
-      image: {
+      bake: {
         key: `eye:${s.eyeStyle}:${s.irisColour}`,
         name: `eye_${s.eyeStyle}`,
-        bytes: eyeTexturePng(s.eyeStyle, s.irisColour),
+        url: eyePngUrl(s.eyeStyle),
         asset: eyeAsset(s.eyeStyle),
+        make: (art) => recolourEyePng(art, s.irisColour),
       },
     })
   }
@@ -554,7 +564,11 @@ export async function buildCharacterWith(
   const fetcher = options.fetch ?? defaultFetch
   const textured = await Promise.all(
     parts.map(async (p) =>
-      p.texture === undefined ? null : new Uint8Array(await fetcher(p.texture))
+      p.bake !== undefined
+        ? p.bake.make(new Uint8Array(await fetcher(p.bake.url)))
+        : p.texture === undefined
+        ? null
+        : new Uint8Array(await fetcher(p.texture))
     )
   )
   const present = new Set<FaceUnitName>()
@@ -589,17 +603,17 @@ export async function buildCharacterWith(
     const material = materials.length
     let mat = p.material
     const bytes = textured[pi]
-    if (p.image !== undefined) {
-      let image = imageFor.get(p.image.key)
+    if (p.bake !== undefined && bytes != null) {
+      let image = imageFor.get(p.bake.key)
       if (image === undefined) {
         images.push({
-          name: meshName(p.image.name),
+          name: meshName(p.bake.name),
           mimeType: 'image/png',
-          bytes: p.image.bytes,
-          asset: p.image.asset,
+          bytes,
+          asset: p.bake.asset,
         })
         image = images.length - 1
-        imageFor.set(p.image.key, image)
+        imageFor.set(p.bake.key, image)
       }
       mat = { ...mat, baseColorTexture: { image } }
     } else if (bytes != null && p.texture !== undefined) {

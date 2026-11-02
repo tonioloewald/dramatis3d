@@ -202,7 +202,7 @@ const TONIO_EYES: LicenceEntry[] = (['basic', 'anime'] as const).map(
     kind: 'texture',
     licence: CC0,
     licenceUrl: CC0_URL,
-    source: `https://github.com/tonioloewald/dramatis3d/blob/main/assets/tonio/eyes/${style}-eye.svg`,
+    source: `https://cdn.tosijs.net/tonio/eyes/${style}-eye.svg`,
     author: 'Tonio Loewald',
     modified: true,
   })

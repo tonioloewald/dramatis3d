@@ -109,8 +109,8 @@ Asset ids are `<source>:<kind>/<name>`, lower case and stable across releases.
 
 | Asset | What | Kind | Licence | Author | Source |
 | --- | --- | --- | --- | --- | --- |
-| `tonio:eye/basic` | Eye texture, basic (the iris recoloured to the character's) (modified) | texture | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Tonio Loewald | [source](https://github.com/tonioloewald/dramatis3d/blob/main/assets/tonio/eyes/basic-eye.svg) |
-| `tonio:eye/anime` | Eye texture, anime (the iris recoloured to the character's) (modified) | texture | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Tonio Loewald | [source](https://github.com/tonioloewald/dramatis3d/blob/main/assets/tonio/eyes/anime-eye.svg) |
+| `tonio:eye/basic` | Eye texture, basic (the iris recoloured to the character's) (modified) | texture | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Tonio Loewald | [source](https://cdn.tosijs.net/tonio/eyes/basic-eye.svg) |
+| `tonio:eye/anime` | Eye texture, anime (the iris recoloured to the character's) (modified) | texture | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Tonio Loewald | [source](https://cdn.tosijs.net/tonio/eyes/anime-eye.svg) |
 
 ### Quaternius
 

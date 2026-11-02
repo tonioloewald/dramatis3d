@@ -35,7 +35,6 @@ Not judged yet: how a character looks on a real GPU, VRM in a VTuber app, browse
 | `src/no-babylon.test.ts` | Bundles both entries for the browser and fails if Babylon reaches the output, the emitted `.d.ts`, or its type closure |
 | `site/` | The site: `config.ts` (tosijs-ui doc system), `hydrate.ts` (bundle entry), `docs/` (pages), `creator/`, `viewer/`, `static/`, `CNAME` |
 | `bin/` | `site.ts` (build and serve), `export-sample.ts` (write `samples/out/`), `extremes.ts` (the extremes sweep) |
-| `assets/` | Original art Dramatis ships, by author: `tonio/eyes/` (the eye SVGs, CC0) |
 | `samples/` | `out/` (the sample exports), `three/`, `three-glb/`, `godot/`, `unity/` |
 | `test/gate1/` | The gate-1 harness: six profile checks on every GLB in `samples/out/` |
 | `tools/engines/` | Spike 1's engine checks: Godot, Blender, Babylon, Unity |

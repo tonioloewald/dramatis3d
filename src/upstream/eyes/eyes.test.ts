@@ -1,31 +1,60 @@
 import { describe, expect, test } from 'bun:test'
-import { decodePng, encodePng } from './png'
+import { decodePng, encodePng, type Rgba } from './png'
 import { parseHex, recolourIris } from './recolour'
-import { eyeTexturePng, eyeUvs, eyeStyle, eyeAsset, ONE_EYE_LAYOUT } from '.'
-import { EYE_PNG } from './textures'
+import {
+  eyeAsset,
+  eyePngUrl,
+  eyeStyle,
+  eyeUvs,
+  EYE_STYLES,
+  ONE_EYE_LAYOUT,
+  recolourEyePng,
+} from '.'
 
-const art = (style: 'basic' | 'anime') =>
-  decodePng(Uint8Array.from(atob(EYE_PNG[style]), (c) => c.charCodeAt(0)))
+const NETWORK = process.env.DRAMATIS_NETWORK === '1'
+
+/**
+ * An eye drawn in code on the art's layout (256 square, iris radius 48 at
+ * the centre): pink sclera, the art's three browns in rings, a black pupil
+ * and a white glint. The real art is on the CDN (checked below with the
+ * network tier).
+ */
+function synthetic(): Rgba {
+  const width = 256
+  const data = new Uint8Array(width * width * 4)
+  for (let y = 0; y < width; y++)
+    for (let x = 0; x < width; x++) {
+      const d = Math.hypot(x + 0.5 - 128, y + 0.5 - 128)
+      const glint = Math.hypot(x + 0.5 - 112, y + 0.5 - 110) < 6
+      const c = glint
+        ? [255, 255, 255]
+        : d < 14
+        ? [0, 0, 0]
+        : d < 26
+        ? [0xc6, 0x9d, 0x6d]
+        : d < 38
+        ? [0x8c, 0x62, 0x39]
+        : d < 48
+        ? [0x60, 0x38, 0x13]
+        : [255, 0xc0 + Math.round((d / 181) * 30), 0xc0]
+      data.set([c[0]!, c[1]!, c[2]!, 255], (y * width + x) * 4)
+    }
+  return { width, height: width, data }
+}
 const px = (img: { width: number; data: Uint8Array }, x: number, y: number) =>
   Array.from(
     img.data.subarray((y * img.width + x) * 4, (y * img.width + x) * 4 + 3)
   )
 
 describe('the PNG codec', () => {
-  test('the embedded art decodes: 256 square, opaque', () => {
-    const img = art('basic')
-    expect([img.width, img.height]).toEqual([256, 256])
-    expect(img.data[3]).toBe(255)
-  })
-
   test('what it writes, it reads back exactly', () => {
-    const img = art('anime')
+    const img = synthetic()
     const again = decodePng(encodePng(img))
-    expect(again.width).toBe(img.width)
+    expect([again.width, again.height]).toEqual([256, 256])
     expect(Buffer.compare(again.data, img.data)).toBe(0)
   })
 
-  test('it refuses what is not an 8-bit RGB(A) PNG', () => {
+  test('it refuses what is not a PNG', () => {
     expect(() => decodePng(new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]))).toThrow(
       'not a PNG'
     )
@@ -34,63 +63,72 @@ describe('the PNG codec', () => {
 
 describe('recolouring the iris', () => {
   const blue = [0x3f, 0x6f, 0xa0] as const
+  const before = synthetic()
+  const after = recolourIris(before, blue, ONE_EYE_LAYOUT)
 
-  test('the browns turn the target colour; the pupil, glints and sclera stay', () => {
-    for (const style of ['basic', 'anime'] as const) {
-      const before = art(style)
-      const after = recolourIris(before, blue, ONE_EYE_LAYOUT)
-      // The sclera, outside the iris disc, is untouched.
-      expect(px(after, 128, 10)).toEqual(px(before, 128, 10))
-      // The pupil (black, in the middle) is untouched.
-      expect(px(after, 128, 128)).toEqual(px(before, 128, 128))
-      // Somewhere in the iris was brown (red over blue) and is now blue.
-      let browns = 0
-      let blues = 0
-      for (let y = 85; y < 172; y++)
-        for (let x = 85; x < 172; x++) {
-          const [r0, , b0] = px(before, x, y)
-          const [r1, , b1] = px(after, x, y)
-          if (r0! > b0! + 30) browns++
-          if (r0! > b0! + 30 && b1! > r1!) blues++
-        }
-      expect(browns).toBeGreaterThan(500)
-      expect(blues / browns).toBeGreaterThan(0.95)
-    }
+  test('the middle brown becomes the colour exactly; the others keep their lightness', () => {
+    expect(px(after, 128, 128 + 32)).toEqual([0x3f, 0x6f, 0xa0])
+    const [r, g, b] = px(after, 128, 128 + 20)
+    expect(b).toBeGreaterThan(r!)
+    expect(b).toBeGreaterThan(0xa0) // the light brown is lighter than the colour
+    const [r2, , b2] = px(after, 128, 128 + 44)
+    expect(b2).toBeGreaterThan(r2!)
+    expect(b2).toBeLessThan(0xa0) // the dark one darker
   })
 
-  test('the anime glints stay white', () => {
-    const before = art('anime')
-    const after = recolourIris(before, blue, ONE_EYE_LAYOUT)
-    let whites = 0
-    for (let y = 80; y < 176; y++)
-      for (let x = 80; x < 176; x++) {
-        const p = px(before, x, y)
-        if (p.every((c) => c > 245)) {
-          whites++
-          expect(px(after, x, y)).toEqual(p)
-        }
-      }
-    expect(whites).toBeGreaterThan(20)
+  test('the pupil, the glint and the sclera stay as they were', () => {
+    for (const [x, y] of [
+      [128, 128],
+      [112, 110],
+      [128, 10],
+      [128, 128 + 60],
+    ] as const)
+      expect(px(after, x, y)).toEqual(px(before, x, y))
   })
 
   test('colours are read as #rrggbb; anything else leaves the art', () => {
     expect(parseHex('#5a3519')).toEqual([0x5a, 0x35, 0x19])
     expect(parseHex('blue')).toBeNull()
-    const own = eyeTexturePng('basic', 'not a colour')
-    expect(
-      Buffer.compare(
-        own,
-        Uint8Array.from(atob(EYE_PNG.basic), (c) => c.charCodeAt(0))
-      )
-    ).toBe(0)
+    const art = encodePng(synthetic())
+    expect(recolourEyePng(art, 'not a colour')).toBe(art)
   })
 
-  test('styles and their licence ids', () => {
+  test('styles, their licence ids and their URLs', () => {
     expect(eyeStyle('anime')).toBe('anime')
     expect(eyeStyle('cartoon')).toBe('basic')
     expect(eyeStyle(undefined)).toBe('basic')
     expect(eyeAsset('anime')).toBe('tonio:eye/anime')
+    expect(eyePngUrl('basic')).toMatch(
+      /^https:\/\/cdn\.tosijs\.net\/tonio\/eyes\/basic-eye\.png\?v=\d+$/
+    )
   })
+})
+
+describe.skipIf(!NETWORK)('the eye art on the CDN', () => {
+  for (const style of EYE_STYLES)
+    test(`${style}: a 256 square PNG whose iris recolours`, async () => {
+      const res = await fetch(eyePngUrl(style))
+      expect(res.ok).toBe(true)
+      expect(res.headers.get('license') ?? '').toContain('CC0')
+      const art = new Uint8Array(await res.arrayBuffer())
+      const img = decodePng(art)
+      expect([img.width, img.height]).toEqual([256, 256])
+      const blue = decodePng(recolourEyePng(art, '#3f6fa0'))
+      let browns = 0
+      let blues = 0
+      for (let y = 85; y < 172; y++)
+        for (let x = 85; x < 172; x++) {
+          const [r0, , b0] = px(img, x, y)
+          const [r1, , b1] = px(blue, x, y)
+          if (r0! > b0! + 30) {
+            browns++
+            if (b1! > r1!) blues++
+          }
+        }
+      expect(browns).toBeGreaterThan(500)
+      expect(blues / browns).toBeGreaterThan(0.95)
+      expect(px(blue, 128, 10)).toEqual(px(img, 128, 10))
+    })
 })
 
 describe('eye UVs (tosijs-3d’s mapping)', () => {
