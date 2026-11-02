@@ -151,7 +151,7 @@ Dramatis export still opens, and the viewer says so.
 
 ## The sample
 
-`samples/three-glb/` is a whole integration on one page, written to be
+[`samples/three-glb/`](https://github.com/tonioloewald/dramatis3d/tree/main/samples/three-glb) is a whole integration on one page, written to be
 copied: a loader, lights, orbit controls, a UAL walk, a face unit, a blink,
 and the licence list. Run it from a checkout:
 
@@ -159,6 +159,10 @@ and the licence list. Run it from a checkout:
 bun samples/three-glb/serve.ts                  # a sample export
 bun samples/three-glb/serve.ts --glb my.glb     # yours
 ```
+
+The [demo](/demo/) is the same, with a walk-round controller:
+[`site/demo/`](https://github.com/tonioloewald/dramatis3d/tree/main/site/demo). The clip handling is
+[`src/three/clip.ts`](https://github.com/tonioloewald/dramatis3d/blob/main/src/three/clip.ts).
 
 Its `main.ts` imports `characterClip` from the source so that it runs
 without a build. In your project, import it from `dramatis/three`.
