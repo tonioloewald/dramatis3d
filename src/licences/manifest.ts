@@ -208,6 +208,76 @@ const TONIO_EYES: LicenceEntry[] = (['basic', 'anime'] as const).map(
   })
 )
 
+// ---- Community garments: checked one by one ------------------------------
+
+/**
+ * The starter wardrobe's community garments (PLAN.md "Starter wardrobe"),
+ * each checked one by one on 2026-11-02: its pack page on MakeHuman's site
+ * (the asset packs are "zip files with checked assets") lists it as CC0, its
+ * pack's metadata declares CC0, and its own file says CC0 in its header. Each
+ * holds up in the slider-extremes sweep (reports/extremes.md) or misses on a
+ * few bodies by under 9 mm (the note says which). Left out on the check:
+ * frankyaye_mini_skirt_01/02 and jujube_newsboy_cap, whose files say AGPL3
+ * though their pack says CC0. A garment's id is `makehuman:proxy/<name>`.
+ */
+export const CHECKED_GARMENTS: Readonly<Record<string, string>> = Object.freeze(
+  {
+    'elvs_crude_t-shirt_male': '# license CC0; holds on every body',
+    'joepal_crude_t-shirt_female': '# license CC0; holds on every body',
+    'toigo_bodice-style_top': '# license CC0; holds on every body',
+    toigo_fisherman_sweater: '# license CC0; 2 of 133 bodies, under 6 mm',
+    toigo_wool_pants: '# license CC0; 7 of 133 bodies, under 7 mm',
+    cortu_cargo_pants: '# Cortu Johnstone - CC0; 12 of 133 bodies, under 9 mm',
+    cortu_jeans_shorts: '# Cortu Johnstone - CC0; 12 of 133 bodies, under 9 mm',
+    toigo_suit_with_dinner_jacket: '# license CC0; holds on every body',
+    'matcreator_mc-bodysuit-2021': '# license: CC0; holds on every body',
+    toigo_flats: '# license CC0; holds on every body',
+    'cortu_t-bar': '# Cortu Johnstone - CC0; holds on every body',
+    culturalibre_hero_boots_1: '# license CC-0; holds on every body',
+    toigo_gloves_short: '# license CC0; holds on every body',
+    aethelraed_unraed_cloche_hat: '# license CC0; holds on every body',
+  }
+)
+
+const packPage = (pack: string): string =>
+  `https://static.makehumancommunity.org/assets/assetpacks/${pack}.html`
+
+const COMMUNITY_CHECKED: LicenceEntry[] = Object.keys(CHECKED_GARMENTS).map(
+  (name) => {
+    const p = (
+      PACKS.proxies as Record<
+        string,
+        {
+          category: string
+          slot?: string
+          pack: string
+          declared: { author: string; license: string } | null
+        }
+      >
+    )[name]
+    if (
+      !p ||
+      p.pack === 'system' ||
+      !p.declared ||
+      p.declared?.license !== 'CC0'
+    )
+      throw new Error(
+        `manifest: ${name} is not a CC0 community proxy in the packs`
+      )
+    return cc0({
+      asset: proxyId(name),
+      title: `${name} by ${p.declared.author} (${
+        p.slot ?? p.category
+      }), from MakeHuman's ${p.pack} asset pack`,
+      kind: proxyKind(p.category),
+      source: packPage(p.pack),
+      author: p.declared.author,
+      // Textures resized to 1024 px; the binding is converted to metres.
+      modified: true,
+    })
+  }
+)
+
 /** Every asset Dramatis ships or references, checked. */
 export const MANIFEST: readonly LicenceEntry[] = Object.freeze(
   [
@@ -217,6 +287,7 @@ export const MANIFEST: readonly LicenceEntry[] = Object.freeze(
     ...TONIO_EYES,
     ...QUATERNIUS_ENTRIES,
     ...BLENDER_ENTRIES,
+    ...COMMUNITY_CHECKED,
   ].map((e) => Object.freeze(e))
 )
 
@@ -250,7 +321,7 @@ const zips = PACKS.packZips as Record<string, string>
 
 export const COMMUNITY: readonly CommunityAsset[] = Object.freeze([
   ...Object.entries(PACKS.proxies)
-    .filter(([, p]) => p.pack !== 'system')
+    .filter(([name, p]) => p.pack !== 'system' && !(name in CHECKED_GARMENTS))
     .map(
       ([name, p]): CommunityAsset => ({
         asset: proxyId(name),
