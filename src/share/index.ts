@@ -98,8 +98,9 @@ export function encodeShareLink(
  * A share link read back as a character. `input` is a whole URL, a fragment
  * (with or without `#`) or the payload alone; `defaults` are
  * `readCharacter`'s (the page's settings and slots). Throws on input that is
- * not a Dramatis share link, a link newer than this module, or a payload
- * that inflates past 256 KB; what was skipped or filled in is in `warnings`.
+ * not a Dramatis share link, a link newer than this module, a payload
+ * longer than `SHARE_LINK_BUDGET` characters, or one that inflates past
+ * 256 KB; what was skipped or filled in is in `warnings`.
  */
 export function decodeShareLink(
   input: string,
@@ -113,6 +114,13 @@ export function decodeShareLink(
   if (version > VERSION)
     fail(
       `link version ${version} is newer than this page reads (${VERSION}); open it on the current site`
+    )
+  // No link this module makes is longer than the budget, so a longer payload
+  // is refused before it is decoded or inflated (a deflate bomb is cheap to
+  // send and costly to open).
+  if (payload.length > BUDGET)
+    fail(
+      `the payload is ${payload.length} characters, over the ${BUDGET} budget: not a Dramatis share link`
     )
   const bytes = fromBase64Url(payload)
   const json = inflateCapped(bytes)
@@ -184,7 +192,15 @@ function parseLink(input: string): { version: number; payload: string } {
   return { version: Number(m[1]), payload: m[2]! }
 }
 
-function inflateCapped(bytes: Uint8Array): Uint8Array {
+/**
+ * How much compressed input is handed to the inflater at a time. DEFLATE
+ * expands at most about 1032:1, so one slice inflates to about 1 MB at most
+ * before the cap below can refuse it.
+ */
+const INFLATE_SLICE = 1024
+
+/** Inflate `bytes`, refusing output past `SHARE_INFLATED_LIMIT`. Internal; exported for the tests. */
+export function inflateCapped(bytes: Uint8Array): Uint8Array {
   const chunks: Uint8Array[] = []
   let size = 0
   let done = false
@@ -196,7 +212,13 @@ function inflateCapped(bytes: Uint8Array): Uint8Array {
     if (final) done = true
   })
   try {
-    inflater.push(bytes, true)
+    // In slices, so the cap stops the work early rather than after it.
+    for (let at = 0; at < bytes.length; at += INFLATE_SLICE)
+      inflater.push(
+        bytes.subarray(at, at + INFLATE_SLICE),
+        at + INFLATE_SLICE >= bytes.length
+      )
+    if (bytes.length === 0) inflater.push(bytes, true)
   } catch (e) {
     const message = (e as Error).message
     if (message.startsWith('share-link:')) throw e
