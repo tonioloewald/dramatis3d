@@ -475,12 +475,31 @@ describe.skipIf(!BROWSER)('the viewer in Chromium', () => {
       }
       await page.goto(`${base}/creator/`)
       expect(await shaded()).toBe(true)
-      // Leave by the doc browser's own navigation, which disposes the scene.
-      await page
-        .locator('a[href="/licences/"]')
-        .filter({ visible: true })
-        .first()
-        .click()
+      // Leave by the doc browser's own navigation, which disposes the scene:
+      // the sidebar's Documentation link, on screen at this size. (A link in
+      // the page's text, far below the stage, was never visible on the CI
+      // runner; if this one ever isn't, the shot and the list say why.)
+      try {
+        await page
+          .locator('a[href="/docs/"]')
+          .filter({ visible: true })
+          .first()
+          .click({ timeout: 30_000 })
+      } catch (e) {
+        await page.screenshot({ path: join(SHOTS, 'creator-leave.png') })
+        console.log(
+          'links on the creator page:',
+          await page.evaluate(() =>
+            [...document.querySelectorAll('a')].map((a) => {
+              const r = a.getBoundingClientRect()
+              return `${a.getAttribute('href')} ${Math.round(r.x)},${Math.round(
+                r.y
+              )} ${Math.round(r.width)}x${Math.round(r.height)}`
+            })
+          )
+        )
+        throw e
+      }
       await page.waitForFunction(
         () => document.querySelector('dramatis-creator') === null,
         undefined,
