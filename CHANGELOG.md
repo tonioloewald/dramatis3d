@@ -6,6 +6,7 @@ All notable changes to Dramatis. The format follows [Keep a Changelog](https://k
 
 ### Added
 
+- **The home page has a picture:** an engraving of a stage company, as WebP at three widths (105 to 290 KB; the browser picks one), credited on the licences page.
 - **A starter wardrobe of 14 CC0 garments** from MakeHuman's community asset packs: two t-shirts, a fisherman sweater, a bodice top, wool trousers, cargo trousers, denim shorts, a dinner suit, a bodysuit, flats, T-bar and cloth shoes, short gloves and a cloche hat. Each was checked one by one (the pack page, the pack's metadata and the garment's own file all say CC0) and each holds up in the slider-extremes sweep, or misses on a few bodies by under 9 mm. Three candidates whose own files say AGPL3 (two mini skirts and a newsboy cap) are left out. Before this the creator offered four garments that held up.
 
 ### Changed

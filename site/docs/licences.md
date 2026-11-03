@@ -315,7 +315,8 @@ Not part of any character, and never exported: the creator's floor
 (`site/static/creator-ground.svg`) is tosijs-3d's `tosi-warhol-testgrid.svg`,
 toned down, under tosijs-3d's licence (Apache-2.0, Tonio Loewald). The
 Dramatis icon (`site/static/icon.svg`, `favicon.svg`, `logo.svg`, and `apple-touch-icon.png` rendered
-from it) is Tonio Loewald's.
+from it) is Tonio Loewald's, and so is the home page's engraving of a stage
+company (`site/static/art/`).
 
 ## Keeping it true
 

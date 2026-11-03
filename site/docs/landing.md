@@ -5,6 +5,18 @@
 **An open 3D character creator for the web.** Make a person, dress them, and
 take them anywhere: CC0 base data, GLB and VRM out, for any engine.
 
+<img
+  class="hero"
+  src="/art/dramatis-1200.webp"
+  srcset="/art/dramatis-800.webp 800w, /art/dramatis-1200.webp 1200w, /art/dramatis-1600.webp 1600w"
+  sizes="(max-width: 900px) 100vw, 900px"
+  width="1600"
+  height="894"
+  decoding="async"
+  style="display: block; width: 100%; height: auto; margin: 1em 0"
+  alt="An engraving of a stage: a company of players in a row before the footlights, a housewife, a gentleman in a frock coat, a jester, a courtier with his hat in his hand, a lady in a plumed hat, a ragged boy, a knight and a girl in a ball gown, among others."
+/>
+
 **[Open the creator](/creator/)** · [three.js demo](/demo/) · [Unity demo](/unity/) ·
 [three.js viewer](/viewer/) · [Documentation](/docs/)
 
