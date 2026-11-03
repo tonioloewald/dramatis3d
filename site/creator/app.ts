@@ -55,7 +55,7 @@ import {
   eyeStyle,
   ONE_EYE_LAYOUT,
   recolourEyePng,
-} from '../../src/upstream/eyes'
+} from 'tosijs-3d/eye-art'
 import { chooseFile } from 'tosijs-3d/choose-file'
 import { decodeShareLink } from '../../src/contracts/share'
 import type { NamingProfile } from '../../src/contracts/profile'
@@ -132,7 +132,7 @@ export async function mountCreator(
   /*
   THE EYES AS EXPORTED. tosijs-3d draws its eyes into a canvas texture named
   "eye", both eyes on one picture (HM08_EYE_UV). The export uses Tonio's eye
-  art instead (src/upstream/eyes), so the creator paints that art onto the same
+  art instead (tosijs-3d/eye-art), so the creator paints that art onto the same
   canvas, at each eye's place and size, so what is seen here is what exports.
   */
   let eyePaint = 0
@@ -473,7 +473,7 @@ export async function mountCreator(
     const character = ch
     for (const k of TOSI_KEPT)
       watch(box(k), () => character.set({ [k]: plain(box(k).value) }))
-    // The eyes as the export draws them (src/upstream/eyes), painted over
+    // The eyes as the export draws them (tosijs-3d/eye-art), painted over
     // tosijs-3d's own after it repaints.
     const eyesLater = () => setTimeout(() => void paintEyes(scene), 0)
     watch(box('irisColour'), eyesLater)

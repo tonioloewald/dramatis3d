@@ -12,9 +12,9 @@ hold up everywhere. The latest run is in
 with its numbers in `reports/extremes.json` and its contact sheet in
 `reports/extremes-sheet.png`.
 
-The sweep is general tosijs-3d work, built here first under
-`src/upstream/extremes/` and bound for tosijs-3d (board task #3661). It is not
-part of Dramatis's API.
+The sweep is tosijs-3d's (`tosijs-3d/fit-extremes`, since 0.12.2): it was
+built here first and moved there, and `bin/extremes.ts` runs it on
+Dramatis's wardrobe. It is not part of Dramatis's API.
 
 ## Which bodies
 

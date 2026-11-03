@@ -56,7 +56,11 @@ import {
   UE_JOINT_NAMES,
 } from '../contracts/profile'
 import { unitNormals } from 'tosijs-3d/skinned-glb'
-import { eyeAsset, eyePngUrl, eyeUvs, recolourEyePng } from '../upstream/eyes'
+import {
+  eyeAsset,
+  gltfEyeUvs as eyeUvs,
+  recolourEyePng,
+} from 'tosijs-3d/eye-art'
 import { assetIds } from './assets'
 import { humanBodyMaker } from 'tosijs-3d/human-rig'
 import { inverseRigid, qconj, qmul, qnormalize, qrotate, sub } from './math'
@@ -69,7 +73,7 @@ import {
   ualGlobalRest,
 } from './pose'
 import { option, REST_POSES } from './options'
-import { MOUTH, readSettings, SLOTS, type Slot } from './settings'
+import { eyeArtUrl, MOUTH, readSettings, SLOTS, type Slot } from './settings'
 
 /** What the build needs that is another lane's (wired at integration). */
 export interface BuildDeps {
@@ -486,7 +490,7 @@ export async function buildCharacterWith(
       bake: {
         key: `eye:${s.eyeStyle}:${s.irisColour}`,
         name: `eye_${s.eyeStyle}`,
-        url: eyePngUrl(s.eyeStyle),
+        url: eyeArtUrl(s.eyeStyle),
         asset: eyeAsset(s.eyeStyle),
         make: (art) => recolourEyePng(art, s.irisColour),
         // Without the art: the plain off-white the eyes had before it.

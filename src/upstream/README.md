@@ -17,14 +17,16 @@ written here first. The rules (owner, 2026-11-02):
    there) and is deleted here **before Gate 1 closes**, so there is never a
    published second copy.
 
-What is here now:
+What is here now: nothing.
 
-| Module | Destination in tosijs-3d | Board task |
-| --- | --- | --- |
-| `extremes/` | `fit-extremes` (the slider-extremes sweep) | #3661 |
+Moved already:
 
-Moved already: the skinned GLB writer and `glb-chunks`, imported as
-`tosijs-3d/skinned-glb` and `tosijs-3d/glb-chunks` since tosijs-3d 0.12.1 (#3662).
+- the skinned GLB writer and `glb-chunks`: `tosijs-3d/skinned-glb` and
+  `tosijs-3d/glb-chunks` since tosijs-3d 0.12.1 (#3662);
+- the slider-extremes sweep: `tosijs-3d/fit-extremes` (with `mesh-sdf` and
+  `hair-place`) since 0.12.2 (#3661);
+- the eye art, its iris recolour and the eyes' glTF UVs: `tosijs-3d/eye-art`
+  since 0.12.2 (#3727).
 
 Until then Dramatis pins tosijs-3d at an exact version and runs its own
 no-Babylon bundle check (`src/no-babylon.test.ts`).

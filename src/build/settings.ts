@@ -11,7 +11,7 @@ import {
   HM08_PACK_VERSION,
 } from 'tosijs-3d/character-settings'
 import { DEFAULT_HUMAN_BODY, type MacroBody } from 'tosijs-3d/human-morph'
-import { eyeStyle, type EyeStyle } from '../upstream/eyes'
+import { eyePngUrl, eyeStyle, type EyeStyle } from 'tosijs-3d/eye-art'
 
 /** What can be worn, one of each: tosijs-3d's `CHARACTER_SLOTS`. */
 export const SLOTS = CHARACTER_SLOTS
@@ -33,7 +33,7 @@ const READ = [
 
 /**
  * The non-slider defaults the build reads: tosijs-3d's `DEFAULT_CHARACTER`,
- * plus Dramatis's own `eyeStyle` (which eye art, src/upstream/eyes).
+ * plus Dramatis's own `eyeStyle` (which eye art, tosijs-3d/eye-art).
  */
 export const DEFAULTS = Object.freeze({
   ...(Object.fromEntries(READ.map((k) => [k, DEFAULT_CHARACTER[k]])) as {
@@ -61,6 +61,15 @@ export const BUILD_SETTINGS: Readonly<Record<string, unknown>> = Object.freeze({
  * a global asset base the library never sets, so the CDN is named here.
  */
 export const HM08_PACK_URL = `https://cdn.tosijs.net/${HM08_PACK_PATH}?v=${HM08_PACK_VERSION}`
+
+/**
+ * The eye art's URL. tosijs-3d's `eyePngUrl` resolves against the same global
+ * asset base, so where no page has set one (a script, a server, an adopter's
+ * bundle) it is resolved against the CDN here; a set base passes through.
+ */
+export function eyeArtUrl(style: EyeStyle): string {
+  return new URL(eyePngUrl(style), 'https://cdn.tosijs.net/').href
+}
 
 /** The proxies every MakeHuman character carries, inside the mouth. */
 export const MOUTH = { teeth: 'teeth_base', tongue: 'tongue01' } as const

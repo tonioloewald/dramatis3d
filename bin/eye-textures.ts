@@ -1,19 +1,19 @@
 // Renders the eye SVGs to the PNGs the export fetches from the CDN. The art
 // (Tonio Loewald, CC0) lives in static-assets, not here: cdn.tosijs.net/tonio/eyes/.
 // A step run by hand after an SVG changes: the export has no SVG renderer,
-// so it recolours these PNGs instead (src/upstream/eyes/recolour.ts).
+// so it recolours these PNGs instead (tosijs-3d/eye-art's recolourEyePng).
 //
 //   bun bin/eye-textures.ts [--assets ../static-assets/assets/tonio/eyes]
 //
 // Then publish from static-assets (`bun run publish tonio/eyes --deploy`) and
-// bump EYE_VERSION in src/upstream/eyes/textures.ts: the CDN caches files as
+// bump EYE_VERSION in tosijs-3d's eye-art (a tosijs-3d release): the CDN caches files as
 // immutable, so new bytes need a new URL. Needs `bunx playwright-core install
 // chromium`.
 
 import { readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { chromium } from 'playwright-core'
-import { EYE_STYLES } from '../src/upstream/eyes/textures'
+import { EYE_STYLES } from 'tosijs-3d/eye-art'
 
 const at = process.argv.indexOf('--assets')
 const DIR =

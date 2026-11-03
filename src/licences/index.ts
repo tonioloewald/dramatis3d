@@ -1,7 +1,7 @@
 // The licence manifest and lookup (lane share-licence). The contract is
 // src/contracts/licences.ts; the page is site/docs/licences.md.
 
-import { eyeAsset, eyeStyle } from '../upstream/eyes'
+import { eyeAsset, eyeStyle } from 'tosijs-3d/eye-art'
 import type { Character } from 'tosijs-3d/character-file'
 import type { HumanPack } from 'tosijs-3d/human-pack'
 import type { LicenceEntry } from '../contracts/licences'
@@ -111,7 +111,7 @@ export function characterLicences(
       )
         ids.push(proxyId(name))
     ids.push('monk:skin-tone/monk-skin-tone-scale')
-    // The eyes' texture (the eye art, recoloured): src/upstream/eyes.
+    // The eyes' texture (the eye art, recoloured): tosijs-3d/eye-art.
     if (pack.manifest.parts?.eyes) ids.push(eyeAsset(eyeStyle(s.eyeStyle)))
   } else if (HOSTED_BODIES[source] != null) {
     ids.push(HOSTED_BODIES[source]!)

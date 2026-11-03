@@ -11,6 +11,7 @@ All notable changes to Dramatis. The format follows [Keep a Changelog](https://k
 
 ### Changed
 
+- **The eye art and the slider-extremes sweep are tosijs-3d's** (0.12.2, pinned). Exports recolour and map the eyes with `tosijs-3d/eye-art` (#3727); `bin/extremes.ts` runs `tosijs-3d/fit-extremes` (#3661). Dramatis's copies in `src/upstream/` are gone, and with them the last code bound for tosijs-3d. The samples' eye textures are pixel-identical; tosijs-3d's PNG encoder writes them about 6 KB larger.
 - **The GLB writer is tosijs-3d's.** Exports are written by `tosijs-3d/skinned-glb` and read by `tosijs-3d/glb-chunks` (in tosijs-3d since 0.12.1, the version already pinned); Dramatis's copy in `src/upstream/glb/` is gone. The four sample exports are byte-identical, and `dramatis` is 4.6 KB gzip smaller.
 
 ### Fixed

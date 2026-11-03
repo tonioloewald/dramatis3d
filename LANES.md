@@ -61,7 +61,7 @@ harness is `test/gate1/` (`bun run gate1`): it checks every GLB in
 | **three** | `src/three/` (the adapter, `characterObject`), `samples/three/` | `site/docs/dramatis-three.md` |
 | **share-licence** | `src/share/`, `src/licences/` | `site/docs/licences.md` |
 | **site-creator** | `site/creator/` and the creator page and its parts; implements `src/contracts/handoff.ts` | `site/docs/creator.md` |
-| **extremes** | `src/upstream/extremes/` (the slider-extremes sweep, bound for tosijs-3d), `bin/extremes.ts`, `reports/extremes*` | `site/docs/extremes.md` |
+| **extremes** | `bin/extremes.ts` (runs tosijs-3d's `fit-extremes` sweep), `reports/extremes*` | `site/docs/extremes.md` |
 
 ## Engines-phase lanes
 

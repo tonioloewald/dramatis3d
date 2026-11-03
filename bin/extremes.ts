@@ -23,22 +23,20 @@ import {
 } from 'fs'
 import { join } from 'path'
 import { loadHumanPack } from 'tosijs-3d/human-pack'
-import { sweepCorners } from '../src/upstream/extremes/corners'
 import {
+  contactSheet,
+  loadResult,
+  renderMarkdown,
   runSweep,
   saveResult,
-  loadResult,
+  sheetCases,
+  summarise,
+  sweepCorners,
   type ItemLicence,
   type SavedResult,
   type SweepResult,
-} from '../src/upstream/extremes/sweep'
-import {
-  readHairLibrary,
-  referenceHeads,
-  markLips,
-} from '../src/upstream/extremes/hair-library'
-import { summarise, renderMarkdown } from '../src/upstream/extremes/report'
-import { contactSheet, sheetCases } from '../src/upstream/extremes/sheet'
+} from 'tosijs-3d/fit-extremes'
+import { readHairLibrary, referenceHeads } from 'tosijs-3d/hair-place'
 
 const args = process.argv.slice(2)
 const flag = (name: string) => args.includes(name)
@@ -133,8 +131,8 @@ let hair: Parameters<typeof runSweep>[0]['hair']
 if (!flag('--no-hair')) {
   console.log(`hair: ${hairUrl}`)
   const pieces = readHairLibrary(new Uint8Array(await read(hairUrl)))
+  // referenceHeads marks the lip line from the moustache's lower edge.
   const heads = referenceHeads(pieces)
-  markLips(pieces, heads)
   hair = {
     pieces: only
       ? pieces.filter(
@@ -173,7 +171,7 @@ if (from) {
     proxies,
     hair,
     licences,
-    onCorner(done, total, r) {
+    handleCorner(done, total, r) {
       console.log(
         `  ${done}/${total} ${r.corner.id} ${r.ms} ms, ${r.bones.length} bone issues`
       )
