@@ -356,6 +356,6 @@ Each check is shown able to fail on a hand-made bad file
 (`test/gate1/fixtures.test.ts`).
 
 The engine imports are spike 1's (`tools/engines/`, `reports/spike-1.md`):
-Godot 4.5, Babylon.js 9.33 (headless) and Blender 5.2 have passed on every
-sample; Unity and Unreal 5 have not been run. Each engine's guide says what
+Unity 6.6 (glTFast 6.14.1), Godot 4.5, Babylon.js 9.33 (headless) and
+Blender 5.2 have passed on every sample; Unreal 5 has not been run. Each engine's guide says what
 was checked there.

@@ -124,7 +124,7 @@ These are known gaps, each tracked on the board:
 
 ## Where it has been checked
 
-The samples have been imported into three.js, Godot 4.5, Babylon.js 9.33
-(headless) and Blender 5.2 with default settings and no fixes. Unity and
-Unreal 5 have not been run. The [docs index](/docs/) has the table, and
+The samples have been imported into three.js, Unity 6.6 (glTFast 6.14.1),
+Godot 4.5, Babylon.js 9.33 (headless) and Blender 5.2 with default settings
+and no fixes. Unreal 5 has not been run. The [docs index](/docs/) has the table, and
 each engine's guide says what was checked.
