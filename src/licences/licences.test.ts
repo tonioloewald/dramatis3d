@@ -130,57 +130,66 @@ const LOCAL_PACK = join(
 )
 const CDN_PACK = `https://cdn.tosijs.net/${PACKS.pack.path}?v=17`
 
-async function livePackText(): Promise<{ text: string; from: string } | null> {
-  if (existsSync(LOCAL_PACK))
-    return { text: readFileSync(LOCAL_PACK, 'utf8'), from: LOCAL_PACK }
-  try {
-    const res = await fetch(CDN_PACK, { signal: AbortSignal.timeout(10_000) })
-    if (res.ok) return { text: await res.text(), from: CDN_PACK }
-  } catch {
-    // offline: reported below
-  }
-  return null
+// Which pack to check, decided before the test is registered (#3678): a
+// static-assets checkout when there is one; else the CDN, in the network
+// tier only (bun test stays offline). Unreachable in the network tier is a
+// failure, not a pass; with neither, the test is listed NOT RUN.
+const NETWORK = process.env.DRAMATIS_NETWORK === '1'
+const PACK_FROM = existsSync(LOCAL_PACK)
+  ? LOCAL_PACK
+  : NETWORK
+  ? CDN_PACK
+  : null
+
+async function livePackText(from: string): Promise<string> {
+  if (from === LOCAL_PACK) return readFileSync(LOCAL_PACK, 'utf8')
+  const res = await fetch(from, { signal: AbortSignal.timeout(20_000) })
+  if (!res.ok) throw new Error(`${from}: HTTP ${res.status}`)
+  return res.text()
 }
 
 describe('the snapshot matches the pack the creator loads', () => {
-  test('hm08.json: every proxy, look and part is in the snapshot', async () => {
-    const live = await livePackText()
-    if (live == null) {
-      console.warn(
-        `NOT RUN: no static-assets checkout at ${LOCAL_PACK} and ${CDN_PACK} unreachable`
+  const name = 'hm08.json: every proxy, look and part is in the snapshot'
+  const run = PACK_FROM ? test : test.skip
+  run(
+    PACK_FROM
+      ? name
+      : `NOT RUN (no static-assets checkout; set DRAMATIS_NETWORK=1 for the CDN's): ${name}`,
+    async () => {
+      const live = { text: await livePackText(PACK_FROM!), from: PACK_FROM! }
+      const m = JSON.parse(live.text) as HumanPackManifest
+      const snap = PACKS.proxies as Record<
+        string,
+        { looks?: Record<string, unknown> }
+      >
+      const stale: string[] = []
+      for (const [name, p] of Object.entries(m.proxies ?? {})) {
+        if (snap[name] == null) stale.push(`proxy ${name}`)
+        for (const look of Object.keys(p.material.looks ?? {}))
+          if (snap[name]?.looks?.[look] == null)
+            stale.push(`look ${name}/${look}`)
+      }
+      for (const part of Object.keys(m.parts ?? {}))
+        if (!(PACKS.pack.parts as readonly string[]).includes(part))
+          stale.push(`part ${part}`)
+      if (stale.length)
+        throw new Error(
+          `${
+            live.from
+          } references assets the snapshot lacks (run bun src/licences/scan-packs.ts): ${stale.join(
+            ', '
+          )}`
+        )
+      if (
+        createHash('sha256').update(live.text).digest('hex') !==
+        PACKS.pack.sha256
       )
-      return
-    }
-    const m = JSON.parse(live.text) as HumanPackManifest
-    const snap = PACKS.proxies as Record<
-      string,
-      { looks?: Record<string, unknown> }
-    >
-    const stale: string[] = []
-    for (const [name, p] of Object.entries(m.proxies ?? {})) {
-      if (snap[name] == null) stale.push(`proxy ${name}`)
-      for (const look of Object.keys(p.material.looks ?? {}))
-        if (snap[name]?.looks?.[look] == null)
-          stale.push(`look ${name}/${look}`)
-    }
-    for (const part of Object.keys(m.parts ?? {}))
-      if (!(PACKS.pack.parts as readonly string[]).includes(part))
-        stale.push(`part ${part}`)
-    if (stale.length)
-      throw new Error(
-        `${
-          live.from
-        } references assets the snapshot lacks (run bun src/licences/scan-packs.ts): ${stale.join(
-          ', '
-        )}`
-      )
-    if (
-      createHash('sha256').update(live.text).digest('hex') !== PACKS.pack.sha256
-    )
-      console.warn(
-        `licences: ${live.from} changed since the snapshot (no new assets); rescan when convenient`
-      )
-  })
+        console.warn(
+          `licences: ${live.from} changed since the snapshot (no new assets); rescan when convenient`
+        )
+    },
+    30_000
+  )
 })
 
 // ---- characterLicences ----------------------------------------------------

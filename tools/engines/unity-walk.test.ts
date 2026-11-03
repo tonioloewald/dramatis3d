@@ -108,57 +108,67 @@ async function runCs(): Promise<string[]> {
 
 const pair = (v: string) => v.split(',').map(Number)
 
-describe.skipIf(!HAVE)('Walk.cs (Unity) against site/demo/core.ts', () => {
-  test('compiles with no UnityEngine, and every case agrees', async () => {
-    const out = await runCs()
-    const take = (kind: string) =>
-      out
-        .filter((l) => l.startsWith(kind + ' '))
-        .map((l) => l.slice(kind.length + 1))
+// Needs Mono (mono, mcs) on the PATH; without it the test is listed NOT RUN,
+// so a machine without Mono doesn't count a silent skip as coverage (#3678).
+describe('Walk.cs (Unity) against site/demo/core.ts', () => {
+  const name = 'compiles with no UnityEngine, and every case agrees'
+  test.skipIf(!HAVE)(
+    HAVE ? name : `NOT RUN (mono and mcs not on the PATH): ${name}`,
+    async () => {
+      const out = await runCs()
+      const take = (kind: string) =>
+        out
+          .filter((l) => l.startsWith(kind + ' '))
+          .map((l) => l.slice(kind.length + 1))
 
-    expect(take('gait')).toEqual(SPEEDS.map((s) => gaitFor(s).name))
+      expect(take('gait')).toEqual(SPEEDS.map((s) => gaitFor(s).name))
 
-    const steers = take('steer')
-    STEERS.forEach(([f, r, yaw], i) => {
-      // Unity's yaw y is three's -y, and its x is three's -x.
-      const three = steer({ forward: f, right: r, run: false }, -yaw)!
-      const [x, z] = pair(steers[i]!)
-      expect(x).toBeCloseTo(-three.x, 9)
-      expect(z).toBeCloseTo(three.z, 9)
-    })
+      const steers = take('steer')
+      STEERS.forEach(([f, r, yaw], i) => {
+        // Unity's yaw y is three's -y, and its x is three's -x.
+        const three = steer({ forward: f, right: r, run: false }, -yaw)!
+        const [x, z] = pair(steers[i]!)
+        expect(x).toBeCloseTo(-three.x, 9)
+        expect(z).toBeCloseTo(three.z, 9)
+      })
 
-    const turns = take('turn')
-    TURNS.forEach(([c, t, m], i) =>
-      expect(Number(turns[i])).toBeCloseTo(turnToward(c, t, m), 9)
-    )
+      const turns = take('turn')
+      TURNS.forEach(([c, t, m], i) =>
+        expect(Number(turns[i])).toBeCloseTo(turnToward(c, t, m), 9)
+      )
 
-    const goals = take('goal')
-    GOALS.forEach(([x, z, gx, gz], i) => {
-      const t = towardGoal({ x, z }, { x: gx, z: gz })
-      if (t === null) expect(goals[i]).toBe('null')
-      else {
-        const [a, b] = pair(goals[i]!)
+      const goals = take('goal')
+      GOALS.forEach(([x, z, gx, gz], i) => {
+        const t = towardGoal({ x, z }, { x: gx, z: gz })
+        if (t === null) expect(goals[i]).toBe('null')
+        else {
+          const [a, b] = pair(goals[i]!)
+          expect(a).toBeCloseTo(t.x, 9)
+          expect(b).toBeCloseTo(t.z, 9)
+        }
+      })
+
+      const collides = take('collide')
+      COLLIDES.forEach(([x, z], i) => {
+        const t = collide({ x, z }, 0.3, pillarRing(), 15)
+        const [a, b] = pair(collides[i]!)
         expect(a).toBeCloseTo(t.x, 9)
         expect(b).toBeCloseTo(t.z, 9)
-      }
-    })
+      })
 
-    const collides = take('collide')
-    COLLIDES.forEach(([x, z], i) => {
-      const t = collide({ x, z }, 0.3, pillarRing(), 15)
-      const [a, b] = pair(collides[i]!)
-      expect(a).toBeCloseTo(t.x, 9)
-      expect(b).toBeCloseTo(t.z, 9)
-    })
+      const pillars = take('pillar').map(pair)
+      expect(pillars.length).toBe(pillarRing().length)
+      pillarRing().forEach((p, i) => {
+        expect(pillars[i]![0]).toBeCloseTo(p.x, 9)
+        expect(pillars[i]![1]).toBeCloseTo(p.z, 9)
+        expect(pillars[i]![2]).toBeCloseTo(p.r, 9)
+      })
 
-    const pillars = take('pillar').map(pair)
-    expect(pillars.length).toBe(pillarRing().length)
-    pillarRing().forEach((p, i) => {
-      expect(pillars[i]![0]).toBeCloseTo(p.x, 9)
-      expect(pillars[i]![1]).toBeCloseTo(p.z, 9)
-      expect(pillars[i]![2]).toBeCloseTo(p.r, 9)
-    })
-
-    expect(Number(take('heading')[0])).toBeCloseTo(headingOf({ x: 1, z: 0 }), 9)
-  }, 60_000)
+      expect(Number(take('heading')[0])).toBeCloseTo(
+        headingOf({ x: 1, z: 0 }),
+        9
+      )
+    },
+    60_000
+  )
 })
