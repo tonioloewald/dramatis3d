@@ -52,15 +52,15 @@ the two hips' heights. `characterClip` from `dramatis/three` does exactly
 this:
 
 ```ts
-import { AnimationMixer } from 'three'
+import { AnimationMixer, Vector3, type Object3D } from 'three'
 import { characterClip } from 'dramatis/three'
 
 const ual = await loader.loadAsync('UAL1.glb') // Quaternius, CC0
 const walk = ual.animations.find((a) => a.name === 'Walk_Loop')!
 
 const naming = gltf.asset.extras?.dramatis?.naming ?? 'ue'
-const hips = (root, name) =>
-  root.getObjectByName(name).getWorldPosition(new Vector3()).y
+const hips = (root: Object3D, name: string) =>
+  root.getObjectByName(name)!.getWorldPosition(new Vector3()).y
 const translationScale =
   hips(gltf.scene, naming === 'ue' ? 'pelvis' : 'mixamorigHips') /
   hips(ual.scene, 'pelvis')
@@ -95,10 +95,13 @@ file into `morphTargetDictionary`. One unit can be on several meshes (the
 lids are on the body and on the eyelashes), and they move together:
 
 ```ts
+import { Mesh } from 'three'
+
 function setFaceUnit(unit: string, weight: number) {
   gltf.scene.traverse((o) => {
+    if (!(o instanceof Mesh)) return
     const i = o.morphTargetDictionary?.[unit]
-    if (i !== undefined) o.morphTargetInfluences[i] = weight
+    if (i !== undefined) o.morphTargetInfluences![i] = weight
   })
 }
 

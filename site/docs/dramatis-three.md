@@ -64,6 +64,7 @@ clip's rotations and only the hips' translation, so the clip doesn't stretch
 the body to the mannequin's bone lengths:
 
 ```ts
+import { AnimationMixer } from 'three'
 import { characterClip } from 'dramatis/three'
 
 const mixer = new AnimationMixer(c.root)
@@ -93,6 +94,7 @@ For an unrigged body, `morphedBodyGeometry(pack, body)` gives the pack's base
 mesh morphed by its macro targets, through tosijs-3d's engine-free subpaths:
 
 ```ts
+import { Mesh, MeshStandardMaterial } from 'three'
 import { loadHumanPack } from 'tosijs-3d/human-pack'
 import { HM08_PACK_URL } from 'dramatis'
 import { DEFAULT_HUMAN_BODY, morphedBodyGeometry } from 'dramatis/three'

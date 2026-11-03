@@ -182,7 +182,10 @@ export default defineSiteConfig({
     tsconfig: 'tsconfig.build.json',
   },
 
-  // Live examples import `dramatis` / `tosijs-3d`, seeded in site/hydrate.ts; the
-  // build-time checker only knows tosijs / tosijs-ui (same reason as tosijs-3d).
-  checkExamples: false,
+  // tosijs-ui's build-time check transpiles every js/ts fence (a syntax error
+  // fails the build). contextKeys ADD dramatis and tosijs-3d to its tosijs /
+  // tosijs-ui defaults; other imports (three, Babylon) only warn. Fences are
+  // live only when they ask (liveExamples: 'opt-in'), so this runs nothing on
+  // the pages. The typecheck of the ts fences is site/docs/fences.test.ts.
+  checkExamples: { contextKeys: ['dramatis', 'tosijs-3d'] },
 })
