@@ -68,8 +68,12 @@ which has the tailor and rig tools this page leaves out.
 ## Size
 
 The page itself is small. The creator loads its 3D engine and the body data
-when it opens: about 2.5 MB of script (compressed) and a few MB of models
-from `cdn.tosijs.net`, cached after the first visit.
+when it opens: about 2.5 MB of script (compressed; the build fails past
+2.6 MB), 1.5 MB of animation clips from this site, and about 19 MB of models
+from `cdn.tosijs.net`, most of it a hair library the default character
+doesn't wear. All of it is cached after the first visit. On a mid-range
+phone over slow 4G that first visit takes well over a minute; a repeat
+visit about 9 s.
 
 ## Known issues
 

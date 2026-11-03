@@ -10,6 +10,8 @@
 // on a local port; the CDN packs come from cdn.tosijs.net either way.
 // --fast skips the throttling (the desktop numbers, for comparison).
 
+import { existsSync, statSync } from 'node:fs'
+import { join, normalize } from 'node:path'
 import type { Browser, CDPSession, Page } from 'playwright-core'
 
 export const PHONE = {
@@ -84,16 +86,23 @@ export const PROBES: Probe[] = [
   },
 ]
 
-async function throttle(cdp: CDPSession, on: boolean): Promise<void> {
+async function throttle(
+  cdp: CDPSession,
+  cpu: boolean,
+  network: boolean
+): Promise<void> {
   await cdp.send('Network.enable')
-  if (!on) return
-  await cdp.send('Emulation.setCPUThrottlingRate', { rate: PHONE.cpuSlowdown })
-  await cdp.send('Network.emulateNetworkConditions', {
-    offline: false,
-    latency: PHONE.latencyMs,
-    downloadThroughput: PHONE.downBytesPerSec,
-    uploadThroughput: PHONE.upBytesPerSec,
-  })
+  if (cpu)
+    await cdp.send('Emulation.setCPUThrottlingRate', {
+      rate: PHONE.cpuSlowdown,
+    })
+  if (network)
+    await cdp.send('Network.emulateNetworkConditions', {
+      offline: false,
+      latency: PHONE.latencyMs,
+      downloadThroughput: PHONE.downBytesPerSec,
+      uploadThroughput: PHONE.upBytesPerSec,
+    })
 }
 
 /** Load one probe in `page` (fresh or warm) and measure it. */
@@ -101,10 +110,11 @@ export async function measure(
   page: Page,
   base: string,
   probe: Probe,
-  options: { phone?: boolean; timeoutMs?: number } = {}
+  options: { phone?: boolean; network?: boolean; timeoutMs?: number } = {}
 ): Promise<PageCost> {
   const cdp = await page.context().newCDPSession(page)
-  await throttle(cdp, options.phone ?? true)
+  const phone = options.phone ?? true
+  await throttle(cdp, phone, phone && (options.network ?? true))
   await cdp.send('Performance.enable')
   let transferBytes = 0
   const urls = new Map<string, string>()
@@ -198,13 +208,62 @@ export async function phoneContext(browser: Browser) {
   })
 }
 
+const ROOT = join(import.meta.dir, '..', '..')
+
+/** Build the site into www/ (bin/site.ts --build). */
+export function buildSite(): void {
+  const built = Bun.spawnSync(['bun', 'bin/site.ts', '--build'], {
+    cwd: ROOT,
+    stdout: 'ignore',
+    stderr: 'inherit',
+  })
+  if (built.exitCode !== 0) throw new Error('site build failed')
+}
+
+/** Text the host compresses, as GitHub Pages does (a .glb it does not). */
+const COMPRESSED = /\.(html|js|css|json|svg|txt|md)$/
+
+/**
+ * www/ as GitHub Pages serves it (samples/out at /samples/), gzipping text,
+ * so bytes over the wire are close to the live site's.
+ */
+export function serveSite(): ReturnType<typeof Bun.serve> {
+  const WWW = join(ROOT, 'www')
+  const SAMPLES = join(ROOT, 'samples', 'out')
+  const file = (dir: string, path: string) => {
+    const full = normalize(join(dir, decodeURIComponent(path)))
+    if (!full.startsWith(dir)) return null
+    for (const c of [full, `${full}.html`, join(full, 'index.html')])
+      if (existsSync(c) && statSync(c).isFile()) return c
+    return null
+  }
+  return Bun.serve({
+    port: 0,
+    async fetch(req: Request) {
+      const { pathname } = new URL(req.url)
+      const found = pathname.startsWith('/samples/')
+        ? file(SAMPLES, pathname.slice(9))
+        : file(WWW, pathname)
+      if (!found) return new Response('not found', { status: 404 })
+      const f = Bun.file(found)
+      const type = f.type
+      if (
+        COMPRESSED.test(found) &&
+        /gzip/.test(req.headers.get('accept-encoding') ?? '')
+      )
+        return new Response(Bun.gzipSync(await f.bytes()), {
+          headers: { 'content-encoding': 'gzip', 'content-type': type },
+        })
+      return new Response(f)
+    },
+  })
+}
+
 const mb = (b: number) => `${(b / 2 ** 20).toFixed(2)} MB`
 const s = (ms: number | null) =>
   ms === null ? '-' : `${(ms / 1000).toFixed(1)} s`
 
 if (import.meta.main) {
-  const { join, normalize } = await import('node:path')
-  const { existsSync, statSync } = await import('node:fs')
   const arg = (n: string) => {
     const i = process.argv.indexOf(n)
     return i > 0 ? process.argv[i + 1] : undefined
@@ -213,34 +272,8 @@ if (import.meta.main) {
   let base: string = arg('--base') ?? ''
   let server: ReturnType<typeof Bun.serve> | null = null
   if (!base) {
-    const ROOT = join(import.meta.dir, '..', '..')
-    const built = Bun.spawnSync(['bun', 'bin/site.ts', '--build'], {
-      cwd: ROOT,
-      stdout: 'ignore',
-      stderr: 'inherit',
-    })
-    if (built.exitCode !== 0) throw new Error('site build failed')
-    const WWW = join(ROOT, 'www')
-    const SAMPLES = join(ROOT, 'samples', 'out')
-    const file = (dir: string, path: string) => {
-      const full = normalize(join(dir, decodeURIComponent(path)))
-      if (!full.startsWith(dir)) return null
-      for (const c of [full, `${full}.html`, join(full, 'index.html')])
-        if (existsSync(c) && statSync(c).isFile()) return c
-      return null
-    }
-    server = Bun.serve({
-      port: 0,
-      fetch(req: Request) {
-        const { pathname } = new URL(req.url)
-        const found = pathname.startsWith('/samples/')
-          ? file(SAMPLES, pathname.slice(9))
-          : file(WWW, pathname)
-        return found
-          ? new Response(Bun.file(found))
-          : new Response('not found', { status: 404 })
-      },
-    })
+    buildSite()
+    server = serveSite()
     base = server.url.href.replace(/\/$/, '')
   }
   console.log(
