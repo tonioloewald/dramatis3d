@@ -1,6 +1,8 @@
 import type { BunPlugin } from 'bun'
 import { describe, expect, test } from 'bun:test'
+import pkg from '../package.json'
 import {
+  existsSync,
   mkdtempSync,
   readdirSync,
   readFileSync,
@@ -39,9 +41,29 @@ the only thing standing between a tosijs-3d release and a Babylon-laden embed.
 const ROOT = join(import.meta.dir, '..')
 const TSC = join(ROOT, 'node_modules', '.bin', 'tsc')
 
-const ENTRIES = {
-  'dramatis (core)': 'src/index.ts',
-  'dramatis/three': 'src/three/index.ts',
+/**
+ * The public entries, from package.json's exports (#3689): `./three` ->
+ * `dist/three/index.js` -> `src/three/index.ts`. A new entry is guarded the
+ * day it is added; the test below fails if one has no source.
+ */
+const ENTRIES: Record<string, string> = Object.fromEntries(
+  Object.entries(pkg.exports as Record<string, unknown>)
+    .filter(([key]) => key !== './package.json')
+    .map(([key, target]) => {
+      const js = (target as { default: string }).default
+      const name = key === '.' ? 'dramatis (core)' : `dramatis${key.slice(1)}`
+      return [name, js.replace(/^\.\/dist\//, 'src/').replace(/\.js$/, '.ts')]
+    })
+)
+
+/**
+ * Pages built outside site/three-page.ts (which fails its own build on
+ * Babylon: the viewer, the demo, the Unity page). The samples show adopters
+ * the three.js way in, so they are held to the same rule.
+ */
+const SAMPLE_PAGES = {
+  'samples/three': 'samples/three/main.ts',
+  'samples/three-glb': 'samples/three-glb/main.ts',
 }
 
 const BABYLON = /@babylonjs/
@@ -162,6 +184,21 @@ function types(entry: string): TypesResult {
 }
 
 describe('the engine-free entries never reach Babylon', () => {
+  test('the entries are package.json exports, each with its source', () => {
+    expect(Object.keys(ENTRIES)).toEqual(['dramatis (core)', 'dramatis/three'])
+    for (const src of Object.values(ENTRIES))
+      expect(existsSync(join(ROOT, src))).toBe(true)
+  })
+
+  for (const [name, entry] of Object.entries(SAMPLE_PAGES))
+    test(`${name}: the browser bundle has no Babylon`, async () => {
+      const r = await bundle(entry)
+      expect(r.logs).toBe('')
+      expect(r.ok).toBe(true)
+      expect(r.specifiers).toEqual([])
+      expect(r.outputs).toEqual([])
+    })
+
   for (const [name, entry] of Object.entries(ENTRIES)) {
     test(`${name}: the browser bundle has no Babylon`, async () => {
       const r = await bundle(entry)
@@ -183,7 +220,7 @@ describe('the engine-free entries never reach Babylon', () => {
   test('the three.js bundle really contains the tosijs-3d body maths', async () => {
     // Positive control: a bundle that silently dropped tosijs-3d would also
     // contain no Babylon. Unminified, the function names survive.
-    const r = await bundle(ENTRIES['dramatis/three'])
+    const r = await bundle(ENTRIES['dramatis/three']!)
     expect(r.text).toContain('function macroWeights')
     expect(r.text).toContain('function morphHuman')
   })
