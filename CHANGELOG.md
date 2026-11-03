@@ -16,6 +16,7 @@ All notable changes to Dramatis. The format follows [Keep a Changelog](https://k
 
 ### Fixed
 
+- **The licences page no longer promises that your own garments and bodies export** (as `NOASSERTION`): they are refused for now, and the page says so. A test ties the sentence to what the exporter does (#3675).
 - **The Unity player hunched the character** (shoulders up, the neck short, the spine out of line). It played UAL's clips as they are, so every joint took UAL's bone offsets and scales, not the character's own. Now only the rotations, and the hips' travel, come from the clip, as in `dramatis/three` and `splice-clip`.
 - **The Unity player's blink tore the face down to the waist.** glTFast imports a morph target at full weight 1, not Unity's usual 100, and the player blinked at 100: every 3.7 s the lids moved 100 times over. The blink now scales to each shape's own full weight.
 - **The Unity player skinned with two bones a vertex** (WebGL's default quality), creasing the shoulders and hips; it now asks for four, which is what the export carries.

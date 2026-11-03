@@ -24,6 +24,7 @@ import {
   lookId,
   proxyId,
 } from './manifest'
+import { wornBy } from '../build/build'
 import { PACKS } from './packs'
 import { PAGE, renderPage } from './write-page'
 
@@ -349,6 +350,27 @@ describe('characterLicences', () => {
     expect(licences[0]!.asset).toBe('user:body/my_scan')
     expect(licences[0]!.licence).toBe('NOASSERTION')
     expect(licences.map((e) => e.asset)).toContain('user:garment/my_cape')
+  })
+
+  // The licences page tells the user what happens to their own files: tied
+  // here to what the exporter does, so the page can't promise an export the
+  // build refuses (#3675). When own files export, this test changes with it.
+  test("the page's own-files sentence matches the exporter: refused, not yet exported", () => {
+    const garment = char(
+      { outfit: 'my cape' },
+      { garments: { 'my cape': new Uint8Array(1) } }
+    )
+    expect(() => wornBy(garment, fakePack())).toThrow(
+      "a garment of the character's own, which does not export yet"
+    )
+    expect(() => wornBy(char({ source: 'My scan' }), fakePack())).toThrow(
+      'only MakeHuman bodies export yet'
+    )
+    const page = readFileSync(PAGE, 'utf8')
+    const from = page.indexOf('**Your own files**')
+    const sentence = page.slice(from, page.indexOf('\n\n', from))
+    expect(sentence).toContain('do not export yet')
+    expect(sentence).not.toMatch(/An export lists them/)
   })
 
   test('the hosted bodies besides MakeHuman have entries', () => {
