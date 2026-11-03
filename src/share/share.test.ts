@@ -334,6 +334,11 @@ describe('share link: garbage is refused', () => {
     refuse(link.fragment.replace('c=1.', 'c=2.'), /newer than this page/)
   })
 
+  test('a version that was never written (0) is refused, not read as 1', () => {
+    const link = encodeShareLink(typical())
+    refuse(link.fragment.replace('c=1.', 'c=0.'), /was never written/)
+  })
+
   test('bad base64url, not deflate, truncated', () => {
     refuse('#c=1.a', /not base64url/)
     refuse(

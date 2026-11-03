@@ -16,6 +16,7 @@ All notable changes to Dramatis. The format follows [Keep a Changelog](https://k
 
 ### Fixed
 
+- **A share link marked version 0 is refused** instead of being read as version 1 (no such link was ever made). The export format page now says what raises its version and how a reader treats a newer file (#3690).
 - **The docs' TypeScript samples typecheck** (#3676). `site/docs/fences.test.ts` checks every ```ts fence against the library's source, in `bun run check`; it found three fences missing three.js imports (`AnimationMixer`, `Mesh`, `Vector3`) and an untyped face-unit helper, now fixed. The site's own example check is on too.
 - **The licences page no longer promises that your own garments and bodies export** (as `NOASSERTION`): they are refused for now, and the page says so. A test ties the sentence to what the exporter does (#3675).
 - **The Unity player hunched the character** (shoulders up, the neck short, the spine out of line). It played UAL's clips as they are, so every joint took UAL's bone offsets and scales, not the character's own. Now only the rotations, and the hips' travel, come from the clip, as in `dramatis/three` and `splice-clip`.

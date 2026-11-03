@@ -321,6 +321,29 @@ naming and the T-pose, plus the **`VRMC_vrm` 1.0** extension (in
   `copyrightInformation` carrying the licence entries above (which stay in
   `asset.extras.dramatis` too).
 
+## Versions
+
+`asset.extras.dramatis.version` is this profile's version (1), and
+`generator` says which Dramatis wrote the file (`dramatis@0.1.2`).
+
+- **What raises the version:** anything that changes what an existing
+  reader would make of a file: a joint renamed, added or moved; a face unit
+  added, renamed or removed (`checkExportExtras` refuses names it doesn't
+  know); a field made required or given a new meaning; a different rest
+  pose by default. A file of version 2 is a new format, and the release
+  that writes it is a major one.
+- **What doesn't:** a new optional field in the extras block that a version 1
+  reader can ignore, and anything outside the block that the profile
+  doesn't specify (mesh order within the rules above, buffer layout).
+- **Reading a newer file:** a reader that checks the block, as
+  `checkExportExtras` does, reports it invalid rather than guessing. It
+  should still show the licence entries it can read: the viewer lists them,
+  marked as the file states them.
+
+The share link is versioned the same way (`#c=1.…`): a newer link is
+refused with a message saying so, and what it carries is a
+`tosijs-character` file, whose own version tosijs-3d checks.
+
 ## How it is checked
 
 `bun test test/gate1` runs six checks on every GLB in `samples/out/`: the

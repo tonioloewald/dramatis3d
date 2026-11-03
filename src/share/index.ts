@@ -111,6 +111,10 @@ export function decodeShareLink(
 ): ReadCharacter {
   if (typeof input !== 'string') fail('not a string')
   const { version, payload } = parseLink(input.trim())
+  // Every link this module has made is version 1 or later: a lower number is
+  // not one of ours, and is refused rather than read as the current version.
+  if (version < 1)
+    fail(`link version ${version} was never written: not a Dramatis share link`)
   if (version > VERSION)
     fail(
       `link version ${version} is newer than this page reads (${VERSION}); open it on the current site`
