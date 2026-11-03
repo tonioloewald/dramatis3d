@@ -74,9 +74,10 @@ import {
   type Gait,
   type Keys,
 } from './core'
+import { STARTER_URL } from '../clips'
 
-/** UAL volume 1's core clips on the tosijs CDN, CC0. */
-const UAL_CORE_URL = 'https://cdn.tosijs.net/quaternius/UAL1_core.glb?v=2'
+/** The site's starter clips (site/clips.ts): the gaits, cut from UAL, CC0. */
+const UAL_CORE_URL = STARTER_URL
 /** The viewer's bundled Walk_Loop, if the CDN is out of reach. */
 const WALK_URL = '/viewer/ual-walk.glb'
 /** The arena: a square this many metres a side, the floor's tiles 2 m. */
@@ -225,7 +226,7 @@ interface ClipSource {
   scene: Object3D
 }
 let clipSource: Promise<ClipSource> | null = null
-/** UAL's core clips, else the bundled walk alone. */
+/** The starter clips, else the bundled walk alone. */
 function clips(): Promise<ClipSource> {
   return (clipSource ??= loader
     .loadAsync(UAL_CORE_URL)

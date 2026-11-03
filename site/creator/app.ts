@@ -13,7 +13,8 @@
 import * as BABYLON from '@babylonjs/core'
 import '@babylonjs/loaders/glTF'
 import { tosi } from 'tosijs'
-import { setAssetBase, assetUrl } from 'tosijs-3d/asset-url'
+import { setAssetBase } from 'tosijs-3d/asset-url'
+import { CREATOR_CLIPS, STARTER_URL } from '../clips'
 import { b3d, type B3d } from 'tosijs-3d/tosi-b3d'
 import { b3dSun } from 'tosijs-3d/b3d-shadows'
 import { b3dLight } from 'tosijs-3d/b3d-light'
@@ -102,13 +103,7 @@ export interface CreatorApp {
 type Box = { value: any; observe(cb: () => void): unknown }
 
 const SLOTS = CHARACTER_SLOTS as readonly string[]
-const CLIPS = [
-  'Idle_Loop',
-  'Walk_Loop',
-  'Jog_Fwd_Loop',
-  'Dance_Loop',
-  'Crouch_Fwd_Loop',
-]
+const CLIPS: string[] = [...CREATOR_CLIPS]
 // The settings a character file keeps: tosijs-3d's character settings that
 // describe MakeHuman's body (not mesh sources, rigs or surfaces).
 const NOT_KEPT = new Set(['hideClothes', 'rigs', 'surfaces', 'source'])
@@ -426,18 +421,16 @@ export async function mountCreator(
     floor.material = floorMat
     host.register({ meshes: [floor] })
 
-    // UAL's mannequin is only where the clips come from: kept hidden.
-    const ual = await BABYLON.LoadAssetContainerAsync(
-      assetUrl('quaternius/UAL1_core.glb', 2),
-      scene
-    )
+    // UAL's mannequin is only where the clips come from: kept hidden. The
+    // site's starter cut (site/clips.ts), not the CDN's 6.3 MB of clips.
+    const ual = await BABYLON.LoadAssetContainerAsync(STARTER_URL, scene)
     host.setLoading('loading the body…')
     ual.addAllToScene()
     for (const g of ual.animationGroups) g.stop()
     const ualRoot = ual.meshes.find((m) => m.name === '__root__')
     const ualSkeleton = ual.skeletons[0]
     if (!ualRoot || !ualSkeleton)
-      throw new Error('UAL1_core.glb has no skeleton')
+      throw new Error('the starter clips have no skeleton')
     const source = readSkeleton(ualSkeleton, ualRoot)
     ualRoot.setEnabled(false)
 
