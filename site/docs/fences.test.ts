@@ -158,15 +158,15 @@ describe('docs code fences', () => {
       ],
       { cwd: ROOT }
     )
-    const errors = tsc.stdout
-      .toString()
+    const out: string = tsc.stdout.toString()
+    const errors = out
       .split('\n')
       .filter((l) => /error TS/.test(l))
       // Name each error by its page and line in the doc, not the temp file.
       .map((l) =>
         l.replace(
           /^.*?([a-z0-9-]+)\.ts\((\d+),\d+\)/,
-          (_, page, row) =>
+          (_: string, page: string, row: string) =>
             `site/docs/${page}.md:${
               lines.get(`${page}.md`)?.[Number(row) - 1] ?? `?${row}`
             }`
