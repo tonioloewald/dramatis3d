@@ -9,11 +9,12 @@
 //     DRAMATIS_ENGINES=1 bun test tools/engines
 
 import { describe, expect, test } from 'bun:test'
-import { readdirSync, readFileSync } from 'node:fs'
+import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { AnimationMixer, Bone, SkinnedMesh, Vector3 } from 'three'
 import { loadWithThree, validatorErrors } from '../../test/gate1/checks'
-import { readGlb } from 'tosijs-3d/glb-chunks'
+import { readGlb, writeGlb } from 'tosijs-3d/glb-chunks'
 import { runBabylon } from './babylon'
 import { runBlender } from './blender'
 import { SAMPLES_OUT, UAL_CLIP } from './common'
@@ -82,11 +83,42 @@ const failures = (
       .map((k) => `${c.file} ${k.check}: ${k.evidence.join(' | ')}`)
   )
 
+/** Every sample export, by file name: each engine must report on all of them (#3677). */
+const SAMPLE_FILES = readdirSync(SAMPLES_OUT)
+  .filter((f) => f.endsWith('.glb'))
+  .sort()
+const checked = (cs: Array<{ file: string }>) => cs.map((c) => c.file).sort()
+
+/**
+ * The negative control: the first sample with its left hand's joint renamed,
+ * so the profile's skeleton is broken. Every engine must fail it, or its
+ * checks are not looking.
+ */
+function brokenExport(): string {
+  const glb = readGlb(
+    new Uint8Array(readFileSync(join(SAMPLES_OUT, 'clothed-casual.glb')))
+  )
+  const hand = glb.json.nodes.find(
+    (n: { name?: string }) => n.name === 'hand_l'
+  )
+  if (!hand) throw new Error('clothed-casual.glb has no hand_l')
+  hand.name = 'not_a_hand'
+  const path = join(
+    mkdtempSync(join(tmpdir(), 'dramatis-broken-')),
+    'broken.glb'
+  )
+  writeFileSync(path, writeGlb(glb.json, glb.bin!))
+  return path
+}
+
 describe('engines (spike 1)', () => {
+  test('there are samples to check', () => {
+    expect(SAMPLE_FILES.length).toBeGreaterThanOrEqual(4)
+  })
   engineTest('Godot imports every export and plays UAL Walk_Loop', async () => {
     const r = await runGodot()
     expect(r.error).toBeUndefined()
-    expect(r.characters.length).toBeGreaterThan(0)
+    expect(checked(r.characters)).toEqual(SAMPLE_FILES)
     expect(failures(r.characters)).toEqual([])
   })
   engineTest(
@@ -94,12 +126,26 @@ describe('engines (spike 1)', () => {
     async () => {
       const r = await runBlender()
       expect(r.error).toBeUndefined()
+      expect(checked(r.characters)).toEqual(SAMPLE_FILES)
       expect(failures(r.characters)).toEqual([])
     }
   )
   engineTest('Babylon loads every export and plays UAL Walk_Loop', async () => {
     const r = await runBabylon()
     expect(r.ran).toBe(true)
+    expect(checked(r.characters)).toEqual(SAMPLE_FILES)
     expect(failures(r.characters)).toEqual([])
+  })
+  engineTest('each engine fails an export with a broken skeleton', async () => {
+    const broken = brokenExport()
+    const godot = await runGodot([broken])
+    expect(checked(godot.characters)).toEqual(['broken.glb'])
+    expect(failures(godot.characters).length).toBeGreaterThan(0)
+    const blender = await runBlender([broken])
+    expect(checked(blender.characters)).toEqual(['broken.glb'])
+    expect(failures(blender.characters).length).toBeGreaterThan(0)
+    const babylon = await runBabylon([broken])
+    expect(checked(babylon.characters)).toEqual(['broken.glb'])
+    expect(failures(babylon.characters).length).toBeGreaterThan(0)
   })
 })
