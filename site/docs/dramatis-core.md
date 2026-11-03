@@ -39,6 +39,11 @@ const glb = writeCharacterGlb(built) // Uint8Array, synchronous
 const vrm = await exportCharacterVrm(character, pack)
 ```
 
+The names follow one rule. **`build…` and `export…` take a `Character`**
+(a character file, read) and a pack, and are async: they fetch. **`write…`
+take a `BuiltCharacter`**, what `buildCharacter` returns, and are
+synchronous: build once, then write it as GLB, VRM or both.
+
 | Export | What it does | Page |
 | --- | --- | --- |
 | `BUILD_SETTINGS` | Every setting the build reads, with its default: `readCharacter`'s `defaults.settings` (it keeps only the keys it is given) | [Export](/export/) |

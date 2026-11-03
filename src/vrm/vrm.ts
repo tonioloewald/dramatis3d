@@ -384,7 +384,8 @@ export function vrmFromGlb(glb: Uint8Array, meta: VrmMeta = {}): Uint8Array {
 /**
  * A built character as VRM 1.0 bytes, synchronously: `writeCharacterGlb`
  * (`ue` naming) then `vrmFromGlb`. The character must be built with the
- * T-pose rest, the default.
+ * T-pose rest, the default. Like every `write…` function it takes a
+ * `BuiltCharacter`; `exportCharacterVrm` takes a `Character` and a pack.
  */
 export function writeCharacterVrm(
   built: BuiltCharacter,

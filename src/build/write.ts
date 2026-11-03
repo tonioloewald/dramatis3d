@@ -52,6 +52,8 @@ export function exportExtras(
  * Write a built character as a GLB to the profile, synchronously: the one
  * GLB writer. `naming` renames joints on the way out; the rest of
  * `ExportOptions` was settled when the character was built.
+ *
+ * The API's naming: `write…` functions take a `BuiltCharacter` (what `buildCharacter` returns) and are synchronous; `build…` and `export…` take a `Character` and a pack (site/docs/dramatis-core.md).
  */
 export function writeCharacterGlb(
   built: BuiltCharacter,

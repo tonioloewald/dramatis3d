@@ -28,6 +28,8 @@ export interface ExportOptions {
  * GLB writer. `naming` renames joints on the way out; the rest of
  * `ExportOptions` was settled when the character was built.
  *
+ * The API's naming: `write…` functions take a `BuiltCharacter` (what `buildCharacter` returns) and are synchronous; `build…` and `export…` take a `Character` and a pack (site/docs/dramatis-core.md).
+ *
  * A character file to GLB bytes (`exportCharacterGlb`): `buildCharacter`
  * then `writeCharacterGlb`. Async because building fetches the pack's
  * targets and proxies.
