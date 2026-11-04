@@ -32,7 +32,8 @@ vertices go.
 - **tosijs-3d** (`proxy-fit`, `proxy-cover`, `human-morph`, `human-rig`, `human-pack`,
   `skin-tone`): where nearly all the MakeHuman-equivalent logic lives (.mhclo fitting,
   macro targets, joint-cube rigging, weights, parsing the pack). It needs the same check
-  before a provenance claim covers the export path: #3776.
-- The static-assets converter that builds hm08.json (a sibling repo).
+  before a provenance claim covers the export path: #3776, now done in
+  [provenance-tosijs-3d.md](provenance-tosijs-3d.md) (nothing copied).
+- The static-assets converter that builds hm08.json (a sibling repo): also done there.
 - `src/build/preview.ts`, `cdn.ts`, `index.ts`, `version.ts` (no MakeHuman concepts).
 - Other MakeHuman codebases (MPFB2, MakeHuman 2): 1.x is the canonical one.
