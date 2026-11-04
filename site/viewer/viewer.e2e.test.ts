@@ -30,6 +30,8 @@ import {
   HANDOFF_DB_VERSION,
   HANDOFF_STORE,
 } from '../../src/contracts/handoff'
+import { vrmProblems } from '../../src/vrm'
+import { glbLicences } from '../creator/actions'
 
 const BROWSER = process.env.DRAMATIS_BROWSER === '1'
 const NETWORK = process.env.DRAMATIS_NETWORK === '1'
@@ -489,6 +491,48 @@ describe.skipIf(!BROWSER)('the viewer in Chromium', () => {
       expect(errors.filter((e) => !e.startsWith('console:'))).toEqual([])
     },
     600_000
+  )
+
+  test.skipIf(!NETWORK)(
+    'creator -> Download VRM saves a VRM 1.0 that passes the structural check, with its licences',
+    async () => {
+      const { page, errors } = await newPage()
+      await page.goto(`${base}/creator/`)
+      await page.waitForFunction(
+        () =>
+          [...document.querySelectorAll('dramatis-creator button')].some(
+            (b) =>
+              b.textContent === 'Download VRM' &&
+              !(b as HTMLButtonElement).disabled
+          ),
+        undefined,
+        { timeout: 240_000 }
+      )
+      const [download] = await Promise.all([
+        page.waitForEvent('download', { timeout: 180_000 }),
+        page.getByRole('button', { name: 'Download VRM' }).click(),
+      ])
+      expect(download.suggestedFilename()).toMatch(/\.vrm$/)
+      const bytes = new Uint8Array(readFileSync((await download.path())!))
+      expect(vrmProblems(bytes)).toEqual([])
+      expect(glbLicences(bytes).length).toBeGreaterThan(0)
+      const status = await page
+        .locator('dramatis-creator .dc-status')
+        .innerText()
+      expect(status).toMatch(/^Saved .+\.vrm \(VRM 1\.0, /)
+      // Five buttons still fit a phone: the bar wraps, the page doesn't scroll sideways.
+      await page.setViewportSize({ width: 390, height: 780 })
+      await page.waitForTimeout(300)
+      await page.screenshot({ path: join(SHOTS, 'creator-phone.png') })
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= window.innerWidth
+        )
+      ).toBe(true)
+      expect(errors).toEqual([])
+      await page.close()
+    },
+    420_000
   )
 
   // Babylon forgets every material plugin when its last engine goes (the doc

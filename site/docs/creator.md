@@ -38,8 +38,10 @@ panel, name your character, and export it.
 When an export cannot be made, the line under the buttons says why, and
 your character is kept.
 
-There is no **VRM** button yet. The library makes VRM files
-([VRM](/vrm/)); the creator does not offer it.
+**Download VRM** saves a [VRM 1.0](/vrm/) avatar, for VTuber apps and VRM
+viewers: the GLB plus VRM's bone map, expressions and licence terms, always
+in the T-pose with UE names (the naming choice does not apply). It has been
+checked with three-vrm, but not yet in a VTuber app.
 
 ## What it is made of
 

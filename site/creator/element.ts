@@ -115,6 +115,11 @@ export class DramatisCreator extends HTMLElement {
           this.run((a) => a.download())
         ),
         button(
+          'Download VRM',
+          'Export a VRM 1.0 avatar (for VTuber apps and VRM viewers) and save it',
+          () => this.run((a) => a.vrm())
+        ),
+        button(
           'Share link',
           'A link that opens this character here',
           () => this.share(),

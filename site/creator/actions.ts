@@ -1,4 +1,5 @@
-// The creator's export actions: View in three.js, View in Unity, Download GLB, Share link.
+// The creator's export actions: View in three.js, View in Unity, Download GLB,
+// Download VRM, Share link.
 // No Babylon here: these take a character file and the pack, call the
 // contracts, and say what happened in words a person can act on. Kept apart
 // from the scene so they can be tested under bun.
@@ -6,7 +7,10 @@
 import type { Character } from 'tosijs-3d/character-file'
 import { parseGlbJson } from 'tosijs-3d/glb-manifest'
 import type { HumanPack } from 'tosijs-3d/human-pack'
-import { exportCharacterGlb } from '../../src/contracts/export'
+import {
+  exportCharacterGlb,
+  exportCharacterVrm,
+} from '../../src/contracts/export'
 import {
   characterLicences,
   UnlicensedAssetError,
@@ -150,6 +154,29 @@ export async function downloadGlb(input: ExportInput): Promise<ActionResult> {
     ok: true,
     message: `Saved ${out.fileName} (${size(
       out.glb.byteLength
+    )}, ${n} licence ${n === 1 ? 'entry' : 'entries'} inside).`,
+  }
+}
+
+/**
+ * Download VRM: VRM 1.0 (the GLB plus VRMC_vrm), for VTuber apps and VRM
+ * viewers. Always UE naming and the T-pose underneath, so the naming choice
+ * does not apply; the licences are the GLB's, inside.
+ */
+export async function downloadVrm(input: ExportInput): Promise<ActionResult> {
+  let vrm: Uint8Array
+  try {
+    vrm = await exportCharacterVrm(input.character, input.pack)
+  } catch (error) {
+    return { ok: false, message: explain(error, 'export the VRM') }
+  }
+  const fileName = fileNameFor(input.character.name, 'vrm')
+  saveBytes(vrm, fileName, 'model/gltf-binary')
+  const n = glbLicences(vrm).length
+  return {
+    ok: true,
+    message: `Saved ${fileName} (VRM 1.0, ${size(
+      vrm.byteLength
     )}, ${n} licence ${n === 1 ? 'entry' : 'entries'} inside).`,
   }
 }

@@ -62,6 +62,7 @@ import type { NamingProfile } from '../../src/contracts/profile'
 import type { HumanPack } from 'tosijs-3d/human-pack'
 import {
   downloadGlb,
+  downloadVrm,
   explain,
   licensedChoice,
   fileNameFor,
@@ -92,6 +93,8 @@ export interface CreatorApp {
   /** The same, in the Unity player. */
   unity(opened: Window | null): Promise<ActionResult>
   download(): Promise<ActionResult>
+  /** Download VRM 1.0. */
+  vrm(): Promise<ActionResult>
   share(): Promise<ActionResult>
   /** The character as a file, now. */
   character(): Character
@@ -730,6 +733,7 @@ export async function mountCreator(
       view: (w) => viewInThree(input(), w),
       unity: (w) => viewInUnity(input(), w),
       download: () => downloadGlb(input()),
+      vrm: () => downloadVrm(input()),
       share: () => shareLink(snapshot(), shell.shareBase()),
       character: () => snapshot(),
       touched: () => changed(),

@@ -24,7 +24,7 @@ const vrm = await exportCharacterVrm(character, pack, {
 
 **Checked** with @pixiv/three-vrm under three.js and with a structural
 check of its own (below). **Not yet tried** in UniVRM, a VTuber app or any
-VRM viewer. The creator has no VRM button yet: make one with the API.
+VRM viewer. In the creator, **Download VRM** makes one.
 
 Also exported: `writeCharacterVrm(built)` (a built character to VRM,
 synchronously), `vrmFromGlb(glb)` (any Dramatis GLB under `ue` naming in

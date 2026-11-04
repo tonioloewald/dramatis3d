@@ -1,4 +1,8 @@
 import { describe, expect, test } from 'bun:test'
+import { readdirSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { parseGlbJson } from 'tosijs-3d/glb-manifest'
+import { vrmFromGlb } from '../../src/vrm'
 import { IDBFactory } from 'fake-indexeddb'
 import {
   HANDOFF_DB,
@@ -20,6 +24,7 @@ import {
   glbLicences,
   shareFragment,
   shareLink,
+  downloadVrm,
   exportGlb,
 } from './actions'
 
@@ -138,6 +143,32 @@ describe('export actions', () => {
       // The skinned-glb lane has landed: then this input is simply wrong.
       expect(out.glb).toBeInstanceOf(Uint8Array)
     } else expect(out.message).toMatch(/GLB|Could not export/)
+  })
+
+  test('downloadVrm turns a failed export into a message, not a crash', async () => {
+    const r = await downloadVrm({
+      character: { name: 'Ada' } as never,
+      pack: {} as never,
+      naming: 'ue',
+    })
+    expect(r.ok).toBe(false)
+    expect(r.message).toMatch(/^Could not export the VRM: /)
+  })
+
+  test("a VRM carries the GLB's licences, so the VRM message can count them", () => {
+    const dir = join(import.meta.dir, '..', '..', 'samples', 'out')
+    const name = readdirSync(dir).find((f) => {
+      const d = parseGlbJson(new Uint8Array(readFileSync(join(dir, f))))?.asset
+        ?.extras?.dramatis
+      return (
+        f.endsWith('.glb') && d?.naming === 'ue' && d?.restPose === 't-pose'
+      )
+    })
+    expect(name).toBeDefined()
+    const glb = new Uint8Array(readFileSync(join(dir, name!)))
+    const licences = glbLicences(glb)
+    expect(licences.length).toBeGreaterThan(0)
+    expect(glbLicences(vrmFromGlb(glb))).toEqual(licences)
   })
 
   test('shareLink turns the share stub (or a bad character) into a message', async () => {
