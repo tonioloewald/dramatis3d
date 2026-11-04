@@ -1,6 +1,6 @@
 # VRM
 
-<!--{"parent": "docs", "order": 4, "description": "The VRM 1.0 export: the GLB plus VRMC_vrm, with its humanoid bone map, expression presets from the face units, look-at by expression and licence terms. Checked with three-vrm, and loaded and tracked in VCam (a macOS VTuber app)."}-->
+<!--{"parent": "docs", "order": 4, "description": "The VRM 1.0 export: the GLB plus VRMC_vrm, with its humanoid bone map, expression presets from the face units, look-at by expression and licence terms. Verified: checked with three-vrm, and run in VCam (a macOS VTuber app)."}-->
 
 A character also leaves Dramatis as a **VRM 1.0** file (`.vrm`), the avatar
 format VTuber apps, VRChat-style worlds and VRM viewers read. A Dramatis VRM
@@ -22,8 +22,8 @@ const vrm = await exportCharacterVrm(character, pack, {
 // vrm is a Uint8Array: save it as ada.vrm
 ```
 
-**Checked** with @pixiv/three-vrm under three.js and with a structural
-check of its own (below), and **tried in VCam**, a macOS VTuber app
+**Verified**: checked with @pixiv/three-vrm under three.js and with a
+structural check of its own (below), and **run in VCam**, a macOS VTuber app
 (2026-11-04): it loads, looks right, and webcam tracking drives it. Not yet
 tried in UniVRM or another VTuber app. In the creator, **Download VRM** makes
 one.
@@ -171,6 +171,8 @@ a fixture) is checked four ways:
 Run in VCam (macOS, 2026-11-04, by the owner): the creator's VRM loads and
 looks right, and webcam tracking drives it. Arm poses looked wrong at
 first; that traced to a webcam off to the side, which tracks depth badly,
-not to the file. Not yet checked: UniVRM (Unity), VSeeFace, VRoid Hub, and
+not to the file. The owner counts that as verified (2026-11-04); the expression weights get
+tuned if users report problems. Not checked: UniVRM (Unity), VSeeFace, VRoid
+Hub, and
 each expression judged one by one. A sample to try by hand is
 `reports/spike-3-vrm/long-hair.vrm`.

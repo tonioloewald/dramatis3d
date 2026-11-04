@@ -148,6 +148,10 @@ tracks the arms' depth badly. So VRM export stays as it is, and
 
 ## Open
 
+The owner called VRM verified on 2026-11-04 after the VCam run. These are
+improvements to make if users report problems, not gates.
+
+
 1. **Judging each expression.** VCam has run the avatar; no one has yet
    looked at the presets one by one. Load a creator VRM in VCam (which has
    expression buttons) or a web VRM viewer and judge each preset by eye.
