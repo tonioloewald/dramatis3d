@@ -48,8 +48,8 @@ a link. It runs on [tosijs-3d](https://3d.tosijs.net)'s character system.
 
 All of this was checked on four sample exports, headless. How the
 characters look on a real GPU has not been judged yet. A [VRM 1.0](/vrm/) export
-(**Download VRM** in the creator) is checked with three-vrm but has not been
-tried in a VTuber app.
+(**Download VRM** in the creator) is checked with three-vrm and has been run in
+VCam, a macOS VTuber app.
 
 ## Where to go next
 

@@ -41,7 +41,7 @@ your character is kept.
 **Download VRM** saves a [VRM 1.0](/vrm/) avatar, for VTuber apps and VRM
 viewers: the GLB plus VRM's bone map, expressions and licence terms, always
 in the T-pose with UE names (the naming choice does not apply). It has been
-checked with three-vrm, but not yet in a VTuber app.
+checked with three-vrm and run in VCam, a macOS VTuber app.
 
 ## What it is made of
 

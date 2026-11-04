@@ -1,6 +1,6 @@
 # VRM
 
-<!--{"parent": "docs", "order": 4, "description": "The VRM 1.0 export: the GLB plus VRMC_vrm, with its humanoid bone map, expression presets from the face units, look-at by expression and licence terms. Checked with three-vrm; not yet in a VTuber app."}-->
+<!--{"parent": "docs", "order": 4, "description": "The VRM 1.0 export: the GLB plus VRMC_vrm, with its humanoid bone map, expression presets from the face units, look-at by expression and licence terms. Checked with three-vrm, and loaded and tracked in VCam (a macOS VTuber app)."}-->
 
 A character also leaves Dramatis as a **VRM 1.0** file (`.vrm`), the avatar
 format VTuber apps, VRChat-style worlds and VRM viewers read. A Dramatis VRM
@@ -23,8 +23,10 @@ const vrm = await exportCharacterVrm(character, pack, {
 ```
 
 **Checked** with @pixiv/three-vrm under three.js and with a structural
-check of its own (below). **Not yet tried** in UniVRM, a VTuber app or any
-VRM viewer. In the creator, **Download VRM** makes one.
+check of its own (below), and **tried in VCam**, a macOS VTuber app
+(2026-11-04): it loads, looks right, and webcam tracking drives it. Not yet
+tried in UniVRM or another VTuber app. In the creator, **Download VRM** makes
+one.
 
 Also exported: `writeCharacterVrm(built)` (a built character to VRM,
 synchronously), `vrmFromGlb(glb)` (any Dramatis GLB under `ue` naming in
@@ -74,8 +76,8 @@ turns the eye's front towards +X. VRM's `blinkLeft` and `lookLeft` are the
 avatar's own left too (three-vrm sends a target on the avatar's +X to
 `lookLeft`), so no side is swapped.
 
-The weights are a first cut, judged from what each unit moves; they have
-not yet been looked at in a VTuber app (see the spike report,
+The weights are a first cut, judged from what each unit moves. The avatar
+has been run in VCam, but no one has judged each expression one by one yet (see the spike report,
 `reports/spike-3-vrm.md`). They live in `src/vrm/expressions.ts` as data.
 
 | Preset | Face units and weights | Overrides | Why |
@@ -166,5 +168,9 @@ a fixture) is checked four ways:
    `lookLeft` and `LeftEyeturnLeft`; the normalized rig is a T-pose facing
    +Z, and lowering its left upper arm lowers the raw `hand_l`.
 
-Not yet checked: UniVRM (Unity), VSeeFace, VRoid Hub or any VTuber app. A
-sample to try by hand is `reports/spike-3-vrm/long-hair.vrm`.
+Run in VCam (macOS, 2026-11-04, by the owner): the creator's VRM loads and
+looks right, and webcam tracking drives it. Arm poses looked wrong at
+first; that traced to a webcam off to the side, which tracks depth badly,
+not to the file. Not yet checked: UniVRM (Unity), VSeeFace, VRoid Hub, and
+each expression judged one by one. A sample to try by hand is
+`reports/spike-3-vrm/long-hair.vrm`.

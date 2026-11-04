@@ -136,11 +136,22 @@ The content flags (violent, sexual, political or religious, antisocial)
 are left false, VRM's default: granting them is the author's decision, and
 `VrmMeta` in the contract has no field for it yet (a later additive field).
 
+## Run in VCam (2026-11-04)
+
+The owner loaded the creator's VRM (`Starter_wardrobe.vrm`) in VCam, a macOS
+VTuber app built on VRMKit. It loads, looks right, and webcam tracking drives
+it. Some arm poses looked wrong. A normalised copy (every bone at rest
+unrotated: `src/vrm/normalize.ts`) was made in case VCam set raw bones
+directly. The cause turned out to be the webcam, off to the side, which
+tracks the arms' depth badly. So VRM export stays as it is, and
+`normaliseBones` is kept internal in case an app needs it.
+
 ## Open
 
-1. **A VTuber app and a person.** Load `reports/spike-3-vrm/long-hair.vrm`
-   in VSeeFace or VTube Studio (via UniVRM), and in a web VRM viewer, and
-   judge each preset by eye. The likely adjustments: `blink` may not fully
+1. **Judging each expression.** VCam has run the avatar; no one has yet
+   looked at the presets one by one. Load a creator VRM in VCam (which has
+   expression buttons) or a web VRM viewer and judge each preset by eye.
+   VSeeFace is Windows only, and VTube Studio is for Live2D, not VRM. The likely adjustments: `blink` may not fully
    close (UpperLidClosed moves the lid 9 mm; whether the lids meet was not
    measured), `ou`/`oh` may need more `LipsKiss`, `happy` may want the
    mouth open a little.
