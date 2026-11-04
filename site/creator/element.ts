@@ -7,6 +7,7 @@
 
 import type { NamingProfile } from '../../src/contracts/profile'
 import type { CreatorApp, CreatorShell } from './app'
+import { onSmallDevice, PHONE_NOTE } from './phone'
 
 /** Where build.ts puts the heavy half, from the site root. */
 export const CREATOR_APP_PATH = '/creator-app/app.js'
@@ -169,6 +170,8 @@ export class DramatisCreator extends HTMLElement {
   private async mount(stage: HTMLElement) {
     this.mounting = true
     const started = performance.now()
+    const note = onSmallDevice(globalThis.matchMedia)
+    if (note) this.status(PHONE_NOTE)
     try {
       // A runtime URL, so the site bundler leaves the import alone.
       const url = new URL(CREATOR_APP_PATH, location.origin).href
@@ -180,6 +183,7 @@ export class DramatisCreator extends HTMLElement {
       if (!this.isConnected) return app.dispose()
       this.app = app
       this.busy(false)
+      if (note && this.statusEl.textContent === PHONE_NOTE) this.status(false)
       console.info(
         `dramatis creator: ready in ${Math.round(
           performance.now() - started

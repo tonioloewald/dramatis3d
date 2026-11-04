@@ -71,9 +71,10 @@ The page itself is small. The creator loads its 3D engine and the body data
 when it opens: about 2.5 MB of script (compressed; the build fails past
 2.6 MB), 1.5 MB of animation clips from this site, and about 19 MB of models
 from `cdn.tosijs.net`, most of it a hair library the default character
-doesn't wear. All of it is cached after the first visit. On a mid-range
-phone over slow 4G that first visit takes well over a minute; a repeat
-visit about 9 s.
+doesn't wear. All of it is cached after the first visit. It works best on a desktop
+or a recent flagship phone (it runs well on an iPhone 17 Pro). On a mid-range
+phone over slow 4G that first visit takes well over a minute, and a repeat
+visit about 9 s, so on a phone or tablet the creator says so while it loads.
 
 ## Known issues
 

@@ -11,11 +11,13 @@ All notable changes to Dramatis. The format follows [Keep a Changelog](https://k
 
 ### Changed
 
+- **The creator warns phone and tablet visitors while it loads:** the first visit is a large download (about 20 MB), and it works best on a desktop or a recent flagship phone. The creator page says the same.
 - **The eye art and the slider-extremes sweep are tosijs-3d's** (0.12.2, pinned). Exports recolour and map the eyes with `tosijs-3d/eye-art` (#3727); `bin/extremes.ts` runs `tosijs-3d/fit-extremes` (#3661). Dramatis's copies in `src/upstream/` are gone, and with them the last code bound for tosijs-3d. The samples' eye textures are pixel-identical; tosijs-3d's PNG encoder writes them about 6 KB larger.
 - **The GLB writer is tosijs-3d's.** Exports are written by `tosijs-3d/skinned-glb` and read by `tosijs-3d/glb-chunks` (in tosijs-3d since 0.12.1, the version already pinned); Dramatis's copy in `src/upstream/glb/` is gone. The four sample exports are byte-identical, and `dramatis` is 4.6 KB gzip smaller.
 
 ### Fixed
 
+- **The export pages listed Unity as not run.** It ran in spike 1 (28 of 28); only Unreal 5 is unverified.
 - **A share link marked version 0 is refused** instead of being read as version 1 (no such link was ever made). The export format page now says what raises its version and how a reader treats a newer file (#3690).
 - **The docs' TypeScript samples typecheck** (#3676). `site/docs/fences.test.ts` checks every ```ts fence against the library's source, in `bun run check`; it found three fences missing three.js imports (`AnimationMixer`, `Mesh`, `Vector3`) and an untyped face-unit helper, now fixed. The site's own example check is on too.
 - **The licences page no longer promises that your own garments and bodies export** (as `NOASSERTION`): they are refused for now, and the page says so. A test ties the sentence to what the exporter does (#3675).
