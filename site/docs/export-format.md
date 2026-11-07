@@ -61,6 +61,14 @@ mesh sharing a name:
 | `hair` | The hair, whichever kind |
 | `garment_<asset>` | Each worn garment, by its asset name (`garment_toigo_harem_pants`) |
 
+**A mesh body** (a character whose body is a mesh rigged in the rig tool,
+not MakeHuman's: src/mesh/, written by tosijs-3d's `riggedBodyGlb`) has
+`body`, one primitive per material of the file (materials `body`, `body_2`,
+…, with the file's own textures), and `eyes` only when the file has
+eyeballs of its own. It has no morph targets (`faceUnits` is empty). Its
+springs, when the rig has any, go in as `VRMC_springBone` and
+`TOSIJS_spring_chains` (see tosijs-3d's spring-vrm).
+
 Names are ASCII letters, digits and `_`. Each mesh has one primitive per
 material (usually one), `mode` 4 (triangles), indexed, with `POSITION`,
 `NORMAL`, `TEXCOORD_0` (when textured), `JOINTS_0` and `WEIGHTS_0`. The
@@ -236,6 +244,9 @@ Every asset in the file is listed, with its source and licence, in
 **`asset.extras.dramatis`**. `asset.copyright` repeats it as one line for
 tools that show only that: `<title>: <licence>` per asset, joined with
 `; `. A CC BY asset's credit line (`attribution`) is copied word for word.
+A mesh body is the `base` entry: CC0 with how it was made for the AI cast,
+and `NOASSERTION` (SPDX for "not stated") for a user's own file, whose
+licence Dramatis can't know.
 
 `asset.extras.dramatis` MUST match this schema (`checkExportExtras` is the
 same schema in code):

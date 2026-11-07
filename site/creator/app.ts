@@ -7,8 +7,10 @@
 // makeCharacter (character), the widgets the character builder uses, the
 // character file and store. The character builder page in tosijs-3d is the
 // reference; this is the product's own, smaller panel over the same parts.
-// Sources of the body, garments and rig tools other than MakeHuman's are left
-// out: Dramatis exports MakeHuman's body.
+// Its bodies are MakeHuman's, the AI cast's (tosijs-3d's AI_CHARACTER_SOURCES,
+// CC0 on the CDN) and a mesh file of the user's, rigged in tosijs-3d's rig tool
+// (mountRigTool, hosted) and exported by src/mesh/ (#3856). tosijs-3d's other
+// bodies, and garments on a mesh body, are left out until they export.
 
 import * as BABYLON from '@babylonjs/core'
 import '@babylonjs/loaders/glTF'
@@ -33,12 +35,18 @@ import { readSkeleton, retargetClip } from 'tosijs-3d/retarget-babylon'
 import { HAIR_COLOURS } from 'tosijs-3d/hair-shading'
 import { irisColor } from 'tosijs-3d/skin-tone'
 import {
+  AI_CHARACTER_SOURCES,
   CHARACTER_SLOTS,
   DEFAULT_CHARACTER,
   loadCharacterAssets,
   makeCharacter,
+  type CharacterSource,
   type SceneCharacter,
 } from 'tosijs-3d/character'
+import { mountRigTool, type RigToolHandle } from 'tosijs-3d/rig-tool'
+import type { RigRecipe } from 'tosijs-3d/rig-recipe'
+import type { CharacterBody } from 'tosijs-3d/character-file'
+import { MAKEHUMAN_SOURCE } from '../../src/mesh/source'
 import {
   readCharacter,
   writeCharacter,
@@ -107,9 +115,10 @@ type Box = { value: any; observe(cb: () => void): unknown }
 
 const SLOTS = CHARACTER_SLOTS as readonly string[]
 const CLIPS: string[] = [...CREATOR_CLIPS]
-// The settings a character file keeps: tosijs-3d's character settings that
-// describe MakeHuman's body (not mesh sources, rigs or surfaces).
-const NOT_KEPT = new Set(['hideClothes', 'rigs', 'surfaces', 'source'])
+// The settings a character file keeps: tosijs-3d's character settings, with
+// the body's source and each mesh's rig recipe (not hideClothes, nor
+// surfaces: a mesh exports in its own materials).
+const NOT_KEPT = new Set(['hideClothes', 'surfaces'])
 const TOSI_KEPT = Object.keys(DEFAULT_CHARACTER).filter((k) => !NOT_KEPT.has(k))
 // Dramatis's own settings, kept in the file beside tosijs-3d's (the build
 // reads them; tosijs-3d's character ignores them): the eye art.
@@ -123,6 +132,9 @@ const START: Record<string, unknown> = {
 }
 
 const plain = <T>(v: T): T => JSON.parse(JSON.stringify(v))
+
+/** The AI cast: CC0 meshes on the CDN (static-assets tonio/ai). */
+const CAST: Record<string, CharacterSource> = AI_CHARACTER_SOURCES
 
 export async function mountCreator(
   stage: HTMLElement,
@@ -196,6 +208,12 @@ export async function mountCreator(
   }
 
   let ch: SceneCharacter | null = null
+  // Mesh bodies: the cast, and files opened here (kept with their bytes, which
+  // the character file carries).
+  const sources: Record<string, CharacterSource> = { ...CAST }
+  const fileBytes = new Map<string, Uint8Array>()
+  let rigging: RigToolHandle | null = null
+  const madeHuman = () => box('source').value === MAKEHUMAN_SOURCE
   let note = ''
   let saved: string[] = []
   const pick = tosi({ dramatisPick: { value: '' } })
@@ -214,6 +232,8 @@ export async function mountCreator(
     select3d({ label, value: box(key), options, stayOpen: true })
 
   const handlers = {
+    rig: (_file?: File) => {},
+    openMesh: () => {},
     save: async () => {},
     rename: async () => {},
     load: async () => {},
@@ -267,8 +287,57 @@ export async function mountCreator(
     return { name, value: `#${hex(c.r)}${hex(c.g)}${hex(c.b)}` }
   })
 
-  const panel = (): Widget3d[] => [
+  const bodyChoice = (): Widget3d[] => [
+    select3d({
+      label: 'body',
+      value: box('source'),
+      options: [MAKEHUMAN_SOURCE, ...Object.keys(sources)],
+      stayOpen: true,
+    }),
+    button3d({
+      label: 'open a mesh file (.glb)…',
+      handleClick: () => handlers.openMesh(),
+    }),
+  ]
+  // A mesh's body: rig it, and say what travels with it.
+  const meshRows = (): Widget3d[] => {
+    const name = String(box('source').value)
+    const own = fileBytes.has(name)
+    return [
+      button3d({
+        label: rigging ? 'rigging…' : `rig ${name}`,
+        handleClick: () => handlers.rig(),
+      }),
+      text3d({
+        text: own
+          ? "Your own mesh: it's saved in this browser and exported, with its licence marked as not known (it's yours to know). A share link can't carry it."
+          : 'One of the AI cast: CC0, made with Gemini and Meshy. Exports carry that.',
+      }),
+    ]
+  }
+  const panel = (): Widget3d[] =>
+    madeHuman()
+      ? humanPanel()
+      : [
+          label3d({ text: 'Body', collapsible: true, open: true }),
+          ...bodyChoice(),
+          ...meshRows(),
+          ...motionRows(),
+          ...characterRows(),
+        ]
+  const motionRows = (): Widget3d[] => [
+    label3d({ text: 'Motion', collapsible: true }),
+    select3d({
+      label: 'clip',
+      value: box('clip'),
+      options: CLIPS,
+      stayOpen: true,
+    }),
+    toggle3d({ label: 'pause', value: box('paused') }),
+  ]
+  const humanPanel = (): Widget3d[] => [
     label3d({ text: 'Body', collapsible: true, open: true }),
+    ...bodyChoice(),
     slider('gender', 'gender'),
     slider('age', 'age'),
     slider('muscle', 'muscle'),
@@ -338,14 +407,7 @@ export async function mountCreator(
     }),
     label3d({ text: 'Clothes', collapsible: true }),
     ...SLOTS.map((slot) => select(slot, slot, choices(slot))),
-    label3d({ text: 'Motion', collapsible: true }),
-    select3d({
-      label: 'clip',
-      value: box('clip'),
-      options: CLIPS,
-      stayOpen: true,
-    }),
-    toggle3d({ label: 'pause', value: box('paused') }),
+    ...motionRows(),
     ...characterRows(),
   ]
 
@@ -440,10 +502,8 @@ export async function mountCreator(
     const assets = await loadCharacterAssets(scene)
     const pack = assets.pack
     offered = pack
-    const settings = () => ({
-      ...Object.fromEntries(KEPT.map((k) => [k, plain(box(k).value)])),
-      source: 'MakeHuman',
-    })
+    const settings = () =>
+      Object.fromEntries(KEPT.map((k) => [k, plain(box(k).value)]))
 
     let playing: BABYLON.AnimationGroup | null = null
     const play = () => {
@@ -464,6 +524,7 @@ export async function mountCreator(
 
     ch = await makeCharacter(scene, assets, {
       settings: settings(),
+      sources,
       gaze: () => scene.activeCamera?.globalPosition ?? cam.position,
       handleStatus: (m) => host.setLoading(m),
       handleMeshes: (meshes) => host.register({ meshes }),
@@ -508,17 +569,36 @@ export async function mountCreator(
       Object.fromEntries(
         SLOTS.map((slot) => [slot, plain(character.cloth(slot))])
       )
-    const snapshot = (
-      name = shell.name().trim() || 'character'
-    ): Character => ({
-      name,
-      settings: {
-        ...Object.fromEntries(KEPT.map((k) => [k, plain(box(k).value)])),
-      },
-      cloth: slotLooks(),
-      tailor: [],
-      garments: {},
-    })
+    // A mesh body travels as where it is (the cast's URL) or as its bytes (a
+    // file of the user's), and with the recipe it is shown rigged from: the
+    // rig tool's, else the first guess the character made.
+    const bodyOf = (source: string): CharacterBody | null => {
+      const bytes = fileBytes.get(source)
+      if (bytes) return { file: { name: source, bytes } }
+      const from = sources[source]
+      if (!from?.url) return null
+      return {
+        url: from.url,
+        ...(from.pick != null ? { pick: from.pick } : {}),
+      }
+    }
+    const snapshot = (name = shell.name().trim() || 'character'): Character => {
+      const kept = Object.fromEntries(KEPT.map((k) => [k, plain(box(k).value)]))
+      const source = String(kept.source)
+      const body = source === MAKEHUMAN_SOURCE ? null : bodyOf(source)
+      const rigs = { ...(kept.rigs as Record<string, RigRecipe>) }
+      const shown = character.shown
+      if (body && !rigs[source] && shown?.source === source && shown.recipe)
+        rigs[source] = plain(shown.recipe)
+      return {
+        name,
+        settings: { ...kept, rigs },
+        cloth: slotLooks(),
+        tailor: [],
+        garments: {},
+        ...(body ? { bodies: { [source]: body } } : {}),
+      }
+    }
     const defaults = () => ({
       settings: Object.fromEntries(KEPT.map((k) => [k, START[k]])),
       slots: slotLooks(),
@@ -528,10 +608,39 @@ export async function mountCreator(
       host.refreshScenePanel?.()
     }
 
+    // A mesh the file carries and this page doesn't have becomes a body.
+    const addBody = (name: string, b: CharacterBody) => {
+      if (b.file) {
+        fileBytes.set(name, b.file.bytes)
+        sources[name] = {
+          file: new File([b.file.bytes as BlobPart], b.file.name),
+          ...(b.pick != null ? { pick: b.pick } : {}),
+        }
+      } else if (b.url)
+        sources[name] = {
+          url: b.url,
+          ...(b.pick != null ? { pick: b.pick } : {}),
+        }
+      else return
+      character.addSource(name, sources[name]!)
+    }
     let restoring = false
     const apply = async (c: Character, warnings: string[]) => {
       restoring = true
       try {
+        for (const [name, b] of Object.entries(c.bodies ?? {}))
+          if (!(name in sources)) addBody(name, b)
+        const source = c.settings.source
+        if (
+          typeof source === 'string' &&
+          source !== MAKEHUMAN_SOURCE &&
+          !(source in sources)
+        ) {
+          warnings.push(
+            `body ${source}: open that mesh file again; MakeHuman's is shown`
+          )
+          c.settings.source = MAKEHUMAN_SOURCE
+        }
         // An outfit first: each of top and bottom clears it.
         for (const k of ['outfit', ...KEPT.filter((k) => k !== 'outfit')])
           if (k in c.settings) box(k).value = c.settings[k]
@@ -694,6 +803,78 @@ export async function mountCreator(
       })
     }
 
+    // THE RIG TOOL (tosijs-3d's, hosted): it rigs the mesh shown, or a file
+    // opened in it, and done makes what it rigged the body, with its recipe
+    // kept in the character. The character steps aside while the tool shows
+    // the same mesh; cancel puts it back as it was.
+    const meshName = (file: File) => {
+      const base = file.name.replace(/\.(glb|gltf)$/i, '') || 'mesh'
+      let name = base
+      for (let i = 2; name in CAST || name === MAKEHUMAN_SOURCE; i++)
+        name = `${base} ${i}`
+      return name
+    }
+    handlers.rig = (file?: File) => {
+      if (rigging) return
+      if (!file && madeHuman()) return
+      const name = file ? meshName(file) : String(box('source').value)
+      const from = file ? { file } : sources[name]
+      if (!from) return
+      character.hide(true)
+      playing?.stop()
+      const finish = () => {
+        rigging = null
+        character.hide(false)
+        host.refreshScenePanel?.()
+      }
+      const kept =
+        (box('rigs').value as Record<string, RigRecipe>)[name] ??
+        character.recipe
+      rigging = mountRigTool(host, {
+        models: [
+          {
+            label: name,
+            url: from.url ?? '',
+            ...(from.file ? { file: from.file } : {}),
+            ...(from.pick != null ? { pick: from.pick } : {}),
+          },
+        ],
+        // A new file starts from nothing; a body shown starts where it is.
+        ...(file || !kept ? {} : { recipe: plain(kept) }),
+        files: false,
+        stage: false,
+        camera: cam,
+        handleDone: async ({ recipe, body, model }) => {
+          finish()
+          delete (recipe as { model?: unknown }).model
+          const loaded =
+            model instanceof File ? model : model?.file ?? file ?? null
+          if (loaded) {
+            fileBytes.set(name, new Uint8Array(await loaded.arrayBuffer()))
+            sources[name] = { file: loaded }
+            character.addSource(name, sources[name]!)
+          }
+          if (body) character.adopt(name, body, recipe)
+          box('rigs').value = {
+            ...plain(box('rigs').value as Record<string, RigRecipe>),
+            [name]: plain(recipe),
+          }
+          if (box('source').value !== name) box('source').value = name
+          else play()
+          host.refreshScenePanel?.()
+        },
+        handleCancel: () => {
+          finish()
+          play()
+        },
+      })
+      host.refreshScenePanel?.()
+    }
+    handlers.openMesh = () => {
+      chooseFile('.glb,model/gltf-binary').then((f) => f && handlers.rig(f))
+    }
+    watch(box('source'), () => host.refreshScenePanel?.())
+
     // Where the page opens: a share link's character, else the working figure.
     const fragment = shareFragment(location.hash)
     let opened = false
@@ -744,6 +925,7 @@ export async function mountCreator(
   function dispose() {
     if (disposed) return
     disposed = true
+    rigging?.unmount()
     clearTimeout(pendingSave)
     for (const off of unwatch.splice(0)) off()
     ch?.dispose()

@@ -13,6 +13,17 @@ panel, name your character, and export it.
   it): body, ancestry, skin and eyes, face, hair and clothes. **Motion** sets
   them walking, dancing or standing still. Drag to turn the
   camera, scroll or pinch to zoom.
+- **Bring your own hero.** **body**, at the top of the panel, is
+  MakeHuman's (shaped with the sliders) or a mesh: one of the AI-made cast,
+  or **open a mesh file (.glb)…** of your own (from Meshy, Tripo, a modeller).
+  **rig** opens [tosijs-3d](https://3d.tosijs.net)'s rig tool on it: it
+  guesses where the joints go, you drag any that are wrong while it plays a
+  clip, and **done** makes it the body, rigged. It exports like any other
+  character, GLB and VRM, on the same skeleton. Your own mesh is kept in
+  this browser and goes into exported files and character files, but **a
+  share link can't carry it** (a link holds settings, not meshes): the link
+  says so, and opens with MakeHuman's body. Its licence is yours to know, so
+  the export marks it as not stated (`NOASSERTION`).
 - **View in three.js** exports a GLB and opens it in Dramatis's three.js
   viewer in a new tab. The file goes to the viewer through this browser's
   storage, not over the network, and is deleted after a day.
@@ -55,6 +66,7 @@ tones, which are CC BY 4.0 and credited in every export:
 | The eye art (**eye art**: basic or anime), its iris recoloured | Tonio Loewald, original | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | More hairstyles and brows (not exportable yet) | [Quaternius](https://quaternius.com) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | The skin tones | [Monk Skin Tone Scale](https://skintone.google), by Dr. Ellis Monk and Google | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| The AI-made cast (**body**: the four meshes besides MakeHuman's), rigged here | Tonio Loewald, with Gemini (reference sheets) and Meshy (meshes, on a paid plan) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | The skeleton, and the preview's animations (the clips are not exported) | Quaternius' Universal Animation Library | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 
 MakeHuman's data is used as published; its code is not (Dramatis
@@ -65,7 +77,8 @@ the assets it actually contains, each with its source and licence, in
 
 The creator runs on [tosijs-3d](https://3d.tosijs.net)'s character system,
 the same one as its [character builder](https://3d.tosijs.net/character-builder/),
-which has the tailor and rig tools this page leaves out.
+whose rig tool it hosts for mesh bodies. The builder's tailor is not here
+yet: garments made with it don't export yet.
 
 ## Size
 
@@ -91,5 +104,9 @@ visit about 9 s, so on a phone or tablet the creator says so while it loads.
   the lashes a dark card, and the creator's skin, hair and cloth shading
   stay behind. The eyes match: the creator paints the same eye art the
   export carries. [Export](/export/) lists what does not travel yet.
+- **A mesh body exports as it is made.** No face expressions (a mesh has
+  none of MakeHuman's face units), no hair or clothes beyond its own, and its
+  height as the file has it: Meshy makes every model 1.9 units tall, so an
+  AI-made character exports 1.9 m tall.
 - The creator's bundle carries its own copy of tosijs beside the site's, so
   the console notes a few elements "already defined". It is harmless.
