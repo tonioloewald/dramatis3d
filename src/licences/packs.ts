@@ -4,7 +4,7 @@
 export const PACKS = {
   pack: {
     path: 'makehuman/hm08/hm08.json',
-    sha256: '240cb7e11654590940e48f4d3df5437d46ac861037196236525ba1fdb15f81ea',
+    sha256: '758987bea6bc9223cf5ee2f7c723b0b99e73b40c3b92ae64792a8109243c59a9',
     source: {
       repo: 'https://github.com/makehumancommunity/makehuman',
       commit: 'a8bc2d54ff0ac92e78ff71431b1023eda42bf482',
@@ -653,6 +653,16 @@ export const PACKS = {
         source: 'http://www.makehumancommunity.org',
       },
     },
+    female1605: {
+      category: 'body',
+      slot: 'body',
+      pack: 'system',
+      declared: {
+        author: 'makehuman_system',
+        license: 'CC0',
+        source: 'http://www.makehumancommunity.org',
+      },
+    },
     female_casualsuit01: {
       category: 'clothes',
       slot: 'outfit',
@@ -676,6 +686,26 @@ export const PACKS = {
     female_elegantsuit01: {
       category: 'clothes',
       slot: 'outfit',
+      pack: 'system',
+      declared: {
+        author: 'makehuman_system',
+        license: 'CC0',
+        source: 'http://www.makehumancommunity.org',
+      },
+    },
+    female_generic: {
+      category: 'body',
+      slot: 'body',
+      pack: 'system',
+      declared: {
+        author: 'makehuman_system',
+        license: 'CC0',
+        source: 'http://www.makehumancommunity.org',
+      },
+    },
+    female_muscle_13442: {
+      category: 'body',
+      slot: 'body',
       pack: 'system',
       declared: {
         author: 'makehuman_system',
@@ -876,6 +906,16 @@ export const PACKS = {
     long01: {
       category: 'hair',
       slot: 'hair',
+      pack: 'system',
+      declared: {
+        author: 'makehuman_system',
+        license: 'CC0',
+        source: 'http://www.makehumancommunity.org',
+      },
+    },
+    male1591: {
+      category: 'body',
+      slot: 'body',
       pack: 'system',
       declared: {
         author: 'makehuman_system',
@@ -1101,6 +1141,26 @@ export const PACKS = {
         },
       },
     },
+    male_generic: {
+      category: 'body',
+      slot: 'body',
+      pack: 'system',
+      declared: {
+        author: 'makehuman_system',
+        license: 'CC0',
+        source: 'http://www.makehumancommunity.org',
+      },
+    },
+    male_muscle_13290: {
+      category: 'body',
+      slot: 'body',
+      pack: 'system',
+      declared: {
+        author: 'makehuman_system',
+        license: 'CC0',
+        source: 'http://www.makehumancommunity.org',
+      },
+    },
     male_worksuit01: {
       category: 'clothes',
       slot: 'outfit',
@@ -1184,6 +1244,16 @@ export const PACKS = {
     ponytail01: {
       category: 'hair',
       slot: 'hair',
+      pack: 'system',
+      declared: {
+        author: 'makehuman_system',
+        license: 'CC0',
+        source: 'http://www.makehumancommunity.org',
+      },
+    },
+    proxy741: {
+      category: 'body',
+      slot: 'body',
       pack: 'system',
       declared: {
         author: 'makehuman_system',

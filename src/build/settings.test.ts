@@ -67,7 +67,7 @@ describe('readSettings', () => {
     )
     // The string the samples and docs were made with.
     expect(HM08_PACK_URL).toBe(
-      'https://cdn.tosijs.net/makehuman/hm08/hm08.json?v=17'
+      'https://cdn.tosijs.net/makehuman/hm08/hm08.json?v=18'
     )
   })
 

@@ -128,7 +128,7 @@ const LOCAL_PACK = join(
   'assets',
   PACKS.pack.path
 )
-const CDN_PACK = `https://cdn.tosijs.net/${PACKS.pack.path}?v=17`
+const CDN_PACK = `https://cdn.tosijs.net/${PACKS.pack.path}?v=18`
 
 // Which pack to check, decided before the test is registered (#3678): a
 // static-assets checkout when there is one; else the CDN, in the network
