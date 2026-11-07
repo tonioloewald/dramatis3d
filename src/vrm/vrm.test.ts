@@ -46,10 +46,19 @@ const glbBytes = (name: string): Uint8Array =>
 const SAMPLES = readdirSync(OUT)
   .filter((f) => f.endsWith('.glb'))
   .sort()
-const UE_SAMPLES = SAMPLES.filter((f) => {
-  const extras = readGlb(glbBytes(f)).json.asset.extras.dramatis
+const extrasOf = (f: string) => readGlb(glbBytes(f)).json.asset.extras.dramatis
+const isUe = (f: string) => {
+  const extras = extrasOf(f)
   return extras.naming === 'ue' && extras.restPose === 't-pose'
-})
+}
+// MakeHuman's samples carry the face units the presets are made from; a mesh
+// body (src/mesh/, the AI cast) has none, so its VRM has bones and meta only.
+const madeHuman = (f: string) =>
+  extrasOf(f).licences.some((e: { asset: string }) =>
+    e.asset.startsWith('makehuman:base/')
+  )
+const UE_SAMPLES = SAMPLES.filter((f) => isUe(f) && madeHuman(f))
+const MESH_UE_SAMPLES = SAMPLES.filter((f) => isUe(f) && !madeHuman(f))
 
 const rest = ualRest(
   new Uint8Array(
@@ -348,6 +357,19 @@ describe('the face units do what the presets assume (measured on a sample)', () 
   })
 })
 
+describe.each(MESH_UE_SAMPLES)('%s (a mesh body) as VRM', (file) => {
+  const vrmBytes = vrmFromGlb(glbBytes(file), { authors: ['Sample author'] })
+  test('passes the checker', () => {
+    expect(vrmProblems(vrmBytes)).toEqual([])
+  })
+  test('three-vrm loads it: meta and every bone; no presets to map', async () => {
+    const vrm = await loadVrm(vrmBytes)
+    expect(vrm.meta.metaVersion).toBe('1')
+    for (const [bone, joint] of Object.entries(VRM_HUMAN_BONES))
+      expect(vrm.humanoid.getRawBoneNode(bone as never)?.name).toBe(joint)
+  })
+})
+
 describe.each(UE_SAMPLES)('%s as VRM', (file) => {
   const glb = glbBytes(file)
   const vrmBytes = vrmFromGlb(glb, { authors: ['Sample author'] })
@@ -444,7 +466,7 @@ describe.each(UE_SAMPLES)('%s as VRM', (file) => {
 })
 
 test('NOT a VRM: a Mixamo-named sample is refused with a reason', () => {
-  const mixamo = SAMPLES.find((f) => !UE_SAMPLES.includes(f))
+  const mixamo = SAMPLES.find((f) => extrasOf(f).naming === 'mixamo')
   if (mixamo === undefined) return
   expect(() => vrmFromGlb(glbBytes(mixamo))).toThrow(/ue naming/)
 })

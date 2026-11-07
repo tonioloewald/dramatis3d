@@ -5,7 +5,10 @@
 //
 // History (gzip): dramatis/three 5.3 KiB at 0.1.0, 5.2 KiB 2026-11-03;
 // dramatis 43.4 KiB 2026-11-03 (4.6 KiB less once the GLB writer moved to
-// tosijs-3d's subpaths).
+// tosijs-3d's subpaths); 45.4 KiB at tosijs-3d 0.12.3; 62.2 KiB 2026-11-07,
+// raised to 66 for mesh bodies (#3856: tosijs-3d's GLB reader, rig fit, bone
+// heat and rigged-body writer, about 17 KiB). Loading them on demand saved
+// only about 7 KiB once split, as the chunks share most of the writer.
 
 import { describe, expect, test } from 'bun:test'
 import { join } from 'node:path'
@@ -15,7 +18,7 @@ const KiB = 1024
 
 const CEILINGS: Record<string, number> = {
   'src/three/index.ts': 7 * KiB,
-  'src/index.ts': 50 * KiB,
+  'src/index.ts': 66 * KiB,
 }
 
 async function gzipSize(entry: string): Promise<number> {

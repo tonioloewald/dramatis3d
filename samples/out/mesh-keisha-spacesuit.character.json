@@ -1,0 +1,56 @@
+{
+  "format": "tosijs-character",
+  "version": 1,
+  "name": "Keisha (spacesuit)",
+  "settings": {
+    "source": "african-american-female-spacesuit-10k",
+    "rigs": {
+      "african-american-female-spacesuit-10k": {
+        "binding": {
+          "markers": {
+            "chin": {
+              "x": 0,
+              "y": 0.7776305947452784
+            },
+            "groin": {
+              "x": 0,
+              "y": -0.2200426276773214
+            },
+            "wristL": {
+              "x": 0.4468869638442993,
+              "y": 0.16002336181700239
+            },
+            "wristR": {
+              "x": -0.4468869638442993,
+              "y": 0.16002336181700239
+            },
+            "elbowL": {
+              "x": 0.27706991758346555,
+              "y": 0.3738104809075594
+            },
+            "elbowR": {
+              "x": -0.27706991758346555,
+              "y": 0.3738104809075594
+            },
+            "kneeL": {
+              "x": 0.13969172537326813,
+              "y": -0.5268271435722709
+            },
+            "kneeR": {
+              "x": -0.13969172537326813,
+              "y": -0.5268271435722709
+            }
+          }
+        }
+      }
+    }
+  },
+  "cloth": {},
+  "tailor": [],
+  "garments": {},
+  "bodies": {
+    "african-american-female-spacesuit-10k": {
+      "url": "https://cdn.tosijs.net/tonio/ai/african-american-female-spacesuit-10k.glb"
+    }
+  }
+}

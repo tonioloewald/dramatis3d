@@ -10,6 +10,7 @@
 import type { Character } from 'tosijs-3d/character-file'
 import type { HumanPack } from 'tosijs-3d/human-pack'
 import { buildCharacter, writeCharacterGlb } from '../build'
+import { exportMeshGlb, hasMeshBody } from '../mesh'
 import type { BuiltCharacter } from '../contracts/built-character'
 import type { VrmExportOptions, VrmMeta } from '../contracts/export'
 import type { LicenceEntry } from '../contracts/licences'
@@ -409,6 +410,15 @@ export async function exportCharacterVrm(
   pack: HumanPack,
   options: VrmExportOptions = {}
 ): Promise<Uint8Array> {
+  if (hasMeshBody(character))
+    return vrmFromGlb(
+      await exportMeshGlb(character, {
+        naming: 'ue',
+        restPose: 't-pose',
+        ...(options.fetch !== undefined ? { fetch: options.fetch } : {}),
+      }),
+      options.meta ?? {}
+    )
   const built = await buildCharacter(character, pack, {
     restPose: 't-pose',
     ...(options.faceUnits !== undefined

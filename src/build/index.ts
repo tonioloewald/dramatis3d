@@ -9,6 +9,7 @@ import { characterLicences } from '../contracts/licences'
 import { buildCharacterWith } from './build'
 import { NAMINGS, option } from './options'
 import { writeCharacterGlb } from './write'
+import { exportMeshGlb, hasMeshBody } from '../mesh'
 
 export { writeCharacterGlb }
 
@@ -54,6 +55,14 @@ export async function exportCharacterGlb(
     NAMINGS,
     'ue'
   )
+  // A mesh body (rigged in the rig tool) is written by tosijs-3d's
+  // rigged-body GLB writer: no MakeHuman build, no face units (src/mesh/).
+  if (hasMeshBody(character))
+    return exportMeshGlb(character, {
+      naming,
+      ...(options.restPose !== undefined ? { restPose: options.restPose } : {}),
+      ...(options.fetch !== undefined ? { fetch: options.fetch } : {}),
+    })
   const built = await buildCharacter(character, pack, {
     ...(options.faceUnits !== undefined
       ? { faceUnits: options.faceUnits }

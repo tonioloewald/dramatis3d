@@ -1,0 +1,56 @@
+{
+  "format": "tosijs-character",
+  "version": 1,
+  "name": "Kevin (spacesuit)",
+  "settings": {
+    "source": "eurasian-male-spacesuit-10k",
+    "rigs": {
+      "eurasian-male-spacesuit-10k": {
+        "binding": {
+          "markers": {
+            "chin": {
+              "x": 0,
+              "y": 0.7887183738872408
+            },
+            "groin": {
+              "x": 0,
+              "y": -0.208210495300591
+            },
+            "wristL": {
+              "x": 0.44899404642730956,
+              "y": 0.16563783064484594
+            },
+            "wristR": {
+              "x": -0.44899404642730956,
+              "y": 0.16563783064484594
+            },
+            "elbowL": {
+              "x": 0.2783763087849319,
+              "y": 0.39706774670630685
+            },
+            "elbowR": {
+              "x": -0.2783763087849319,
+              "y": 0.39706774670630685
+            },
+            "kneeL": {
+              "x": 0.14837816320359704,
+              "y": -0.5197507669217885
+            },
+            "kneeR": {
+              "x": -0.14837816320359704,
+              "y": -0.5197507669217885
+            }
+          }
+        }
+      }
+    }
+  },
+  "cloth": {},
+  "tailor": [],
+  "garments": {},
+  "bodies": {
+    "eurasian-male-spacesuit-10k": {
+      "url": "https://cdn.tosijs.net/tonio/ai/eurasian-male-spacesuit-10k.glb"
+    }
+  }
+}

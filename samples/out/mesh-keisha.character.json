@@ -1,0 +1,56 @@
+{
+  "format": "tosijs-character",
+  "version": 1,
+  "name": "Keisha",
+  "settings": {
+    "source": "african-american-female-10k",
+    "rigs": {
+      "african-american-female-10k": {
+        "binding": {
+          "markers": {
+            "chin": {
+              "x": 0,
+              "y": 0.6107403254136443
+            },
+            "groin": {
+              "x": 0,
+              "y": -0.10158118698745966
+            },
+            "wristL": {
+              "x": 0.4564613516351617,
+              "y": 0.024262280203402042
+            },
+            "wristR": {
+              "x": -0.4564613516351617,
+              "y": 0.024262280203402042
+            },
+            "elbowL": {
+              "x": 0.33378851767374973,
+              "y": 0.20604673016816377
+            },
+            "elbowR": {
+              "x": -0.33378851767374973,
+              "y": 0.20604673016816377
+            },
+            "kneeL": {
+              "x": 0.1177003514021635,
+              "y": -0.45809810394421224
+            },
+            "kneeR": {
+              "x": -0.1177003514021635,
+              "y": -0.45809810394421224
+            }
+          }
+        }
+      }
+    }
+  },
+  "cloth": {},
+  "tailor": [],
+  "garments": {},
+  "bodies": {
+    "african-american-female-10k": {
+      "url": "https://cdn.tosijs.net/tonio/ai/african-american-female-10k.glb"
+    }
+  }
+}

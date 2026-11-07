@@ -160,6 +160,14 @@ for (const file of files) {
 
     test("the eyes carry Tonio's eye art, mapped, and credited", async () => {
       const { json } = readGlb(await bytes())
+      // A mesh body (src/mesh/, the AI cast) keeps its own eyes, drawn into
+      // its own texture: the eye art is MakeHuman's.
+      if (
+        !json.asset.extras.dramatis.licences.some((e: { asset: string }) =>
+          e.asset.startsWith('makehuman:base/')
+        )
+      )
+        return
       const mesh = json.meshes.find((m: { name: string }) => m.name === 'eyes')
       const prim = mesh.primitives[0]
       expect(prim.attributes.TEXCOORD_0).toBeDefined()

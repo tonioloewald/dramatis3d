@@ -7,6 +7,11 @@
 // Reads the hm08 pack from the CDN (cached in .cache/cdn/, so a second run is
 // offline). Licences: the manifest's characterLicences (src/licences/), the
 // same entries the public buildCharacter carries.
+//
+// MESH_SAMPLES are the AI cast (#3856): a mesh from the CDN, rigged from the
+// markers tosijs-3d's rig tool would start from (guessed off its outline),
+// written by exportMeshGlb (src/mesh/). The guess goes into the character
+// file as its rig recipe, so the sample is made again from the file alone.
 
 import { mkdirSync } from 'node:fs'
 import { join } from 'node:path'
@@ -17,6 +22,9 @@ import { buildCharacterWith } from '../src/build/build'
 import { cachedFetch, HM08_PACK_URL } from '../src/build/cdn'
 import { characterLicences } from '../src/contracts/licences'
 import { writeCharacterGlb } from '../src/build/write'
+import { glbRigTriangles } from 'tosijs-3d/glb-rig'
+import { bodyFromMarkers } from 'tosijs-3d/rigged-body'
+import { AI_CAST_BASE, exportMeshGlb } from '../src/mesh'
 
 interface Sample {
   /** Why it is here. */
@@ -86,15 +94,99 @@ export const SAMPLES: Record<string, Sample> = {
   },
 }
 
+/** The AI cast's meshes (CC0, cdn tonio/ai), by sample name. */
+export const MESH_SAMPLES: Record<
+  string,
+  { what: string; name: string; file: string; naming?: NamingProfile }
+> = {
+  'mesh-keisha': {
+    what: 'a mesh body: Keisha (AI-made, CC0), in underwear',
+    name: 'Keisha',
+    file: 'african-american-female-10k.glb',
+  },
+  'mesh-keisha-spacesuit': {
+    what: 'a mesh body: Keisha in a spacesuit, under the Mixamo naming profile',
+    name: 'Keisha (spacesuit)',
+    file: 'african-american-female-spacesuit-10k.glb',
+    naming: 'mixamo',
+  },
+  'mesh-kevin': {
+    what: 'a mesh body: Kevin (AI-made, CC0), in underwear',
+    name: 'Kevin',
+    file: 'eurasian-male-10k.glb',
+  },
+  'mesh-kevin-spacesuit': {
+    what: 'a mesh body: Kevin in a spacesuit',
+    name: 'Kevin (spacesuit)',
+    file: 'eurasian-male-spacesuit-10k.glb',
+  },
+}
+
+/** A mesh sample's character: the CDN mesh, and its guessed markers as the recipe. */
+async function meshCharacter(
+  sample: (typeof MESH_SAMPLES)[string],
+  fetcher: (url: string) => Promise<ArrayBuffer>
+): Promise<Character> {
+  const url = `${AI_CAST_BASE}${sample.file}`
+  const guessed = bodyFromMarkers(
+    glbRigTriangles(new Uint8Array(await fetcher(url)))
+  )
+  if (guessed.made.by !== 'markers')
+    throw new Error(`${url}: not bound from markers`)
+  const source = sample.file.replace(/\.glb$/, '')
+  return {
+    name: sample.name,
+    settings: {
+      source,
+      rigs: {
+        [source]: {
+          binding: {
+            markers: guessed.made.markers,
+            ...(guessed.made.tail ? { tail: guessed.made.tail } : {}),
+          },
+        },
+      },
+    },
+    cloth: {},
+    tailor: [],
+    garments: {},
+    bodies: { [source]: { url } },
+  }
+}
+
 const OUT = join(import.meta.dir, '..', 'samples', 'out')
 
 if (import.meta.main) {
   const names = process.argv.slice(2)
-  const chosen = names.length > 0 ? names : Object.keys(SAMPLES)
+  const chosen =
+    names.length > 0
+      ? names
+      : [...Object.keys(SAMPLES), ...Object.keys(MESH_SAMPLES)]
   const fetcher = cachedFetch()
   const pack = await loadHumanPack(HM08_PACK_URL, fetcher)
   mkdirSync(OUT, { recursive: true })
   for (const name of chosen) {
+    const mesh = MESH_SAMPLES[name]
+    if (mesh !== undefined) {
+      const t0 = performance.now()
+      const c = await meshCharacter(mesh, fetcher)
+      const bytes = await exportMeshGlb(c, {
+        naming: mesh.naming ?? 'ue',
+        fetch: fetcher,
+      })
+      await Bun.write(join(OUT, `${name}.glb`), bytes)
+      await Bun.write(
+        join(OUT, `${name}.character.json`),
+        JSON.stringify(writeCharacter(c), null, 2) + '\n'
+      )
+      console.log(
+        `${name}.glb: ${(bytes.byteLength / 1e6).toFixed(2)} MB, ${(
+          (performance.now() - t0) /
+          1000
+        ).toFixed(1)} s — ${mesh.what}`
+      )
+      continue
+    }
     const sample = SAMPLES[name]
     if (sample === undefined) throw new Error(`no sample ${name}`)
     const t0 = performance.now()
