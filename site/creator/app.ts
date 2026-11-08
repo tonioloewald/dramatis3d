@@ -44,6 +44,7 @@ import {
   type SceneCharacter,
 } from 'tosijs-3d/character'
 import { mountRigTool, type RigToolHandle } from 'tosijs-3d/rig-tool'
+import { undoHistory } from 'tosijs-3d/undo-history'
 import type { RigRecipe } from 'tosijs-3d/rig-recipe'
 import type { CharacterBody } from 'tosijs-3d/character-file'
 import { MAKEHUMAN_SOURCE } from '../../src/mesh/source'
@@ -240,10 +241,17 @@ export async function mountCreator(
     forget: async () => {},
     exportJson: () => {},
     importJson: () => {},
+    undo: () => {},
+    redo: () => {},
   }
+  // UNDO: the panel's settings, a step per pause in the editing.
+  const history = undoHistory<Record<string, unknown>>({
+    limit: 100,
+    same: (a, b) => JSON.stringify(a) === JSON.stringify(b),
+  })
 
   const characterRows = (): Widget3d[] => [
-    label3d({ text: 'Character', collapsible: true }),
+    label3d({ text: 'Character', collapsible: true, icon: 'character' }),
     button3d({
       label: 'save in this browser…',
       handleClick: () => handlers.save(),
@@ -319,14 +327,19 @@ export async function mountCreator(
     madeHuman()
       ? humanPanel()
       : [
-          label3d({ text: 'Body', collapsible: true, open: true }),
+          label3d({
+            text: 'Body',
+            collapsible: true,
+            open: true,
+            icon: 'body',
+          }),
           ...bodyChoice(),
           ...meshRows(),
           ...motionRows(),
           ...characterRows(),
         ]
   const motionRows = (): Widget3d[] => [
-    label3d({ text: 'Motion', collapsible: true }),
+    label3d({ text: 'Motion', collapsible: true, icon: 'motion' }),
     select3d({
       label: 'clip',
       value: box('clip'),
@@ -336,7 +349,7 @@ export async function mountCreator(
     toggle3d({ label: 'pause', value: box('paused') }),
   ]
   const humanPanel = (): Widget3d[] => [
-    label3d({ text: 'Body', collapsible: true, open: true }),
+    label3d({ text: 'Body', collapsible: true, open: true, icon: 'body' }),
     ...bodyChoice(),
     slider('gender', 'gender'),
     slider('age', 'age'),
@@ -349,13 +362,15 @@ export async function mountCreator(
     slider('pecs', 'pecs'),
     slider('bust', 'bustSize'),
     slider('firmness', 'bustFirmness'),
-    label3d({ text: 'Ancestry', collapsible: true }),
+    // A subheading in Body, not a tab of its own (as tosijs-3d's builder).
+    label3d({ text: 'ancestry' }),
     slider('african', 'african'),
     slider('asian', 'asian'),
     slider('caucasian', 'caucasian'),
-    label3d({ text: 'Skin and eyes', collapsible: true }),
+    label3d({ text: 'Skin', collapsible: true, icon: 'skin' }),
     slider('tone', 'tone'),
     slider('redness', 'redness'),
+    label3d({ text: 'Eyes', collapsible: true, icon: 'eyes' }),
     colorPicker3d({
       label: 'eye colour',
       value: box('irisColour') as {
@@ -367,13 +382,13 @@ export async function mountCreator(
       presets: irisPresets,
     }),
     select('eye art', 'eyeStyle', [...EYE_STYLES]),
-    label3d({ text: 'Face', collapsible: true }),
+    label3d({ text: 'Face', collapsible: true, icon: 'face' }),
     toggle3d({ label: 'blink', value: box('blink') }),
     toggle3d({ label: 'talk', value: box('talk') }),
     slider('smile', 'smile'),
     slider('brows up', 'browsUp'),
     slider('frown', 'frown'),
-    label3d({ text: 'Hair', collapsible: true }),
+    label3d({ text: 'Hair', collapsible: true, icon: 'hair' }),
     select('hair', 'hair', choices('hair')),
     select('beard', 'beard', choices('beard')),
     select('moustache', 'moustache', choices('moustache')),
@@ -405,7 +420,7 @@ export async function mountCreator(
         value: c.highlight,
       })),
     }),
-    label3d({ text: 'Clothes', collapsible: true }),
+    label3d({ text: 'Clothes', collapsible: true, icon: 'clothing' }),
     ...SLOTS.map((slot) => select(slot, slot, choices(slot))),
     ...motionRows(),
     ...characterRows(),
@@ -425,7 +440,23 @@ export async function mountCreator(
       clearColor: '#2a3340',
       panelTitle: 'Dramatis',
       scenePanelOpen: true,
+      // A tab per section, each its icon; undo and redo on the icon bar.
+      panelSections: 'tabs',
       scenePanel: () => panel(),
+      panelActions: () => [
+        {
+          icon: 'rotateCcw',
+          title: 'undo (⌘Z)',
+          dim: !history.canUndo,
+          handleClick: () => handlers.undo(),
+        },
+        {
+          icon: 'rotateCw',
+          title: 'redo (⇧⌘Z)',
+          dim: !history.canRedo,
+          handleClick: () => handlers.redo(),
+        },
+      ],
       async sceneCreated(host: B3d) {
         try {
           await build(host)
@@ -899,6 +930,62 @@ export async function mountCreator(
     await listSaved()
     host.setLoading(false)
     play()
+
+    // UNDO AND REDO over the panel's settings (what the file keeps): a step
+    // is recorded once the editing pauses, so a slider's drag is one step.
+    // Loading, importing and rigging are steps too.
+    const kept = () =>
+      Object.fromEntries(KEPT.map((k) => [k, plain(box(k).value)]))
+    let stepping = false
+    let pendingStep: ReturnType<typeof setTimeout> | undefined
+    const recordLater = () => {
+      if (stepping || disposed) return
+      clearTimeout(pendingStep)
+      pendingStep = setTimeout(() => {
+        pendingStep = undefined
+        if (history.record(kept())) host.refreshScenePanel?.()
+      }, 400)
+    }
+    const step = (to: Record<string, unknown> | undefined) => {
+      if (!to) return
+      clearTimeout(pendingStep)
+      stepping = true
+      try {
+        // An outfit first: each of top and bottom clears it.
+        for (const k of ['outfit', ...KEPT.filter((k) => k !== 'outfit')])
+          if (k in to && JSON.stringify(box(k).value) !== JSON.stringify(to[k]))
+            box(k).value = plain(to[k])
+      } finally {
+        stepping = false
+      }
+      changed()
+      host.refreshScenePanel?.()
+    }
+    history.clear(kept())
+    for (const k of KEPT) watch(box(k), recordLater)
+    handlers.undo = () => {
+      // An edit still waiting to be recorded is the step undo takes back.
+      if (pendingStep) {
+        clearTimeout(pendingStep)
+        pendingStep = undefined
+        history.record(kept())
+      }
+      step(history.undo())
+    }
+    handlers.redo = () => step(history.redo())
+    const keys = (e: KeyboardEvent) => {
+      if (!(e.metaKey || e.ctrlKey) || e.key.toLowerCase() !== 'z') return
+      const t = e.target as HTMLElement | null
+      if (t?.closest?.('input, textarea, [contenteditable="true"]')) return
+      e.preventDefault()
+      if (e.shiftKey) handlers.redo()
+      else handlers.undo()
+    }
+    window.addEventListener('keydown', keys)
+    unwatch.push(() => {
+      window.removeEventListener('keydown', keys)
+      clearTimeout(pendingStep)
+    })
     host.refreshScenePanel?.()
     watch(box('clip'), play)
     watch(box('paused'), () =>

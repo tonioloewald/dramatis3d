@@ -10,9 +10,13 @@ panel, name your character, and export it.
 ## Using it
 
 - **Shape** the character in the scene's panel (the owl opens and closes
-  it): body, ancestry, skin and eyes, face, hair and clothes. **Motion** sets
-  them walking, dancing or standing still. Drag to turn the
+  it), a tab for each part: body (ancestry at its end), skin, eyes, face,
+  hair and clothes. **Motion** sets them walking, dancing or standing still,
+  and **character** saves, loads and moves the file. Drag to turn the
   camera, scroll or pinch to zoom.
+- **Undo and redo** are the arrows at the top right of the panel, or ⌘Z and
+  ⇧⌘Z (Ctrl on Windows and Linux). A slider's drag is one step; loading a
+  character or rigging a body is one too.
 - **Bring your own hero.** **body**, at the top of the panel, is
   MakeHuman's (shaped with the sliders) or a mesh: one of the AI-made cast,
   or **open a mesh file (.glb)…** of your own (from Meshy, Tripo, a modeller).
