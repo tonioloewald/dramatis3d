@@ -351,7 +351,9 @@ export async function mountCreator(
   const humanPanel = (): Widget3d[] => [
     label3d({ text: 'Body', collapsible: true, open: true, icon: 'body' }),
     ...bodyChoice(),
-    // Subheadings in Body (accordions once a tab can hold them).
+    // Subheadings in Body (accordions once a tab can hold them, #3898).
+    // Vital stats are the skeleton; shape is current fitness (and the bust).
+    // A new slider goes by that rule (owner, 2026-11-08).
     label3d({ text: 'vital stats' }),
     slider('gender', 'gender'),
     slider('age', 'age'),
