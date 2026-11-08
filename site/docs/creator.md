@@ -10,7 +10,7 @@ panel, name your character, and export it.
 ## Using it
 
 - **Shape** the character in the scene's panel (the owl opens and closes
-  it), a tab for each part: body (ancestry at its end), skin, eyes, face,
+  it), a tab for each part: body (vital stats, shape and ancestry), skin, eyes, face,
   hair and clothes. **Motion** sets them walking, dancing or standing still,
   and **character** saves, loads and moves the file. Drag to turn the
   camera, scroll or pinch to zoom.
