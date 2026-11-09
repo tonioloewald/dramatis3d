@@ -20,9 +20,10 @@ panel, name your character, and export it.
 - **Bring your own hero.** **body**, at the top of the panel, is
   MakeHuman's (shaped with the sliders) or a mesh: one of the AI-made cast,
   or **open a mesh file (.glb)…** of your own (from Meshy, Tripo, a modeller).
-  **rig** opens [tosijs-3d](https://3d.tosijs.net)'s rig tool on it: it
-  guesses where the joints go, you drag any that are wrong while it plays a
-  clip, and **done** makes it the body, rigged. It exports like any other
+  The cast come rigged by hand. **rig** opens
+  [tosijs-3d](https://3d.tosijs.net)'s rig tool on the body: on a mesh of
+  your own it guesses where the joints go, you drag any that are wrong while
+  it plays a clip, and **done** makes it the body, rigged. It exports like any other
   character, GLB and VRM, on the same skeleton. Your own mesh is kept in
   this browser and goes into exported files and character files, but **a
   share link can't carry it** (a link holds settings, not meshes): the link

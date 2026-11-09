@@ -8,10 +8,10 @@
 // offline). Licences: the manifest's characterLicences (src/licences/), the
 // same entries the public buildCharacter carries.
 //
-// MESH_SAMPLES are the AI cast (#3856): a mesh from the CDN, rigged from the
-// markers tosijs-3d's rig tool would start from (guessed off its outline),
-// written by exportMeshGlb (src/mesh/). The guess goes into the character
-// file as its rig recipe, so the sample is made again from the file alone.
+// MESH_SAMPLES are the AI cast (#3856): a mesh from the CDN, rigged from
+// Tonio's hand-placed rig for it (tosijs-3d/character-sources, #3881),
+// written by exportMeshGlb (src/mesh/). The rig goes into the character file
+// as its recipe, so the sample is made again from the file alone.
 
 import { mkdirSync } from 'node:fs'
 import { join } from 'node:path'
@@ -22,9 +22,9 @@ import { buildCharacterWith } from '../src/build/build'
 import { cachedFetch, HM08_PACK_URL } from '../src/build/cdn'
 import { characterLicences } from '../src/contracts/licences'
 import { writeCharacterGlb } from '../src/build/write'
-import { glbRigTriangles } from 'tosijs-3d/glb-rig'
-import { bodyFromMarkers } from 'tosijs-3d/rigged-body'
-import { AI_CAST_BASE, exportMeshGlb } from '../src/mesh'
+import { setAssetBase } from 'tosijs-3d/asset-url'
+import { AI_CHARACTER_SOURCES } from 'tosijs-3d/character-sources'
+import { exportMeshGlb } from '../src/mesh'
 
 interface Sample {
   /** Why it is here. */
@@ -97,60 +97,52 @@ export const SAMPLES: Record<string, Sample> = {
 /** The AI cast's meshes (CC0, cdn tonio/ai), by sample name. */
 export const MESH_SAMPLES: Record<
   string,
-  { what: string; name: string; file: string; naming?: NamingProfile }
+  {
+    what: string
+    name: string
+    /** Its key in tosijs-3d's AI_CHARACTER_SOURCES. */
+    cast: string
+    naming?: NamingProfile
+  }
 > = {
   'mesh-keisha': {
     what: 'a mesh body: Keisha (AI-made, CC0), in underwear',
     name: 'Keisha',
-    file: 'african-american-female-10k.glb',
+    cast: 'african-american-female',
   },
   'mesh-keisha-spacesuit': {
     what: 'a mesh body: Keisha in a spacesuit, under the Mixamo naming profile',
     name: 'Keisha (spacesuit)',
-    file: 'african-american-female-spacesuit-10k.glb',
+    cast: 'african-american-female-spacesuit',
     naming: 'mixamo',
   },
   'mesh-kevin': {
     what: 'a mesh body: Kevin (AI-made, CC0), in underwear',
     name: 'Kevin',
-    file: 'eurasian-male-10k.glb',
+    cast: 'eurasian-male',
   },
   'mesh-kevin-spacesuit': {
     what: 'a mesh body: Kevin in a spacesuit',
     name: 'Kevin (spacesuit)',
-    file: 'eurasian-male-spacesuit-10k.glb',
+    cast: 'eurasian-male-spacesuit',
   },
 }
 
-/** A mesh sample's character: the CDN mesh, and its guessed markers as the recipe. */
-async function meshCharacter(
-  sample: (typeof MESH_SAMPLES)[string],
-  fetcher: (url: string) => Promise<ArrayBuffer>
-): Promise<Character> {
-  const url = `${AI_CAST_BASE}${sample.file}`
-  const guessed = bodyFromMarkers(
-    glbRigTriangles(new Uint8Array(await fetcher(url)))
-  )
-  if (guessed.made.by !== 'markers')
-    throw new Error(`${url}: not bound from markers`)
-  const source = sample.file.replace(/\.glb$/, '')
+/** A mesh sample's character: the CDN mesh, and its hand-placed rig as the recipe. */
+function meshCharacter(sample: (typeof MESH_SAMPLES)[string]): Character {
+  setAssetBase('https://cdn.tosijs.net')
+  const source = sample.cast
+  const from = AI_CHARACTER_SOURCES[source]
+  if (!from?.url) throw new Error(`${source}: not in tosijs-3d's cast`)
+  if (!from.recipe?.binding?.markers)
+    throw new Error(`${source}: tosijs-3d has no hand-placed rig for it`)
   return {
     name: sample.name,
-    settings: {
-      source,
-      rigs: {
-        [source]: {
-          binding: {
-            markers: guessed.made.markers,
-            ...(guessed.made.tail ? { tail: guessed.made.tail } : {}),
-          },
-        },
-      },
-    },
+    settings: { source, rigs: { [source]: structuredClone(from.recipe) } },
     cloth: {},
     tailor: [],
     garments: {},
-    bodies: { [source]: { url } },
+    bodies: { [source]: { url: from.url } },
   }
 }
 
@@ -169,7 +161,7 @@ if (import.meta.main) {
     const mesh = MESH_SAMPLES[name]
     if (mesh !== undefined) {
       const t0 = performance.now()
-      const c = await meshCharacter(mesh, fetcher)
+      const c = meshCharacter(mesh)
       const bytes = await exportMeshGlb(c, {
         naming: mesh.naming ?? 'ue',
         fetch: fetcher,

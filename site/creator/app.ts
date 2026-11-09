@@ -351,24 +351,23 @@ export async function mountCreator(
   const humanPanel = (): Widget3d[] => [
     label3d({ text: 'Body', collapsible: true, open: true, icon: 'body' }),
     ...bodyChoice(),
-    // Subheadings in Body (accordions once a tab can hold them, #3898).
+    // Body folds into three (sub-sections, #3898), one open at a time.
     // Vital stats are the skeleton; shape is current fitness (and the bust).
     // A new slider goes by that rule (owner, 2026-11-08).
-    label3d({ text: 'vital stats' }),
+    label3d({ text: 'vital stats', collapsible: true, level: 2 }),
     slider('gender', 'gender'),
     slider('age', 'age'),
     slider('height', 'height'),
     slider('proportions', 'proportions'),
     slider('chest depth', 'chestDepth'),
-    label3d({ text: 'shape' }),
+    label3d({ text: 'shape', collapsible: true, level: 2 }),
     slider('weight', 'weight'),
     slider('muscle', 'muscle'),
     slider('waist', 'waist'),
     slider('pecs', 'pecs'),
     slider('bust', 'bustSize'),
     slider('firmness', 'bustFirmness'),
-    // A subheading in Body, not a tab of its own (as tosijs-3d's builder).
-    label3d({ text: 'ancestry' }),
+    label3d({ text: 'ancestry', collapsible: true, level: 2 }),
     slider('african', 'african'),
     slider('asian', 'asian'),
     slider('caucasian', 'caucasian'),
