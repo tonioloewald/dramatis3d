@@ -22,10 +22,11 @@ import { buildCharacterWith } from '../src/build/build'
 import { cachedFetch, HM08_PACK_URL } from '../src/build/cdn'
 import { characterLicences } from '../src/contracts/licences'
 import { writeCharacterGlb } from '../src/build/write'
-import { setAssetBase } from 'tosijs-3d/asset-url'
+import { assetUrl, setAssetBase } from 'tosijs-3d/asset-url'
 import { AI_CHARACTER_SOURCES } from 'tosijs-3d/character-sources'
 import { exportMeshGlb } from '../src/mesh'
 import { ualClips, type ExportClip } from '../src/clips'
+import { WEAPONS_PATH, weaponHeld, type ExportHeld } from '../src/held'
 
 interface Sample {
   /** Why it is here. */
@@ -50,6 +51,19 @@ const clipsOf = (c: Character): ExportClip[] => {
   if (names.length === 0) return []
   starter ??= new Uint8Array(readFileSync(STARTER))
   return ualClips(starter, names)
+}
+
+// What the hand holds is in the character file too (settings.held and
+// settings.grips, tosijs-3d's), from Tonio's weapon library on the CDN.
+const heldOf = async (
+  c: Character,
+  fetcher: (url: string) => Promise<ArrayBuffer>
+): Promise<ExportHeld | undefined> => {
+  const name = c.settings.held as string | undefined
+  if (!name || name === 'none') return undefined
+  setAssetBase('https://cdn.tosijs.net')
+  const bytes = new Uint8Array(await fetcher(assetUrl(WEAPONS_PATH, 2)))
+  return weaponHeld(bytes, name, (c.settings.grips ?? {}) as any)
 }
 
 const character = (
@@ -124,6 +138,19 @@ export const SAMPLES: Record<string, Sample> = {
       exportClips: ['Walk_Loop', 'Dance_Loop'],
     }),
   },
+  'with-held': {
+    what: 'holding a Long Sword (#3909): weapon_r under hand_r, the sword skinned to it',
+    character: character('With a sword', {
+      gender: 1,
+      age: 0.4,
+      tone: 0.7,
+      outfit: 'male_casualsuit02',
+      shoes: 'shoes01',
+      hair: 'short02',
+      brows: 'eyebrow001',
+      held: 'Long Sword',
+    }),
+  },
 }
 
 /** The AI cast's meshes (CC0, cdn tonio/ai), by sample name. */
@@ -137,6 +164,8 @@ export const MESH_SAMPLES: Record<
     naming?: NamingProfile
     /** Clips it carries (`settings.exportClips`). */
     clips?: string[]
+    /** What the right hand holds (`settings.held`). */
+    held?: string
   }
 > = {
   'mesh-keisha': {
@@ -177,6 +206,7 @@ function meshCharacter(sample: (typeof MESH_SAMPLES)[string]): Character {
       source,
       rigs: { [source]: structuredClone(from.recipe) },
       ...(sample.clips ? { exportClips: sample.clips } : {}),
+      ...(sample.held ? { held: sample.held } : {}),
     },
     cloth: {},
     tailor: [],
@@ -201,10 +231,12 @@ if (import.meta.main) {
     if (mesh !== undefined) {
       const t0 = performance.now()
       const c = meshCharacter(mesh)
+      const held = await heldOf(c, fetcher)
       const bytes = await exportMeshGlb(c, {
         naming: mesh.naming ?? 'ue',
         fetch: fetcher,
         clips: clipsOf(c),
+        ...(held ? { held } : {}),
       })
       await Bun.write(join(OUT, `${name}.glb`), bytes)
       await Bun.write(
@@ -228,9 +260,11 @@ if (import.meta.main) {
       { fetch: fetcher },
       { licences: characterLicences }
     )
+    const held = await heldOf(sample.character, fetcher)
     const bytes = writeCharacterGlb(built, {
       naming: sample.naming ?? 'ue',
       clips: clipsOf(sample.character),
+      ...(held ? { held } : {}),
     })
     await Bun.write(join(OUT, `${name}.glb`), bytes)
     await Bun.write(

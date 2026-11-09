@@ -5,6 +5,8 @@ import type { BuildOptions } from './built-character'
 import type { NamingProfile } from './profile'
 import type { ExportClip } from '../clips'
 export type { ExportClip } from '../clips'
+import type { ExportHeld } from '../held'
+export type { ExportHeld } from '../held'
 
 /** How a character is exported. */
 export interface ExportOptions {
@@ -30,6 +32,13 @@ export interface ExportOptions {
    * by name without them.
    */
   clips?: readonly ExportClip[]
+  /**
+   * What the right hand holds (`weaponHeld` makes one from Tonio's weapon
+   * library): written as a `weapon_r` joint under `hand_r`, after the
+   * profile's 65, with the item's mesh skinned to it and its licence among
+   * the file's. Default none. VRM files carry none.
+   */
+  held?: ExportHeld
 }
 
 /**

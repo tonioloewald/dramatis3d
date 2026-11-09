@@ -44,7 +44,7 @@ Asset ids are `<source>:<kind>/<name>`, lower case and stable across releases.
 
 <!-- manifest -->
 
-**118 assets shipped**, every one listed here with its source and licence. **118 community assets** are in the packs but unchecked, so they are excluded (below).
+**130 assets shipped**, every one listed here with its source and licence. **118 community assets** are in the packs but unchecked, so they are excluded (below).
 
 ### MakeHuman (core and system assets)
 
@@ -134,6 +134,18 @@ Asset ids are `<source>:<kind>/<name>`, lower case and stable across releases.
 | --- | --- | --- | --- | --- | --- |
 | `tonio:eye/basic` | Eye texture, basic (the iris recoloured to the character's) (modified) | texture | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Tonio Loewald | [source](https://cdn.tosijs.net/tonio/eyes/basic-eye.svg) |
 | `tonio:eye/anime` | Eye texture, anime (the iris recoloured to the character's) (modified) | texture | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Tonio Loewald | [source](https://cdn.tosijs.net/tonio/eyes/anime-eye.svg) |
+| `tonio:weapon/assault-rifle` | Assault Rifle (a held item, from Tonio's weapon library) | other | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Tonio Loewald | [source](https://cdn.tosijs.net/tonio/weapons-classic/weapons.glb) |
+| `tonio:weapon/buckler` | Buckler (a held item, from Tonio's weapon library) | other | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Tonio Loewald | [source](https://cdn.tosijs.net/tonio/weapons-classic/weapons.glb) |
+| `tonio:weapon/dagger` | Dagger (a held item, from Tonio's weapon library) | other | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Tonio Loewald | [source](https://cdn.tosijs.net/tonio/weapons-classic/weapons.glb) |
+| `tonio:weapon/game-controller` | Game Controller (a held item, from Tonio's weapon library) | other | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Tonio Loewald | [source](https://cdn.tosijs.net/tonio/weapons-classic/weapons.glb) |
+| `tonio:weapon/hand-and-a-half` | Hand and a Half (a held item, from Tonio's weapon library) | other | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Tonio Loewald | [source](https://cdn.tosijs.net/tonio/weapons-classic/weapons.glb) |
+| `tonio:weapon/long-sword` | Long Sword (a held item, from Tonio's weapon library) | other | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Tonio Loewald | [source](https://cdn.tosijs.net/tonio/weapons-classic/weapons.glb) |
+| `tonio:weapon/pistol` | Pistol (a held item, from Tonio's weapon library) | other | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Tonio Loewald | [source](https://cdn.tosijs.net/tonio/weapons-classic/weapons.glb) |
+| `tonio:weapon/plasma-blade` | Plasma Blade (a held item, from Tonio's weapon library) | other | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Tonio Loewald | [source](https://cdn.tosijs.net/tonio/weapons-classic/weapons.glb) |
+| `tonio:weapon/rocket-launcher` | Rocket Launcher (a held item, from Tonio's weapon library) | other | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Tonio Loewald | [source](https://cdn.tosijs.net/tonio/weapons-classic/weapons.glb) |
+| `tonio:weapon/short-sword` | Short Sword (a held item, from Tonio's weapon library) | other | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Tonio Loewald | [source](https://cdn.tosijs.net/tonio/weapons-classic/weapons.glb) |
+| `tonio:weapon/smg` | SMG (a held item, from Tonio's weapon library) | other | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Tonio Loewald | [source](https://cdn.tosijs.net/tonio/weapons-classic/weapons.glb) |
+| `tonio:weapon/spear` | Spear (a held item, from Tonio's weapon library) | other | [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Tonio Loewald | [source](https://cdn.tosijs.net/tonio/weapons-classic/weapons.glb) |
 
 ### Quaternius
 

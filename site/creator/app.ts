@@ -15,7 +15,7 @@
 import * as BABYLON from '@babylonjs/core'
 import '@babylonjs/loaders/glTF'
 import { tosi } from 'tosijs'
-import { setAssetBase } from 'tosijs-3d/asset-url'
+import { assetUrl, setAssetBase } from 'tosijs-3d/asset-url'
 import { CREATOR_CLIPS, STARTER_URL } from '../clips'
 import { b3d, type B3d } from 'tosijs-3d/tosi-b3d'
 import { b3dSun } from 'tosijs-3d/b3d-shadows'
@@ -45,6 +45,21 @@ import {
 } from 'tosijs-3d/character'
 import { mountRigTool, type RigToolHandle } from 'tosijs-3d/rig-tool'
 import { undoHistory } from 'tosijs-3d/undo-history'
+import { b3dLibrary, type B3dLibrary } from 'tosijs-3d/b3d-library'
+import { handSocket, heldGrip } from 'tosijs-3d/b3d-launcher'
+import {
+  HOLD_CLASS_LABELS,
+  holdClassOf,
+  holdGrip,
+  type HoldGrip,
+} from 'tosijs-3d/hold-grip'
+import { euler3d, vector3d } from 'tosijs-3d/vector-field'
+import {
+  WEAPONS,
+  WEAPONS_PATH,
+  weaponHeld,
+  type ExportHeld,
+} from '../../src/held'
 import type { RigRecipe } from 'tosijs-3d/rig-recipe'
 import type { CharacterBody } from 'tosijs-3d/character-file'
 import { MAKEHUMAN_SOURCE } from '../../src/mesh/source'
@@ -265,6 +280,8 @@ export async function mountCreator(
     importJson: () => {},
     undo: () => {},
     redo: () => {},
+    grip: (_patch: Partial<HoldGrip>) => {},
+    resetGrip: () => {},
   }
   // UNDO: the panel's settings, a step per pause in the editing.
   const history = undoHistory<Record<string, unknown>>({
@@ -345,6 +362,51 @@ export async function mountCreator(
       }),
     ]
   }
+  // WHAT THE RIGHT HAND HOLDS (#3909): one of Tonio's weapons, on the hand's
+  // socket, held as its class is (a grip per class, kept with the character:
+  // place it on one sword and every one-handed blade follows).
+  const gripOf = (name: string): HoldGrip =>
+    holdGrip(
+      name,
+      plain((box('grips').value ?? {}) as Record<string, Partial<HoldGrip>>)
+    )
+  const holdRows = (): Widget3d[] => {
+    const name = String(box('held').value)
+    const g = gripOf(name)
+    return [
+      label3d({ text: 'Hold', collapsible: true, icon: 'bipedHandgun' }),
+      select('right hand', 'held', ['none', ...WEAPONS]),
+      ...(name === 'none'
+        ? []
+        : [
+            label3d({
+              text: `grip for all ${
+                HOLD_CLASS_LABELS[holdClassOf(name)]
+              }: from the hand (metres)`,
+            }),
+            vector3d({
+              value: { x: g.x, y: g.y, z: g.z },
+              step: 0.01,
+              scrub: 0.002,
+              handleChange: (v) => handlers.grip({ x: v.x, y: v.y, z: v.z }),
+            }),
+            label3d({ text: 'turned (degrees)' }),
+            euler3d({
+              value: { x: g.rx, y: g.ry, z: g.rz },
+              step: 5,
+              scrub: 0.5,
+              handleChange: (v) => handlers.grip({ rx: v.x, ry: v.y, rz: v.z }),
+            }),
+            button3d({
+              label: 'reset grip',
+              handleClick: () => handlers.resetGrip(),
+            }),
+            text3d({
+              text: "Tonio's weapons, CC0. Exports carry it on a weapon_r joint under the hand.",
+            }),
+          ]),
+    ]
+  }
   const panel = (): Widget3d[] =>
     madeHuman()
       ? humanPanel()
@@ -357,6 +419,7 @@ export async function mountCreator(
           }),
           ...bodyChoice(),
           ...meshRows(),
+          ...holdRows(),
           ...motionRows(),
           ...characterRows(),
         ]
@@ -457,6 +520,7 @@ export async function mountCreator(
     }),
     label3d({ text: 'Clothes', collapsible: true, icon: 'clothing' }),
     ...SLOTS.map((slot) => select(slot, slot, choices(slot))),
+    ...holdRows(),
     ...motionRows(),
     ...characterRows(),
   ]
@@ -588,6 +652,74 @@ export async function mountCreator(
       if (box('paused').value) playing?.pause()
     }
 
+    // THE HELD ITEM, shown: an instance of the library's model on the shown
+    // body's right-hand socket, made again when the item or the body
+    // changes. The library (7.6 MB) loads the first time a hand holds one.
+    let library: B3dLibrary | null = null
+    let shownHeld: {
+      node: BABYLON.TransformNode
+      name: string
+      skeleton: BABYLON.Skeleton
+      grip: BABYLON.Vector3
+    } | null = null
+    const placeHeld = () => {
+      if (disposed) return
+      const name = String(box('held').value)
+      const skeleton: BABYLON.Skeleton | null =
+        ch?.shown?.built?.skeleton ?? null
+      if (
+        shownHeld &&
+        (shownHeld.name !== name || shownHeld.skeleton !== skeleton || rigging)
+      ) {
+        shownHeld.node.dispose()
+        shownHeld = null
+      }
+      if (name === 'none' || !skeleton || rigging) return
+      if (!library) {
+        library = b3dLibrary({
+          url: assetUrl(WEAPONS_PATH, 2),
+          type: 'weapons',
+        }) as B3dLibrary
+        host.append(library)
+        void library.ready.then(placeHeld)
+        return
+      }
+      if (!shownHeld) {
+        const hand = skeleton.bones
+          .find((b) => b.name === 'hand_r')
+          ?.getTransformNode()
+        const node = hand
+          ? (library.instantiate(name, {
+              canonical: true,
+            }) as BABYLON.TransformNode | null)
+          : null
+        if (!hand || !node) return
+        node.parent = handSocket(skeleton, 'hand_r', 'r', hand) ?? hand
+        // Its grip point (a pistol's handle), not its origin, goes where
+        // the grip says, as the export puts it.
+        shownHeld = {
+          node,
+          name,
+          skeleton,
+          grip: heldGrip(node) ?? BABYLON.Vector3.Zero(),
+        }
+        host.register({ meshes: node.getChildMeshes() })
+      }
+      const at = shownHeld
+      const g = gripOf(name)
+      const d = Math.PI / 180
+      const turn = BABYLON.Quaternion.FromEulerAngles(
+        g.rx * d,
+        g.ry * d,
+        g.rz * d
+      )
+      const spun = at.grip.scale(g.scale).applyRotationQuaternion(turn)
+      at.node.position.set(g.x - spun.x, g.y - spun.y, g.z - spun.z)
+      at.node.rotationQuaternion = turn
+      at.node.scaling.setAll(g.scale)
+    }
+    unwatch.push(() => shownHeld?.node.dispose())
+
     ch = await makeCharacter(scene, assets, {
       settings: settings(),
       sources,
@@ -598,9 +730,34 @@ export async function mountCreator(
         void paintEyes(scene)
         host.refreshScenePanel?.()
         play()
+        placeHeld()
       },
     })
     const character = ch
+    watch(box('held'), () => {
+      placeHeld()
+      host.refreshScenePanel?.()
+    })
+    watch(box('grips'), placeHeld)
+    handlers.grip = (patch) => {
+      const name = String(box('held').value)
+      if (name === 'none') return
+      const kept = plain(
+        (box('grips').value ?? {}) as Record<string, Partial<HoldGrip>>
+      )
+      box('grips').value = {
+        ...kept,
+        [holdClassOf(name)]: { ...gripOf(name), ...patch },
+      }
+    }
+    handlers.resetGrip = () => {
+      const kept = plain(
+        (box('grips').value ?? {}) as Record<string, Partial<HoldGrip>>
+      )
+      delete kept[holdClassOf(String(box('held').value))]
+      box('grips').value = kept
+      host.refreshScenePanel?.()
+    }
     for (const k of TOSI_KEPT)
       watch(box(k), () => character.set({ [k]: plain(box(k).value) }))
     // The eyes as the export draws them (tosijs-3d/eye-art), painted over
@@ -891,6 +1048,7 @@ export async function mountCreator(
       const finish = () => {
         rigging = null
         character.hide(false)
+        placeHeld()
         host.refreshScenePanel?.()
       }
       const kept =
@@ -934,6 +1092,7 @@ export async function mountCreator(
           play()
         },
       })
+      placeHeld()
       host.refreshScenePanel?.()
     }
     handlers.openMesh = () => {
@@ -1042,17 +1201,37 @@ export async function mountCreator(
       clipFile.catch(() => (clipFile = undefined))
       return ualClips(await clipFile, names)
     }
-    const input = async () => ({
-      character: snapshot(),
-      pack,
-      naming: shell.naming(),
-      clips: await exportClips(),
-    })
+    // What the hand holds, read from the same library file (cached by now).
+    let weapons: Promise<Uint8Array> | undefined
+    const exportHeld = async (): Promise<ExportHeld | undefined> => {
+      const name = String(box('held').value)
+      if (name === 'none') return undefined
+      weapons ??= fetch(assetUrl(WEAPONS_PATH, 2)).then(async (r) => {
+        if (!r.ok) throw new Error(`the weapon library: ${r.status}`)
+        return new Uint8Array(await r.arrayBuffer())
+      })
+      weapons.catch(() => (weapons = undefined))
+      return weaponHeld(
+        await weapons,
+        name,
+        plain((box('grips').value ?? {}) as Record<string, Partial<HoldGrip>>)
+      )
+    }
+    const input = async () => {
+      const held = await exportHeld()
+      return {
+        character: snapshot(),
+        pack,
+        naming: shell.naming(),
+        clips: await exportClips(),
+        ...(held ? { held } : {}),
+      }
+    }
     resolveApp({
       view: async (w) => viewInThree(await input(), w),
       unity: async (w) => viewInUnity(await input(), w),
       download: async () => downloadGlb(await input()),
-      // VRM carries no clips.
+      // VRM carries no clips, and nothing in the hand.
       vrm: () =>
         downloadVrm({ character: snapshot(), pack, naming: shell.naming() }),
       share: () => shareLink(snapshot(), shell.shareBase()),

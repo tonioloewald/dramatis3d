@@ -1,0 +1,18 @@
+{
+  "format": "tosijs-character",
+  "version": 1,
+  "name": "With a sword",
+  "settings": {
+    "gender": 1,
+    "age": 0.4,
+    "tone": 0.7,
+    "outfit": "male_casualsuit02",
+    "shoes": "shoes01",
+    "hair": "short02",
+    "brows": "eyebrow001",
+    "held": "Long Sword"
+  },
+  "cloth": {},
+  "tailor": [],
+  "garments": {}
+}

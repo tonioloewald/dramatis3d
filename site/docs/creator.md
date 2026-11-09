@@ -11,7 +11,7 @@ panel, name your character, and export it.
 
 - **Shape** the character in the scene's panel (the owl opens and closes
   it), a tab for each part: body (vital stats, shape and ancestry), skin, eyes, face,
-  hair and clothes. **Motion** sets them walking, dancing or standing still,
+  hair and clothes, and **hold**. **Motion** sets them walking, dancing or standing still,
   and **character** saves, loads and moves the file. Drag to turn the
   camera, scroll or pinch to zoom.
 - **Clips in the file.** By default an exported GLB carries no animation:
@@ -20,6 +20,12 @@ panel, name your character, and export it.
   the character (Walk, Dance and the rest; CC0, by Quaternius). The viewer
   plays them, and the character file and share links keep the choice. VRM
   files carry none.
+- **Something in the hand.** **Hold** puts one of Tonio's weapons (guns,
+  blades, a plasma blade, a buckler, a game controller; CC0) in the right
+  hand. The grip is set per kind of item: adjust it on one sword and every
+  one-handed blade follows. Exported GLBs carry the item on a `weapon_r`
+  joint under the hand, where Unity and Unreal attach items of their own; it
+  adds about 7 MB (the weapons' texture atlas). VRM files carry none.
 - **Undo and redo** are the arrows at the top right of the panel, or ⌘Z and
   ⇧⌘Z (Ctrl on Windows and Linux). A slider's drag is one step; loading a
   character or rigging a body is one too.
@@ -76,6 +82,7 @@ tones, which are CC BY 4.0 and credited in every export:
 | More clothes: t-shirts, a sweater, a bodice top, wool trousers, cargo trousers, denim shorts, a dinner suit, a bodysuit, three pairs of shoes, gloves and a cloche hat | MakeHuman community authors (Margaret Toigo, Cortu, Elvaerwyn, Joel Palmius, MatCreator, Aethelraed_Unraed), from MakeHuman's asset packs, each checked one by one | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | The eye art (**eye art**: basic or anime), its iris recoloured | Tonio Loewald, original | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | More hairstyles and brows (not exportable yet) | [Quaternius](https://quaternius.com) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| The weapons (**Hold**) | Tonio Loewald, original | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | The skin tones | [Monk Skin Tone Scale](https://skintone.google), by Dr. Ellis Monk and Google | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
 | The AI-made cast (**body**: the four meshes besides MakeHuman's), rigged here | Tonio Loewald, with Gemini (reference sheets) and Meshy (meshes, on a paid plan) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | The skeleton, and the preview's animations (the clips are not exported) | Quaternius' Universal Animation Library | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |

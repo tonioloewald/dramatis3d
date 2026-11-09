@@ -49,6 +49,8 @@ export {
 export { BUILD_SETTINGS, HM08_PACK_URL } from './build/settings'
 export { ualClips, UAL_CLIPS_LICENCE } from './clips'
 export type { ExportClip } from './clips'
+export { weaponHeld, WEAPONS, WEAPONS_PATH } from './held'
+export type { ExportHeld } from './held'
 // VRM 1.0 beyond the contract's exportCharacterVrm (site/docs/vrm.md).
 export {
   VRM_HUMAN_BONES,

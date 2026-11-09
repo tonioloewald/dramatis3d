@@ -17,7 +17,13 @@ written here first. The rules (owner, 2026-11-02):
    there) and is deleted here **before Gate 1 closes**, so there is never a
    published second copy.
 
-What is here now: nothing.
+What is here now:
+
+- `held-parts.ts`: a held item as GLB parts (the socket joint, the item's
+  mesh, materials and pictures) for any skeleton, for the MakeHuman
+  writer's held items (#3909). Bound for tosijs-3d's rigged-body-glb, whose
+  private heldSocket and materialsOf it mirrors (#3917). It must move
+  before a Dramatis release ships it.
 
 Moved already:
 

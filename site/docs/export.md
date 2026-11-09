@@ -41,6 +41,7 @@ built character is engine-free data, the same shape the
 | `faceUnits` | `true` | All 59 face units as morph targets, `false` for none, or a list |
 | `fetch` | `fetch` | How textures are read (a cache, a worker, a test) |
 | `clips` | none | Clips the file carries, retargeted onto the character (below) |
+| `held` | none | What the right hand holds, on a `weapon_r` joint (below) |
 
 `fetch` is asked for the pack's textures and for the eye art,
 `https://cdn.tosijs.net/tonio/eyes/<style>-eye.png?v=1` (Tonio Loewald, CC0).
@@ -73,6 +74,26 @@ const glb = await exportCharacterGlb(character, pack, {
 `writeCharacterGlb(built, { clips })` takes them too. Each is written as a
 glTF animation with its licence in the file
 ([Export format](/export-format/#clips-in-the-file)).
+
+### A held item
+
+`weaponHeld` takes the bytes of Tonio's weapon library
+(`https://cdn.tosijs.net/tonio/weapons-classic/weapons.glb`, CC0), an item's
+name (`WEAPONS` lists them) and the character's adjusted grips, and gives
+the item, its grip and its licence entry:
+
+```js
+import { exportCharacterGlb, weaponHeld } from 'dramatis'
+
+const weapons = new Uint8Array(await (await fetch(WEAPONS_URL)).arrayBuffer())
+const glb = await exportCharacterGlb(character, pack, {
+  held: weaponHeld(weapons, 'Long Sword', character.settings.grips),
+})
+```
+
+The file gets a `weapon_r` joint under `hand_r` and the item skinned to it
+([Export format](/export-format/#a-held-item)). The library's texture atlas
+comes with the item: about 7 MB.
 
 ## What happens to a character
 

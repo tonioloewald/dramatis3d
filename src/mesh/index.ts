@@ -35,6 +35,7 @@ import {
   withClipLicences,
   type ExportClip,
 } from '../clips'
+import { heldExtras, type ExportHeld } from '../held'
 
 import { MAKEHUMAN_SOURCE } from './source'
 export { hasMeshBody, MAKEHUMAN_SOURCE } from './source'
@@ -92,6 +93,8 @@ export interface MeshExportOptions {
   fetch?: (url: string) => Promise<ArrayBuffer>
   /** Clips to carry (as `ExportOptions.clips`). */
   clips?: readonly ExportClip[]
+  /** What the right hand holds (as `ExportOptions.held`). */
+  held?: ExportHeld
 }
 
 /** The mesh's bytes: the file's, or fetched from its URL. */
@@ -150,7 +153,11 @@ export async function exportMeshGlb(
     source: body.url ?? body.file?.name ?? name,
   })
   const clips = options.clips ?? []
-  const licences = withClipLicences([meshLicence(name, body)], clips)
+  const held = options.held
+  const licences = withClipLicences(
+    [meshLicence(name, body), ...(held ? [held.licence] : [])],
+    clips
+  )
   const extras: ExportExtras = {
     format: EXPORT_FORMAT,
     version: EXPORT_PROFILE_VERSION,
@@ -168,6 +175,16 @@ export async function exportMeshGlb(
     generator: GENERATOR,
     copyright: copyrightLine(licences),
     extras: { [EXTRAS_KEY]: extras },
+    ...(held
+      ? {
+          held: {
+            grip: held.grip,
+            item: held.item,
+            ...(held.gripPoint ? { gripPoint: held.gripPoint } : {}),
+            extras: heldExtras(held),
+          },
+        }
+      : {}),
     ...(clips.length
       ? {
           clips: clips.map((c) => ({

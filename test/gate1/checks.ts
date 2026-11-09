@@ -46,6 +46,9 @@ export function declaredNaming(glb: Glb): NamingProfile {
   return n === 'mixamo' ? 'mixamo' : 'ue'
 }
 
+/** A held item's socket joint (export-format.md, "A held item"). */
+const SOCKET = /^weapon_[rl]$/
+
 /**
  * The skeleton is the profile's: one skin (every skinned mesh uses it) whose
  * joints are the profile's 65 under the declared naming, in profile order,
@@ -66,7 +69,10 @@ export function skeletonProblems(glb: Glb): string[] {
     skin?: number
     mesh?: number
   }> = j.nodes ?? []
-  const names = skin.joints.map((i) => nodes[i]?.name ?? `(node ${i} unnamed)`)
+  const all = skin.joints.map((i) => nodes[i]?.name ?? `(node ${i} unnamed)`)
+  // A held item's socket (#3909) may follow the profile's joints, under its
+  // hand; heldProblems checks it.
+  const names = all.filter((n, k) => !(k >= UE_JOINTS.length && SOCKET.test(n)))
   const expected = UE_JOINTS.map((r) => jointName(r.name, naming))
   const have = new Set(names)
   const want = new Set(expected)
@@ -381,5 +387,53 @@ async function playProblems(
           MIN_TRAVEL * 100
         } cm`
       )
+  return problems
+}
+
+/**
+ * A held item (#3909), when there is one: its socket joint (`weapon_r` or
+ * `weapon_l`) is the skin's last, a child of its hand, within a hand's
+ * reach of it; the `held` mesh is skinned to it alone and names a licence
+ * the file lists. A file with no socket has nothing to check.
+ */
+export function heldProblems(glb: Glb): string[] {
+  const j = glb.json
+  const nodes: any[] = j.nodes ?? []
+  const skin: { joints: number[] } | undefined = j.skins?.[0]
+  if (!skin) return []
+  const at = skin.joints.findIndex((i) => SOCKET.test(nodes[i]?.name ?? ''))
+  const heldMesh = (j.meshes ?? []).findIndex((m: any) => m.name === 'held')
+  if (at < 0)
+    return heldMesh < 0 ? [] : ['a held mesh but no socket joint for it']
+  const problems: string[] = []
+  const node = nodes[skin.joints[at]!]
+  if (at !== skin.joints.length - 1)
+    problems.push(`${node.name} is not the skin's last joint`)
+  const side = node.name.endsWith('_l') ? 'l' : 'r'
+  const hand = jointName(`hand_${side}`, declaredNaming(glb))
+  const parent = nodes.findIndex((n) => n.children?.includes(skin.joints[at]!))
+  if (nodes[parent]?.name !== hand)
+    problems.push(
+      `${node.name}'s parent is ${nodes[parent]?.name}, not ${hand}`
+    )
+  const t: number[] = node.translation ?? [0, 0, 0]
+  if (Math.hypot(t[0]!, t[1]!, t[2]!) > 0.25)
+    problems.push(
+      `${node.name} is ${Math.hypot(t[0]!, t[1]!, t[2]!).toFixed(
+        2
+      )} m from the hand`
+    )
+  if (heldMesh < 0) return problems
+  const mesh = j.meshes[heldMesh]
+  const listed = new Set(
+    (j.asset?.extras?.dramatis?.licences ?? []).map((l: any) => l.asset)
+  )
+  const licence = mesh.extras?.dramatis?.licence
+  if (!licence) problems.push('the held mesh names no licence')
+  else if (!listed.has(licence))
+    problems.push(`the held mesh's licence ${licence} is not among the file's`)
+  const node2 = nodes.findIndex((n) => n.mesh === heldMesh)
+  if (node2 < 0 || nodes[node2].skin !== 0)
+    problems.push('the held mesh is not on the skin')
   return problems
 }

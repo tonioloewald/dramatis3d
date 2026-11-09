@@ -4,6 +4,7 @@ import { join, relative } from 'node:path'
 import {
   clipProblems,
   embeddedClipProblems,
+  heldProblems,
   licenceProblems,
   morphProblems,
   skeletonProblems,
@@ -57,6 +58,7 @@ const CHECKS = [
   'three.js: GLTFLoader loads it under bun',
   'UAL clip: binds by name to the major joints and moves them',
   'own clips: licensed, bind and move',
+  'held item: on its socket under the hand, licensed',
 ] as const
 
 const files = exports()
@@ -106,5 +108,8 @@ for (const path of files) {
       },
       60_000
     )
+    test(CHECKS[7], async () => {
+      expect(heldProblems(readGlb(await load()))).toEqual([])
+    })
   })
 }

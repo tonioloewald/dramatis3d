@@ -60,6 +60,7 @@ mesh sharing a name:
 | `eyelashes`, `teeth`, `tongue`, `brows`, `beard` | When the character has them |
 | `hair` | The hair, whichever kind |
 | `garment_<asset>` | Each worn garment, by its asset name (`garment_toigo_harem_pants`) |
+| `held` | What the right hand holds, when it holds something (see "A held item") |
 
 **A mesh body** (a character whose body is a mesh rigged in the rig tool,
 not MakeHuman's: src/mesh/, written by tosijs-3d's `riggedBodyGlb`) has
@@ -80,7 +81,9 @@ order of the meshes is the order above, garments by asset name.
   set to the `root` joint and `inverseBindMatrices` given.
 - Its `joints` are **exactly the 65 below, in this order**, named per the
   file's naming profile (`ue`, the default, or `mixamo`). Parents are as
-  listed; a parent always comes before its children.
+  listed; a parent always comes before its children. The one exception is
+  a held item's socket, `weapon_r`, which follows them as a 66th joint
+  (see "A held item").
 - These are **UE mannequin names as Quaternius' Universal Animation Library
   (UAL) spells them**: tosijs-3d's `HM08_UAL`. Note `Head` (capital H) and the
   `_leaf` tips, which carry no skin weight and exist so engines know where a
@@ -222,6 +225,30 @@ tab, `ExportOptions.clips` in the library). Each one is then:
 A mesh body's clips are retargeted the same way, with its rig's arm space.
 VRM files carry no clips. The character file keeps the choice as
 `settings.exportClips` (clip names).
+
+### A held item
+
+A character may hold something in its right hand (the creator's Hold tab,
+`ExportOptions.held` in the library: one of Tonio's weapons, CC0). The file
+then has:
+
+- **a socket joint, `weapon_r`**, the skin's last joint (after the 65), a
+  child of `hand_r`, under either naming profile. It sits where the item's
+  grip is, turned as the item is held: the hand's socket (a frame set from
+  the hand, forearm and thumb, so one grip fits any hand) times the grip
+  for the item's class (pistols, one-handed blades, …), as the creator
+  shows it. Unity and Unreal attach items of their own to a bone like this.
+- **a `held` mesh**, the item at its own size (times the grip's scale),
+  skinned wholly to `weapon_r`, with its own materials (`held`, `held_2`,
+  …) and textures. Tonio's weapons share one 2048 px texture atlas, so an
+  item adds about 7 MB to the file.
+- **its licence**: the mesh's `extras.dramatis.licence` is the asset id of
+  one of the file's licence entries (`tonio:weapon/<name>`, CC0).
+
+Clips move the hand, and the item with it. A mesh body's item is written
+the same way (tosijs-3d's `riggedBodyGlb`), in the same place. VRM files
+carry none. The character file keeps it as tosijs-3d's `settings.held` (the
+item's name) and `settings.grips` (grips adjusted per class).
 
 ## Morph targets: the face units
 

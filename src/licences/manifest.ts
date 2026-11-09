@@ -5,6 +5,7 @@
 
 import type { AssetKind, LicenceEntry } from '../contracts/licences'
 import { PACKS } from './packs'
+import { WEAPONS, WEAPONS_URL, weaponAsset } from '../held/library'
 
 export const CC0 = 'CC0-1.0'
 export const CC0_URL = 'https://creativecommons.org/publicdomain/zero/1.0/'
@@ -208,6 +209,25 @@ const TONIO_EYES: LicenceEntry[] = (['basic', 'anime'] as const).map(
   })
 )
 
+// ---- Tonio Loewald's weapons (held items, #3909) -----------------------------
+
+/**
+ * Tonio's textured weapon library (static-assets tonio/weapons-classic), what
+ * a hand may hold: original models, CC0 (owner, 2026-11-09, "CC0 for
+ * consistency"; the library's metadata.json in static-assets still says
+ * CC BY 4.0 until he changes it). Written into an export unchanged but
+ * placed in the hand (and scaled by the grip).
+ */
+const TONIO_WEAPONS: LicenceEntry[] = WEAPONS.map((name) => ({
+  asset: weaponAsset(name),
+  title: `${name} (a held item, from Tonio's weapon library)`,
+  kind: 'other',
+  licence: CC0,
+  licenceUrl: CC0_URL,
+  source: WEAPONS_URL,
+  author: 'Tonio Loewald',
+}))
+
 // ---- Community garments: checked one by one ------------------------------
 
 /**
@@ -285,6 +305,7 @@ export const MANIFEST: readonly LicenceEntry[] = Object.freeze(
     ...MAKEHUMAN_SYSTEM,
     MONK,
     ...TONIO_EYES,
+    ...TONIO_WEAPONS,
     ...QUATERNIUS_ENTRIES,
     ...BLENDER_ENTRIES,
     ...COMMUNITY_CHECKED,

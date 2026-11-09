@@ -30,6 +30,7 @@ const ORDER = [
   'beard',
   'hair',
   'garment',
+  'held',
 ]
 
 test('there are at least three samples', () => {
@@ -140,13 +141,16 @@ for (const file of files) {
         expect(n.skin).toBe(0)
       }
       expect(json.skins[0].name).toBe('skeleton')
+      // The 65, and a held item's socket after them when there is one.
+      const held = names.includes('held')
       expect(
         json.skins[0].joints.map((j: number) => json.nodes[j].name)
-      ).toEqual(
-        UE_JOINT_NAMES.map((n) =>
+      ).toEqual([
+        ...UE_JOINT_NAMES.map((n) =>
           jointName(n, json.asset.extras[EXTRAS_KEY].naming)
-        )
-      )
+        ),
+        ...(held ? ['weapon_r'] : []),
+      ])
     })
 
     test('the licences are in asset.copyright too', async () => {
