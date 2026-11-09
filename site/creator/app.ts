@@ -69,6 +69,8 @@ import { chooseFile } from 'tosijs-3d/choose-file'
 import { decodeShareLink } from '../../src/contracts/share'
 import type { NamingProfile } from '../../src/contracts/profile'
 import type { HumanPack } from 'tosijs-3d/human-pack'
+import { readGlbClips, type GlbClipSource } from 'tosijs-3d/glb-clips'
+import { ualClips, type ExportClip } from '../../src/clips'
 import {
   downloadGlb,
   downloadVrm,
@@ -122,8 +124,9 @@ const CLIPS: string[] = [...CREATOR_CLIPS]
 const NOT_KEPT = new Set(['hideClothes', 'surfaces'])
 const TOSI_KEPT = Object.keys(DEFAULT_CHARACTER).filter((k) => !NOT_KEPT.has(k))
 // Dramatis's own settings, kept in the file beside tosijs-3d's (the build
-// reads them; tosijs-3d's character ignores them): the eye art.
-const OWN: Record<string, unknown> = { eyeStyle: 'basic' }
+// reads them; tosijs-3d's character ignores them): the eye art, and the
+// clips an exported GLB carries (#3908).
+const OWN: Record<string, unknown> = { eyeStyle: 'basic', exportClips: [] }
 const KEPT = [...TOSI_KEPT, ...Object.keys(OWN)]
 const START: Record<string, unknown> = {
   ...Object.fromEntries(TOSI_KEPT.map((k) => [k, DEFAULT_CHARACTER[k]])),
@@ -207,6 +210,25 @@ export async function mountCreator(
     const off = b.observe(cb)
     if (typeof off === 'function') unwatch.push(off as () => void)
   }
+  // The Motion tab's "in exported GLBs" toggles, one per clip, kept in step
+  // with exportClips (the list the character file keeps).
+  const exported = tosi({
+    dramatisExportClips: Object.fromEntries(CLIPS.map((c) => [c, false])),
+  }).dramatisExportClips as unknown as Record<string, Box>
+  const listed = () =>
+    new Set((box('exportClips').value as string[] | undefined) ?? [])
+  const toToggles = () => {
+    const on = listed()
+    for (const c of CLIPS)
+      if (exported[c]!.value !== on.has(c)) exported[c]!.value = on.has(c)
+  }
+  toToggles()
+  watch(box('exportClips'), toToggles)
+  for (const c of CLIPS)
+    watch(exported[c]!, () => {
+      const on = CLIPS.filter((k) => exported[k]!.value)
+      if (on.join() !== [...listed()].join()) box('exportClips').value = on
+    })
 
   let ch: SceneCharacter | null = null
   // Mesh bodies: the cast, and files opened here (kept with their bytes, which
@@ -347,6 +369,15 @@ export async function mountCreator(
       stayOpen: true,
     }),
     toggle3d({ label: 'pause', value: box('paused') }),
+    // Which clips an exported GLB carries (#3908): none by default, since
+    // UAL's clips play on an export by name without them.
+    label3d({ text: 'in exported GLBs' }),
+    ...CLIPS.map((clip) =>
+      toggle3d({
+        label: clip.replace(/_Loop$/, '').replace(/_/g, ' '),
+        value: exported[clip]!,
+      })
+    ),
   ]
   const humanPanel = (): Widget3d[] => [
     label3d({ text: 'Body', collapsible: true, open: true, icon: 'body' }),
@@ -996,16 +1027,34 @@ export async function mountCreator(
       box('paused').value ? playing?.pause() : playing?.play(true)
     )
 
-    const input = () => ({
+    // The clips an exported GLB carries come from the starter file the scene
+    // plays (UAL, CC0), read once, engine-free, on first use.
+    let clipFile: Promise<GlbClipSource> | undefined
+    const exportClips = async (): Promise<ExportClip[]> => {
+      const names = (box('exportClips').value as string[] | undefined) ?? []
+      if (names.length === 0) return []
+      clipFile ??= fetch(STARTER_URL)
+        .then((r) => {
+          if (!r.ok) throw new Error(`the clips file: ${r.status}`)
+          return r.arrayBuffer()
+        })
+        .then((b) => readGlbClips(new Uint8Array(b)))
+      clipFile.catch(() => (clipFile = undefined))
+      return ualClips(await clipFile, names)
+    }
+    const input = async () => ({
       character: snapshot(),
       pack,
       naming: shell.naming(),
+      clips: await exportClips(),
     })
     resolveApp({
-      view: (w) => viewInThree(input(), w),
-      unity: (w) => viewInUnity(input(), w),
-      download: () => downloadGlb(input()),
-      vrm: () => downloadVrm(input()),
+      view: async (w) => viewInThree(await input(), w),
+      unity: async (w) => viewInUnity(await input(), w),
+      download: async () => downloadGlb(await input()),
+      // VRM carries no clips.
+      vrm: () =>
+        downloadVrm({ character: snapshot(), pack, naming: shell.naming() }),
       share: () => shareLink(snapshot(), shell.shareBase()),
       character: () => snapshot(),
       touched: () => changed(),

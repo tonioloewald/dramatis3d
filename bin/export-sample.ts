@@ -13,7 +13,7 @@
 // written by exportMeshGlb (src/mesh/). The rig goes into the character file
 // as its recipe, so the sample is made again from the file alone.
 
-import { mkdirSync } from 'node:fs'
+import { mkdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { writeCharacter, type Character } from 'tosijs-3d/character-file'
 import { loadHumanPack } from 'tosijs-3d/human-pack'
@@ -25,12 +25,31 @@ import { writeCharacterGlb } from '../src/build/write'
 import { setAssetBase } from 'tosijs-3d/asset-url'
 import { AI_CHARACTER_SOURCES } from 'tosijs-3d/character-sources'
 import { exportMeshGlb } from '../src/mesh'
+import { ualClips, type ExportClip } from '../src/clips'
 
 interface Sample {
   /** Why it is here. */
   what: string
   character: Character
   naming?: NamingProfile
+}
+
+// The clips a sample carries are in its character file, as the creator keeps
+// them (settings.exportClips), and come from the site's starter cut of UAL.
+const STARTER = join(
+  import.meta.dir,
+  '..',
+  'site',
+  'static',
+  'clips',
+  'ual-starter.glb'
+)
+let starter: Uint8Array | undefined
+const clipsOf = (c: Character): ExportClip[] => {
+  const names = (c.settings.exportClips as string[] | undefined) ?? []
+  if (names.length === 0) return []
+  starter ??= new Uint8Array(readFileSync(STARTER))
+  return ualClips(starter, names)
 }
 
 const character = (
@@ -92,6 +111,19 @@ export const SAMPLES: Record<string, Sample> = {
     }),
     naming: 'mixamo',
   },
+  'with-clips': {
+    what: 'carrying its own clips (#3908): Walk_Loop and Dance_Loop, retargeted onto it',
+    character: character('With clips', {
+      gender: 0,
+      age: 0.3,
+      tone: 0.5,
+      outfit: 'female_casualsuit01',
+      shoes: 'shoes02',
+      hair: 'ponytail01',
+      brows: 'eyebrow006',
+      exportClips: ['Walk_Loop', 'Dance_Loop'],
+    }),
+  },
 }
 
 /** The AI cast's meshes (CC0, cdn tonio/ai), by sample name. */
@@ -103,6 +135,8 @@ export const MESH_SAMPLES: Record<
     /** Its key in tosijs-3d's AI_CHARACTER_SOURCES. */
     cast: string
     naming?: NamingProfile
+    /** Clips it carries (`settings.exportClips`). */
+    clips?: string[]
   }
 > = {
   'mesh-keisha': {
@@ -122,9 +156,10 @@ export const MESH_SAMPLES: Record<
     cast: 'eurasian-male',
   },
   'mesh-kevin-spacesuit': {
-    what: 'a mesh body: Kevin in a spacesuit',
+    what: 'a mesh body: Kevin in a spacesuit, carrying Walk_Loop',
     name: 'Kevin (spacesuit)',
     cast: 'eurasian-male-spacesuit',
+    clips: ['Walk_Loop'],
   },
 }
 
@@ -138,7 +173,11 @@ function meshCharacter(sample: (typeof MESH_SAMPLES)[string]): Character {
     throw new Error(`${source}: tosijs-3d has no hand-placed rig for it`)
   return {
     name: sample.name,
-    settings: { source, rigs: { [source]: structuredClone(from.recipe) } },
+    settings: {
+      source,
+      rigs: { [source]: structuredClone(from.recipe) },
+      ...(sample.clips ? { exportClips: sample.clips } : {}),
+    },
     cloth: {},
     tailor: [],
     garments: {},
@@ -165,6 +204,7 @@ if (import.meta.main) {
       const bytes = await exportMeshGlb(c, {
         naming: mesh.naming ?? 'ue',
         fetch: fetcher,
+        clips: clipsOf(c),
       })
       await Bun.write(join(OUT, `${name}.glb`), bytes)
       await Bun.write(
@@ -188,7 +228,10 @@ if (import.meta.main) {
       { fetch: fetcher },
       { licences: characterLicences }
     )
-    const bytes = writeCharacterGlb(built, { naming: sample.naming ?? 'ue' })
+    const bytes = writeCharacterGlb(built, {
+      naming: sample.naming ?? 'ue',
+      clips: clipsOf(sample.character),
+    })
     await Bun.write(join(OUT, `${name}.glb`), bytes)
     await Bun.write(
       join(OUT, `${name}.character.json`),

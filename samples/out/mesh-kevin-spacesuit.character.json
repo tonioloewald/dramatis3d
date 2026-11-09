@@ -128,7 +128,8 @@
           "hands": "mitten"
         }
       }
-    }
+    },
+    "exportClips": ["Walk_Loop"]
   },
   "cloth": {},
   "tailor": [],

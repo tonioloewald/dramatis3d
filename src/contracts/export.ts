@@ -3,6 +3,8 @@
 
 import type { BuildOptions } from './built-character'
 import type { NamingProfile } from './profile'
+import type { ExportClip } from '../clips'
+export type { ExportClip } from '../clips'
 
 /** How a character is exported. */
 export interface ExportOptions {
@@ -21,6 +23,13 @@ export interface ExportOptions {
    * `fetch`. If the eye art can't be fetched, the eyes keep a plain material.
    */
   fetch?: BuildOptions['fetch']
+  /**
+   * Clips to carry, each retargeted onto this character's skeleton and
+   * written as a glTF animation, its licence among the file's (`ualClips`
+   * makes them from UAL's file). Default none: UAL's clips play on an export
+   * by name without them.
+   */
+  clips?: readonly ExportClip[]
 }
 
 /**

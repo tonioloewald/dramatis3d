@@ -202,6 +202,27 @@ every joint and its **translation** tracks on `root` and `pelvis` only
 what `characterClip` in `dramatis/three` does (its `translationScale` is the
 ratio), and the gate's clip check plays the clip through it.
 
+### Clips in the file
+
+By default a file carries **no animations**: UAL's clips play on it by name
+(above). A user can choose clips for the file to carry (the creator's Motion
+tab, `ExportOptions.clips` in the library). Each one is then:
+
+- **retargeted onto this character's skeleton** and baked at 30 keys a
+  second: a rotation track on every joint the clip moves, and a translation
+  track on `pelvis` (the hips' height scaled to this body). No other
+  translation tracks, so a clip never stretches the body;
+- a glTF **animation** named as the clip (`Walk_Loop`), whose channels target
+  the skin's joints;
+- **licensed**: the animation's `extras.dramatis.licence` is the asset id of
+  one of the file's licence entries (UAL's clips are
+  `quaternius:animation/ual1`, CC0), and that entry is in
+  `asset.extras.dramatis.licences`.
+
+A mesh body's clips are retargeted the same way, with its rig's arm space.
+VRM files carry no clips. The character file keeps the choice as
+`settings.exportClips` (clip names).
+
 ## Morph targets: the face units
 
 - The face goes out as **morph targets, one per face unit**: MakeHuman's face

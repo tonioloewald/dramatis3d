@@ -11,7 +11,8 @@
 // only about 7 KiB once split, as the chunks share most of the writer.
 // 69.5 KiB at tosijs-3d 0.12.5 (2026-11-09), raised to 72: its rigged-body
 // writer now writes garments, clips and held items (#3882-#3884), about
-// 7 KiB, with nothing changed here.
+// 7 KiB, with nothing changed here. 72.5 KiB 2026-11-09 with clips in the
+// export (#3908: glb-clips' reader and baker, src/clips/), raised to 76.
 
 import { describe, expect, test } from 'bun:test'
 import { join } from 'node:path'
@@ -21,7 +22,7 @@ const KiB = 1024
 
 const CEILINGS: Record<string, number> = {
   'src/three/index.ts': 7 * KiB,
-  'src/index.ts': 72 * KiB,
+  'src/index.ts': 76 * KiB,
 }
 
 async function gzipSize(entry: string): Promise<number> {

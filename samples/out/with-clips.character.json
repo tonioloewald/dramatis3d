@@ -1,0 +1,18 @@
+{
+  "format": "tosijs-character",
+  "version": 1,
+  "name": "With clips",
+  "settings": {
+    "gender": 0,
+    "age": 0.3,
+    "tone": 0.5,
+    "outfit": "female_casualsuit01",
+    "shoes": "shoes02",
+    "hair": "ponytail01",
+    "brows": "eyebrow006",
+    "exportClips": ["Walk_Loop", "Dance_Loop"]
+  },
+  "cloth": {},
+  "tailor": [],
+  "garments": {}
+}

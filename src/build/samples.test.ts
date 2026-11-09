@@ -87,7 +87,9 @@ for (const file of files) {
         const shoulder = world(`upperarm_${s}`)
         const hand = world(`hand_${s}`)
         expect(Math.abs(hand.y - shoulder.y)).toBeLessThan(0.01)
-        expect(Math.abs(hand.x - shoulder.x)).toBeGreaterThan(0.4)
+        // Level is the T-pose; the reach only says the arm is out (a small
+        // young woman's is 0.39 m).
+        expect(Math.abs(hand.x - shoulder.x)).toBeGreaterThan(0.3)
       }
       expect(world('pelvis').y).toBeGreaterThan(0.7)
     })

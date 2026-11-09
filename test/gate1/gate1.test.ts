@@ -3,6 +3,7 @@ import { readdirSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import {
   clipProblems,
+  embeddedClipProblems,
   licenceProblems,
   morphProblems,
   skeletonProblems,
@@ -15,7 +16,7 @@ import { readGlb } from 'tosijs-3d/glb-chunks'
 /*
 GATE 1, THE AUTOMATED HALF: every GLB in samples/out/ (written by the
 skinned-glb lane's bin/export-sample.ts) against the export profile
-(site/docs/export-format.md). Six checks per file:
+(site/docs/export-format.md). Seven checks per file:
 
 1. the Khronos glTF validator reports zero errors;
 2. the skeleton is the profile's 65 joints, named per the file's naming;
@@ -23,7 +24,9 @@ skinned-glb lane's bin/export-sample.ts) against the export profile
 4. asset.extras.dramatis carries licence entries, to the schema;
 5. three's GLTFLoader loads it under bun, with a SkinnedMesh in it;
 6. UAL's Walk_Loop (Quaternius, CC0) binds by name to the major joints and
-   moves them.
+   moves them;
+7. any clips the file carries (#3908) name a licence the file lists, and
+   each binds to the major joints and moves them in three.
 
 With no GLB in samples/out/, each check is registered as skipped under a
 name that starts NOT RUN, so the summary shows it. It never passes. The
@@ -53,6 +56,7 @@ const CHECKS = [
   'licences: entries in asset.extras',
   'three.js: GLTFLoader loads it under bun',
   'UAL clip: binds by name to the major joints and moves them',
+  'own clips: licensed, bind and move',
 ] as const
 
 const files = exports()
@@ -92,6 +96,13 @@ for (const path of files) {
       CHECKS[5],
       async () => {
         expect(await clipProblems(await load(), await clipBytes())).toEqual([])
+      },
+      60_000
+    )
+    test(
+      CHECKS[6],
+      async () => {
+        expect(await embeddedClipProblems(await load())).toEqual([])
       },
       60_000
     )

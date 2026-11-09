@@ -16,6 +16,7 @@ import {
   UE_JOINT_NAMES,
 } from '../contracts/profile'
 import { writeSkinnedGlb } from 'tosijs-3d/skinned-glb'
+import { bakeAnimations, withClipLicences, type ExportClip } from '../clips'
 import { NAMINGS, option } from './options'
 import { GENERATOR } from './version'
 
@@ -57,7 +58,7 @@ export function exportExtras(
  */
 export function writeCharacterGlb(
   built: BuiltCharacter,
-  options: { naming?: NamingProfile } = {}
+  options: { naming?: NamingProfile; clips?: readonly ExportClip[] } = {}
 ): Uint8Array {
   const naming = option(
     'writeCharacterGlb',
@@ -75,6 +76,10 @@ export function writeCharacterGlb(
     throw new Error(
       'writeCharacterGlb: the skeleton is not the profile skeleton'
     )
+  const clips = options.clips ?? []
+  const animations = bakeAnimations(joints, clips)
+  if (clips.length)
+    built = { ...built, licences: withClipLicences(built.licences, clips) }
   const ibm = new Float32Array(joints.length * 16)
   joints.forEach((j, i) => ibm.set(j.inverseBind, i * 16))
   const declared = new Set(built.faceUnits)
@@ -122,5 +127,6 @@ export function writeCharacterGlb(
       mimeType: im.mimeType,
       bytes: im.bytes,
     })),
+    ...(animations.length ? { animations } : {}),
   })
 }

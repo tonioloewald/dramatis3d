@@ -6,6 +6,7 @@
 
 import type { Character } from 'tosijs-3d/character-file'
 import { parseGlbJson } from 'tosijs-3d/glb-manifest'
+import type { ExportClip } from '../../src/clips'
 import type { HumanPack } from 'tosijs-3d/human-pack'
 import {
   exportCharacterGlb,
@@ -107,6 +108,8 @@ export interface ExportInput {
   character: Character
   pack: HumanPack
   naming: NamingProfile
+  /** Clips the GLB carries (the Motion tab's list); none for VRM. */
+  clips?: readonly ExportClip[]
 }
 
 /** Export a GLB, or a sentence saying why not. */
@@ -119,6 +122,7 @@ export async function exportGlb(
   try {
     const glb = await exportCharacterGlb(input.character, input.pack, {
       naming: input.naming,
+      ...(input.clips?.length ? { clips: input.clips } : {}),
     })
     return { ok: true, glb, fileName: fileNameFor(input.character.name, 'glb') }
   } catch (error) {

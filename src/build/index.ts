@@ -62,6 +62,7 @@ export async function exportCharacterGlb(
       naming,
       ...(options.restPose !== undefined ? { restPose: options.restPose } : {}),
       ...(options.fetch !== undefined ? { fetch: options.fetch } : {}),
+      ...(options.clips !== undefined ? { clips: options.clips } : {}),
     })
   const built = await buildCharacter(character, pack, {
     ...(options.faceUnits !== undefined
@@ -70,5 +71,8 @@ export async function exportCharacterGlb(
     ...(options.restPose !== undefined ? { restPose: options.restPose } : {}),
     ...(options.fetch !== undefined ? { fetch: options.fetch } : {}),
   })
-  return writeCharacterGlb(built, { naming })
+  return writeCharacterGlb(built, {
+    naming,
+    ...(options.clips !== undefined ? { clips: options.clips } : {}),
+  })
 }

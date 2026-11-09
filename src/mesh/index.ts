@@ -29,6 +29,12 @@ import {
 } from '../contracts/profile'
 import { GENERATOR } from '../build/version'
 import { copyrightLine } from '../build/write'
+import {
+  CLIP_FPS,
+  clipExtras,
+  withClipLicences,
+  type ExportClip,
+} from '../clips'
 
 import { MAKEHUMAN_SOURCE } from './source'
 export { hasMeshBody, MAKEHUMAN_SOURCE } from './source'
@@ -84,6 +90,8 @@ export interface MeshExportOptions {
   restPose?: RestPose
   /** Fetches a URL body (as the build's `fetch` does). Default `fetch`. */
   fetch?: (url: string) => Promise<ArrayBuffer>
+  /** Clips to carry (as `ExportOptions.clips`). */
+  clips?: readonly ExportClip[]
 }
 
 /** The mesh's bytes: the file's, or fetched from its URL. */
@@ -141,7 +149,8 @@ export async function exportMeshGlb(
     ...(b.joints ? { joints: b.joints } : {}),
     source: body.url ?? body.file?.name ?? name,
   })
-  const licences = [meshLicence(name, body)]
+  const clips = options.clips ?? []
+  const licences = withClipLicences([meshLicence(name, body)], clips)
   const extras: ExportExtras = {
     format: EXPORT_FORMAT,
     version: EXPORT_PROFILE_VERSION,
@@ -159,5 +168,19 @@ export async function exportMeshGlb(
     generator: GENERATOR,
     copyright: copyrightLine(licences),
     extras: { [EXTRAS_KEY]: extras },
+    ...(clips.length
+      ? {
+          clips: clips.map((c) => ({
+            from: c.from,
+            clip: c.clip,
+            name: c.name ?? c.clip,
+            fps: CLIP_FPS,
+            ...(recipe.armSpaceDeg != null
+              ? { armSpaceDeg: recipe.armSpaceDeg }
+              : {}),
+            extras: clipExtras(c),
+          })),
+        }
+      : {}),
   })
 }

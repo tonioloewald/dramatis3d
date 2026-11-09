@@ -8,6 +8,9 @@ import type { HumanPack } from 'tosijs-3d/human-pack'
 import { exportCharacterGlb, exportCharacterVrm } from '../contracts/export'
 import { checkExportExtras } from '../contracts/profile'
 import { vrmProblems } from '../vrm'
+import { ualClips } from '../clips'
+import { embeddedClipProblems } from '../../test/gate1/checks'
+import { writeGlb } from 'tosijs-3d/glb-chunks'
 import {
   AI_CAST_BASE,
   exportMeshGlb,
@@ -104,6 +107,38 @@ describe('mesh bodies', () => {
     const names = json.skins[0].joints.map((i: number) => json.nodes[i].name)
     expect(names).toContain('mixamorig:Hips')
   }, 30_000)
+
+  test('with clips (#3908), each licensed; gate 1 catches one that isn’t', async () => {
+    const starter = new Uint8Array(
+      await Bun.file(
+        join(
+          import.meta.dir,
+          '..',
+          '..',
+          'site',
+          'static',
+          'clips',
+          'ual-starter.glb'
+        )
+      ).arrayBuffer()
+    )
+    const glb = await exportMeshGlb(await meshCharacter(), {
+      clips: ualClips(starter, ['Walk_Loop']),
+    })
+    const json = readGlb(glb).json
+    expect(json.animations.map((a: { name: string }) => a.name)).toEqual([
+      'Walk_Loop',
+    ])
+    expect(
+      json.asset.extras.dramatis.licences.map((l: { asset: string }) => l.asset)
+    ).toEqual(['user:hero.glb', 'quaternius:animation/ual1'])
+    expect(await embeddedClipProblems(glb)).toEqual([])
+    const broken = readGlb(glb)
+    broken.json.asset.extras.dramatis.licences.pop()
+    expect(
+      (await embeddedClipProblems(writeGlb(broken.json, broken.bin))).join()
+    ).toContain('is not among the file')
+  }, 60_000)
 
   test('and as VRM 1.0', async () => {
     const vrm = await exportCharacterVrm(await meshCharacter(), NO_PACK)

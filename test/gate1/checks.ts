@@ -274,8 +274,54 @@ export async function clipProblems(
   const raw = source.animations[0]
   if (raw === undefined) return ['the clip file has no animation']
   const naming = declaredNaming(readGlb(bytes))
+  const clip = clipOnExport(raw, character.scene, source.scene, naming)
+  return playProblems(character, clip, naming)
+}
+
+/**
+ * The clips an export carries itself (#3908), each as three plays it: its
+ * licence is one of the file's entries, and it binds to the major joints and
+ * moves them as UAL's Walk_Loop does. A file with none has no problems.
+ */
+export async function embeddedClipProblems(
+  bytes: Uint8Array
+): Promise<string[]> {
+  const glb = readGlb(bytes)
+  const animations: any[] = glb.json.animations ?? []
+  if (animations.length === 0) return []
+  const listed = new Set(
+    (glb.json.asset?.extras?.dramatis?.licences ?? []).map((l: any) => l.asset)
+  )
+  const problems: string[] = []
+  for (const a of animations) {
+    const licence = a.extras?.dramatis?.licence
+    if (!licence) problems.push(`${a.name}: no licence in its extras`)
+    else if (!listed.has(licence))
+      problems.push(`${a.name}: its licence ${licence} is not among the file's`)
+  }
+  let character: GLTF
+  try {
+    character = await loadWithThree(bytes)
+  } catch (e) {
+    return [`could not load: ${e instanceof Error ? e.message : String(e)}`]
+  }
+  const naming = declaredNaming(glb)
+  for (const clip of character.animations)
+    problems.push(
+      ...(await playProblems(character, clip, naming)).map(
+        (p) => `${clip.name}: ${p}`
+      )
+    )
+  return problems
+}
+
+/** A clip played on a loaded export: what doesn't bind, turn or travel. */
+async function playProblems(
+  character: GLTF,
+  clip: AnimationClip,
+  naming: NamingProfile
+): Promise<string[]> {
   const scene = character.scene
-  const clip = clipOnExport(raw, scene, source.scene, naming)
   const bones = new Set<Object3D>()
   scene.traverse((o) => {
     if (o instanceof SkinnedMesh) for (const b of o.skeleton.bones) bones.add(b)

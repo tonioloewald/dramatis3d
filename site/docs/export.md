@@ -40,6 +40,7 @@ built character is engine-free data, the same shape the
 | `restPose` | `'t-pose'` | The bind pose: UAL's T-pose, or `'source'` (MakeHuman's arms-down rest) |
 | `faceUnits` | `true` | All 59 face units as morph targets, `false` for none, or a list |
 | `fetch` | `fetch` | How textures are read (a cache, a worker, a test) |
+| `clips` | none | Clips the file carries, retargeted onto the character (below) |
 
 `fetch` is asked for the pack's textures and for the eye art,
 `https://cdn.tosijs.net/tonio/eyes/<style>-eye.png?v=1` (Tonio Loewald, CC0).
@@ -51,6 +52,27 @@ A `naming` or `restPose` that is not one of its two values (`'UE'`,
 `'T-Pose'`) is an error naming the allowed values, from `buildCharacter`,
 `writeCharacterGlb` and `exportCharacterGlb` alike, before anything is
 built: it is never taken as the other value.
+
+### Clips
+
+A file carries no animation unless you ask: UAL's clips play on it by name.
+To carry some, read a file of UAL clips (the site's starter cut, or
+`UAL1_core.glb` from the CDN) and name the ones you want. `ualClips` gives
+each the licence entry it needs (UAL is CC0); clips from another file take
+`readGlbClips` from `tosijs-3d/glb-clips` and a licence entry of your own.
+
+```js
+import { exportCharacterGlb, ualClips } from 'dramatis'
+
+const ual = new Uint8Array(await (await fetch(UAL_URL)).arrayBuffer())
+const glb = await exportCharacterGlb(character, pack, {
+  clips: ualClips(ual, ['Walk_Loop', 'Dance_Loop']),
+})
+```
+
+`writeCharacterGlb(built, { clips })` takes them too. Each is written as a
+glTF animation with its licence in the file
+([Export format](/export-format/#clips-in-the-file)).
 
 ## What happens to a character
 

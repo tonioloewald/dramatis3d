@@ -14,6 +14,12 @@ panel, name your character, and export it.
   hair and clothes. **Motion** sets them walking, dancing or standing still,
   and **character** saves, loads and moves the file. Drag to turn the
   camera, scroll or pinch to zoom.
+- **Clips in the file.** By default an exported GLB carries no animation:
+  UAL's clips play on it by name in any engine. **in exported GLBs**, in the
+  Motion tab, picks clips for the file to carry instead, each retargeted onto
+  the character (Walk, Dance and the rest; CC0, by Quaternius). The viewer
+  plays them, and the character file and share links keep the choice. VRM
+  files carry none.
 - **Undo and redo** are the arrows at the top right of the panel, or ⌘Z and
   ⇧⌘Z (Ctrl on Windows and Linux). A slider's drag is one step; loading a
   character or rigging a body is one too.
