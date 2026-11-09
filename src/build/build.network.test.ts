@@ -11,7 +11,7 @@ import { describe, expect, test } from 'bun:test'
 import { join } from 'node:path'
 import { readCharacter } from 'tosijs-3d/character-file'
 import { type HumanPack, loadHumanPack } from 'tosijs-3d/human-pack'
-import { SAMPLES } from '../../bin/export-sample'
+import { clipsOf, heldOf, SAMPLES } from '../../bin/export-sample'
 import {
   clipProblems,
   morphProblems,
@@ -83,8 +83,14 @@ describe('build from the CDN', () => {
   for (const [name, sample] of Object.entries(SAMPLES))
     it(`samples/out/${name}.glb is what its character file builds today`, async () => {
       const doc = await Bun.file(join(OUT, `${name}.character.json`)).text()
+      // Read with the settings the export reads too (what it carries).
       const { character } = readCharacter(doc, {
-        settings: { ...BUILD_SETTINGS },
+        settings: {
+          ...BUILD_SETTINGS,
+          exportClips: [],
+          held: 'none',
+          grips: {},
+        },
       })
       const built = await buildCharacterWith(
         character,
@@ -92,8 +98,12 @@ describe('build from the CDN', () => {
         { fetch: fetcher },
         deps
       )
+      // The clips and the held item it carries are in its file too.
+      const held = await heldOf(character, fetcher)
       const bytes = writeCharacterGlb(built, {
         naming: sample.naming ?? 'ue',
+        clips: clipsOf(character),
+        ...(held ? { held } : {}),
       })
       const committed = new Uint8Array(
         await Bun.file(join(OUT, `${name}.glb`)).arrayBuffer()

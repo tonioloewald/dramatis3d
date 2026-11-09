@@ -46,7 +46,7 @@ const STARTER = join(
   'ual-starter.glb'
 )
 let starter: Uint8Array | undefined
-const clipsOf = (c: Character): ExportClip[] => {
+export const clipsOf = (c: Character): ExportClip[] => {
   const names = (c.settings.exportClips as string[] | undefined) ?? []
   if (names.length === 0) return []
   starter ??= new Uint8Array(readFileSync(STARTER))
@@ -55,7 +55,7 @@ const clipsOf = (c: Character): ExportClip[] => {
 
 // What the hand holds is in the character file too (settings.held and
 // settings.grips, tosijs-3d's), from Tonio's weapon library on the CDN.
-const heldOf = async (
+export const heldOf = async (
   c: Character,
   fetcher: (url: string) => Promise<ArrayBuffer>
 ): Promise<ExportHeld | undefined> => {
