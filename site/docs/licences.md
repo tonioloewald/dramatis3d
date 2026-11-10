@@ -23,11 +23,12 @@ disagree. A character that uses an asset with no entry cannot be exported:
   labelled CC0 but declare a CC BY asset inside, which is why.
 - **Attribution:** an asset whose licence asks for credit (any CC BY) carries
   its credit line here and in every export.
-- **Your own files** (a garment or a body you opened from disk) are yours.
-  They do not export yet: a character wearing one is refused, with a message
-  saying so. When they do, an export will list them with the licence
-  `NOASSERTION` (Dramatis makes no claim about them), as `characterLicences`
-  already does.
+- **Your own files** are yours. A mesh body of your own (a `.glb` you
+  opened and rigged in the rig tool) exports: the file lists it with the
+  licence `NOASSERTION`, which means Dramatis makes no claim about it, and
+  whether you may share it is for you to know. A garment of your own does
+  not export yet: a character wearing one is refused, with a message saying
+  so.
 
 ## Using the API
 

@@ -1,5 +1,5 @@
 node_modules/
-# Library build (bun run build). Not published yet; the package is private.
+# Library build (bun run build); published to npm from CI, not committed.
 dist/
 # The site build (bun run build), deployed to Pages by .github/workflows/pages.yml.
 www/

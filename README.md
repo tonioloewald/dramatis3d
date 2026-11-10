@@ -9,7 +9,7 @@ An open 3D character creator for the web. CC0 base data, GLB and VRM out, works 
 - **The demos**: `/demo/` walks your character round a three.js scene; `/unity/` does the same in Unity's Web player.
 - **The library**: `buildCharacter`, `exportCharacterGlb`, `exportCharacterVrm` (VRM 1.0, library only, no creator button yet), share links, the licence manifest, and `dramatis/three` for live three.js objects.
 
-Where the export has been checked (on the four samples in `samples/out/`, headless, default import settings; evidence in [reports/spike-1.md](reports/spike-1.md)):
+Where the export has been checked (on the four MakeHuman samples of spike 1 in `samples/out/`, headless, default import settings; evidence in [reports/spike-1.md](reports/spike-1.md)):
 
 | Engine | Status |
 | --- | --- |

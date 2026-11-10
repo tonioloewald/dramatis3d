@@ -13,6 +13,10 @@
 // writer now writes garments, clips and held items (#3882-#3884), about
 // 7 KiB, with nothing changed here. 72.5 KiB 2026-11-09 with clips in the
 // export (#3908: glb-clips' reader and baker, src/clips/), raised to 76.
+// 75.8 KiB 2026-11-10 with held items (#3909: glb-rig's node reader,
+// hold-grip, hand-socket and the held-parts writer); 76 kept, with 0.2 KiB
+// to spare, so the next addition here decides between loading the export's
+// extras on demand and a raise, with its reason.
 
 import { describe, expect, test } from 'bun:test'
 import { join } from 'node:path'

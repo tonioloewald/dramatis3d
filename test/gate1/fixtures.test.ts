@@ -73,6 +73,35 @@ describe('gate 1 negative controls: each check fails on its bad fixture', () => 
     expect(problems).toContain('joint not in the profile: Hand_L')
   })
 
+  // What export-format.md's Versions section promises a v1 reader: the 65,
+  // plus at most one socket joint (weapon_r or weapon_l) as the skin's last.
+  const withJoints = (names: string[], at?: number) =>
+    makeFixture({
+      mutate: (g) => {
+        const joints: number[] = g.json.skins[0].joints
+        const hand = g.json.nodes.findIndex(
+          (n: { name: string }) => n.name === 'hand_r'
+        )
+        for (const name of names) {
+          const i = g.json.nodes.push({ name }) - 1
+          ;(g.json.nodes[hand].children ??= []).push(i)
+          joints.splice(at ?? joints.length, 0, i)
+        }
+      },
+    })
+  test('skeleton: one socket after the 65 is the profile; anything more is not', async () => {
+    for (const s of ['weapon_r', 'weapon_l'])
+      expect(skeletonProblems(readGlb(await withJoints([s])))).toEqual([])
+    const two = skeletonProblems(
+      readGlb(await withJoints(['weapon_r', 'weapon_l']))
+    )
+    expect(two).toContain('joint not in the profile: weapon_r')
+    const other = skeletonProblems(readGlb(await withJoints(['prop_r'])))
+    expect(other).toContain('joint not in the profile: prop_r')
+    const inside = skeletonProblems(readGlb(await withJoints(['weapon_r'], 10)))
+    expect(inside).toContain('joint not in the profile: weapon_r')
+  })
+
   test('skeleton: UE names in a file that declares Mixamo', async () => {
     const bytes = await makeFixture({
       mutate: (g) => {

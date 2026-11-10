@@ -85,7 +85,7 @@ tones, which are CC BY 4.0 and credited in every export:
 | The weapons (**Hold**) | Tonio Loewald, original | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 | The skin tones | [Monk Skin Tone Scale](https://skintone.google), by Dr. Ellis Monk and Google | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
 | The AI-made cast (**body**: the four meshes besides MakeHuman's), rigged here | Tonio Loewald, with Gemini (reference sheets) and Meshy (meshes, on a paid plan) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
-| The skeleton, and the preview's animations (the clips are not exported) | Quaternius' Universal Animation Library | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| The skeleton, and the animations (the preview's, and the clips you pick to export) | Quaternius' Universal Animation Library | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
 
 MakeHuman's data is used as published; its code is not (Dramatis
 reimplements what it needs from the file formats). An exported file lists

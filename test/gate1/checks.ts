@@ -70,9 +70,12 @@ export function skeletonProblems(glb: Glb): string[] {
     mesh?: number
   }> = j.nodes ?? []
   const all = skin.joints.map((i) => nodes[i]?.name ?? `(node ${i} unnamed)`)
-  // A held item's socket (#3909) may follow the profile's joints, under its
-  // hand; heldProblems checks it.
-  const names = all.filter((n, k) => !(k >= UE_JOINTS.length && SOCKET.test(n)))
+  // A held item's socket (#3909) may follow the profile's joints, once, as
+  // the skin's last joint, under its hand; heldProblems checks the hand.
+  const names = all.filter(
+    (n, k) =>
+      !(k === UE_JOINTS.length && k === all.length - 1 && SOCKET.test(n))
+  )
   const expected = UE_JOINTS.map((r) => jointName(r.name, naming))
   const have = new Set(names)
   const want = new Set(expected)

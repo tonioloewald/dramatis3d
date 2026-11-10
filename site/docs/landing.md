@@ -46,7 +46,7 @@ a link. It runs on [tosijs-3d](https://3d.tosijs.net)'s character system.
 | [Unity 6](/guide-unity/) | Verified: glTFast import, Humanoid, walk; [Web player](/unity/) |
 | [Unreal Engine 5](/guide-unreal/) | Not verified yet: a procedure, not yet run |
 
-All of this was checked on four sample exports, headless. How the
+All of this was checked on spike 1's four sample exports, headless. How the
 characters look on a real GPU has not been judged yet. A [VRM 1.0](/vrm/) export
 (**Download VRM** in the creator) is **verified**: checked with three-vrm, and run in
 VCam, a macOS VTuber app.

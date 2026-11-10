@@ -62,9 +62,10 @@ To carry some, read a file of UAL clips (the site's starter cut, or
 each the licence entry it needs (UAL is CC0); clips from another file take
 `readGlbClips` from `tosijs-3d/glb-clips` and a licence entry of your own.
 
-```js
+```ts
 import { exportCharacterGlb, ualClips } from 'dramatis'
 
+const UAL_URL = 'https://cdn.tosijs.net/quaternius/UAL1_core.glb?v=2'
 const ual = new Uint8Array(await (await fetch(UAL_URL)).arrayBuffer())
 const glb = await exportCharacterGlb(character, pack, {
   clips: ualClips(ual, ['Walk_Loop', 'Dance_Loop']),
@@ -82,12 +83,19 @@ glTF animation with its licence in the file
 name (`WEAPONS` lists them) and the character's adjusted grips, and gives
 the item, its grip and its licence entry:
 
-```js
-import { exportCharacterGlb, weaponHeld } from 'dramatis'
+```ts
+import { exportCharacterGlb, weaponHeld, WEAPONS_PATH } from 'dramatis'
+import type { HoldGrip } from 'tosijs-3d/hold-grip'
 
+const WEAPONS_URL = `https://cdn.tosijs.net/${WEAPONS_PATH}`
 const weapons = new Uint8Array(await (await fetch(WEAPONS_URL)).arrayBuffer())
-const glb = await exportCharacterGlb(character, pack, {
-  held: weaponHeld(weapons, 'Long Sword', character.settings.grips),
+const sword = await exportCharacterGlb(character, pack, {
+  // The character's own grip adjustments, per kind of item (settings are untyped).
+  held: weaponHeld(
+    weapons,
+    'Long Sword',
+    character.settings.grips as Record<string, Partial<HoldGrip>>
+  ),
 })
 ```
 
@@ -138,7 +146,11 @@ The character stands on the floor at the origin, facing +Z, its left hand on
 - `long-hair.glb`: a woman with long hair and a sports suit, darker skin;
 - `extreme-heavy.glb`: every body slider at its extreme (oldest, heaviest,
   most muscular, tallest), in a work suit;
-- `clothed-casual-mixamo.glb`: the first, with Mixamo joint names.
+- `clothed-casual-mixamo.glb`: the first, with Mixamo joint names;
+- `with-clips.glb` and `with-held.glb`: a character carrying two UAL clips,
+  and one holding a Long Sword;
+- `mesh-*.glb`: the AI cast's Keisha and Kevin as mesh bodies, in underwear
+  and spacesuits (one under Mixamo naming).
 
 Gate 1 (`bun run gate1`) checks each against the profile: the Khronos glTF
 validator, the skeleton, the morph names, the licences, three.js's loader,
@@ -153,9 +165,10 @@ These are known gaps, each tracked on the board:
 - **Baked textures.** The skin is one colour (no lips, no stubble) and the
   lashes a dark opaque card; garment normal maps and colour recipes do not
   travel yet. (The eyes are textured, in the character's eye colour.)
-- **Quaternius hair and brows**, garments of the character's own, and mesh
-  bodies other than MakeHuman's: `buildCharacter` throws, saying which (the
-  creator offers Quaternius hair, so its export stops there).
+- **Quaternius hair and brows**, and garments of the character's own:
+  `buildCharacter` throws, saying which (the creator offers Quaternius hair,
+  so its export stops there). A mesh body exports through
+  `exportCharacterGlb` and `exportCharacterVrm`, not `buildCharacter`.
 - A hat pushing the hair under it.
 - **Shoes go below the floor.** The body is grounded on its whole skin,
   then the skin under shoes is cut away, and a shoe's sole ends up below
@@ -167,7 +180,9 @@ These are known gaps, each tracked on the board:
 
 ## Where it has been checked
 
-The samples have been imported into three.js, Unity 6.6 (glTFast 6.14.1),
-Godot 4.5, Babylon.js 9.33 (headless) and Blender 5.2 with default settings
-and no fixes. Unreal 5 has not been run. The [docs index](/docs/) has the table, and
+The first four samples have been imported into three.js, Unity 6.6
+(glTFast 6.14.1), Godot 4.5, Babylon.js 9.33 (headless) and Blender 5.2 with
+default settings and no fixes. The newer ones (mesh bodies, clips in the
+file, a held item) have so far been checked by gate 1, three.js included,
+and not yet in the other engines. Unreal 5 has not been run. The [docs index](/docs/) has the table, and
 each engine's guide says what was checked.

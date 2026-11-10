@@ -25,6 +25,7 @@ import {
   proxyId,
 } from './manifest'
 import { wornBy } from '../build/build'
+import { meshLicence } from '../mesh'
 import { PACKS } from './packs'
 import { PAGE, renderPage } from './write-page'
 
@@ -364,7 +365,9 @@ describe('characterLicences', () => {
   // The licences page tells the user what happens to their own files: tied
   // here to what the exporter does, so the page can't promise an export the
   // build refuses (#3675). When own files export, this test changes with it.
-  test("the page's own-files sentence matches the exporter: refused, not yet exported", () => {
+  // A mesh body of the user's own exports with meshLicence's entry
+  // (src/mesh/mesh.test.ts exports one and finds it in the file).
+  test("the page's own-files sentence matches the exporter: own garments refused, own mesh bodies NOASSERTION", () => {
     const garment = char(
       { outfit: 'my cape' },
       { garments: { 'my cape': new Uint8Array(1) } }
@@ -372,14 +375,17 @@ describe('characterLicences', () => {
     expect(() => wornBy(garment, fakePack())).toThrow(
       "a garment of the character's own, which does not export yet"
     )
-    expect(() => wornBy(char({ source: 'My scan' }), fakePack())).toThrow(
-      'only MakeHuman bodies export yet'
-    )
+    const own = meshLicence('My hero', {
+      file: { name: 'hero.glb', bytes: new Uint8Array() },
+    })
+    expect(own.asset).toBe('user:hero.glb')
+    expect(own.licence).toBe('NOASSERTION')
     const page = readFileSync(PAGE, 'utf8')
     const from = page.indexOf('**Your own files**')
     const sentence = page.slice(from, page.indexOf('\n\n', from))
-    expect(sentence).toContain('do not export yet')
-    expect(sentence).not.toMatch(/An export lists them/)
+    expect(sentence).toContain('A mesh body of your own')
+    expect(sentence).toContain('`NOASSERTION`')
+    expect(sentence).toContain('A garment of your own does\n  not export yet')
   })
 
   test('the hosted bodies besides MakeHuman have entries', () => {

@@ -82,8 +82,8 @@ order of the meshes is the order above, garments by asset name.
 - Its `joints` are **exactly the 65 below, in this order**, named per the
   file's naming profile (`ue`, the default, or `mixamo`). Parents are as
   listed; a parent always comes before its children. The one exception is
-  a held item's socket, `weapon_r`, which follows them as a 66th joint
-  (see "A held item").
+  a held item's socket, `weapon_r` (or `weapon_l`), which may follow them
+  once, as a 66th joint (see "A held item").
 - These are **UE mannequin names as Quaternius' Universal Animation Library
   (UAL) spells them**: tosijs-3d's `HM08_UAL`. Note `Head` (capital H) and the
   `_leaf` tips, which carry no skin weight and exist so engines know where a
@@ -394,6 +394,13 @@ naming and the T-pose, plus the **`VRMC_vrm` 1.0** extension (in
 - **What doesn't:** a new optional field in the extras block that a version 1
   reader can ignore, and anything outside the block that the profile
   doesn't specify (mesh order within the rules above, buffer layout).
+- **The one optional joint:** a version 1 file may carry a socket joint,
+  `weapon_r` or `weapon_l`, once, as the skin's last joint, after the 65
+  (added 2026-11-10, Dramatis 0.1.3; see "A held item"). The 65 keep their
+  names, order and indices, and no body vertex is weighted to it, so a
+  reader that takes the 65 by name loses nothing by ignoring it. A reader
+  written before it that insists on exactly 65 joints rejects such a file;
+  a reader should accept the 65 plus that one joint, and nothing else.
 - **Reading a newer file:** a reader that checks the block, as
   `checkExportExtras` does, reports it invalid rather than guessing. It
   should still show the licence entries it can read: the viewer lists them,

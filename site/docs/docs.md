@@ -45,7 +45,7 @@ Each engine's own glTF importer, default settings, no plugins.
 Blender 5.2 also imports every sample cleanly; it is a second opinion, with
 no guide of its own. The evidence for each row is in
 [`reports/spike-1.md`](https://github.com/tonioloewald/dramatis3d/blob/main/reports/spike-1.md).
-"Verified" means the checks ran on the four sample exports. Looks have not
+"Verified" means the checks ran on spike 1's four sample exports. Looks have not
 been judged on a real GPU in any engine.
 
 ## The library
