@@ -19,14 +19,12 @@ written here first. The rules (owner, 2026-11-02):
 
 What is here now:
 
-- `held-parts.ts`: a held item as GLB parts (the socket joint, the item's
-  mesh, materials and pictures) for any skeleton, for the MakeHuman
-  writer's held items (#3909). Bound for tosijs-3d's rigged-body-glb, whose
-  private heldSocket and materialsOf it mirrors (#3917). It must move
-  before a Dramatis release ships it.
+Nothing.
 
 Moved already:
 
+- `held-parts.ts`: a held item as GLB parts for any skeleton,
+  `heldParts` in `tosijs-3d/rigged-body-glb` since tosijs-3d 0.12.6 (#3917);
 - the skinned GLB writer and `glb-chunks`: `tosijs-3d/skinned-glb` and
   `tosijs-3d/glb-chunks` since tosijs-3d 0.12.1 (#3662);
 - the slider-extremes sweep: `tosijs-3d/fit-extremes` (with `mesh-sdf` and

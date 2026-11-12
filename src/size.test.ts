@@ -17,6 +17,11 @@
 // hold-grip, hand-socket and the held-parts writer); 76 kept, with 0.2 KiB
 // to spare, so the next addition here decides between loading the export's
 // extras on demand and a raise, with its reason.
+// 82.5 KiB at tosijs-3d 0.12.6 (2026-11-12), raised to 86: nothing changed
+// here but the held-parts copy going (-2.9 KiB). Its rigged-body writer now
+// bakes garments' looks, reaching a JPEG decoder, material recipes and colour
+// (about 5 KiB, unused by Dramatis's exports, which bake nothing), and
+// retarget's foot IK (1.4 KiB). The decoder on demand is asked of tosijs-3d.
 
 import { describe, expect, test } from 'bun:test'
 import { join } from 'node:path'
@@ -26,7 +31,7 @@ const KiB = 1024
 
 const CEILINGS: Record<string, number> = {
   'src/three/index.ts': 7 * KiB,
-  'src/index.ts': 76 * KiB,
+  'src/index.ts': 86 * KiB,
 }
 
 async function gzipSize(entry: string): Promise<number> {

@@ -16,7 +16,7 @@ import {
 } from '../../test/gate1/checks'
 import { holdGrip } from 'tosijs-3d/hold-grip'
 import { heldExtras, weaponAsset, type ExportHeld } from '../held'
-import { heldParts, type RestJoint } from '../upstream/held-parts'
+import { heldParts, type RestJoint } from 'tosijs-3d/rigged-body-glb'
 import { lookupLicence } from '../licences'
 import { writeGlb } from 'tosijs-3d/glb-chunks'
 import {

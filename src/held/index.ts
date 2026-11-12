@@ -9,7 +9,7 @@
 // item is set per class (tosijs-3d/hold-grip: pistols, one-handed blades…),
 // and a character keeps its own adjustments per class (`settings.grips`).
 // The mesh path writes it with riggedBodyGlb's `held`; the MakeHuman path
-// with the same placement (src/upstream/held-parts.ts).
+// with the same placement (tosijs-3d/rigged-body-glb's heldParts).
 
 import { glbNodePosition, glbRigTriangles } from 'tosijs-3d/glb-rig'
 import { holdGrip, type HoldGrip } from 'tosijs-3d/hold-grip'

@@ -18,7 +18,7 @@ import {
 import { writeSkinnedGlb } from 'tosijs-3d/skinned-glb'
 import { bakeAnimations, withClipLicences, type ExportClip } from '../clips'
 import { heldExtras, type ExportHeld } from '../held'
-import { heldParts } from '../upstream/held-parts'
+import { heldParts } from 'tosijs-3d/rigged-body-glb'
 import { NAMINGS, option } from './options'
 import { GENERATOR } from './version'
 
