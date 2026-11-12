@@ -4,6 +4,10 @@ All notable changes to Dramatis. The format follows [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-11-12
+
+Mesh bodies, clips and a held item in the export, a starter wardrobe, VRM from the creator, and the creator's tabs and undo. New public API (below); nothing removed. On tosijs-3d 0.12.6.
+
 ### Added
 
 - **Bring your hero: mesh bodies** (#3856). A character's body can be MakeHuman's, one of the AI cast (Keisha and Kevin, in underwear and spacesuits; CC0, Tonio Loewald's), or a mesh file of your own, rigged in tosijs-3d's rig tool. `exportCharacterGlb` and `exportCharacterVrm` export it to the same profile: CC0 with its provenance for the cast, `NOASSERTION` for your own file. A mesh body has no face units, garments or real height. Gate 1 runs on four cast samples (`samples/out/mesh-*.glb`).

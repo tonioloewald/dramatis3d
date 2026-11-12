@@ -383,7 +383,7 @@ naming and the T-pose, plus the **`VRMC_vrm` 1.0** extension (in
 ## Versions
 
 `asset.extras.dramatis.version` is this profile's version (1), and
-`generator` says which Dramatis wrote the file (`dramatis@0.1.2`).
+`generator` says which Dramatis wrote the file (`dramatis@0.1.3`).
 
 - **What raises the version:** anything that changes what an existing
   reader would make of a file: a joint renamed, added or moved; a face unit
