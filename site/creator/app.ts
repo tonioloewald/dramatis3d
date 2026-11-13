@@ -645,6 +645,10 @@ export async function mountCreator(
         ? retargetClip(clip, source, ch.skeleton, {
             scene,
             armSpaceDeg: ch.recipe?.armSpaceDeg,
+            // OFF until tosijs-3d fixes it (#4078): 0.12.6's foot IK makes
+            // the default MakeHuman body's right leg jump 10 to 20 degrees
+            // between keys of Idle_Loop.
+            footIk: false,
           })
         : null
       playing?.start(true)
