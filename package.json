@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "fflate": "0.8.3",
-    "tosijs-3d": "0.12.6"
+    "tosijs-3d": "0.13.0"
   },
   "peerDependencies": {
     "three": ">=0.160.0"

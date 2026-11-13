@@ -22,6 +22,8 @@
 // bakes garments' looks, reaching a JPEG decoder, material recipes and colour
 // (about 5 KiB, unused by Dramatis's exports, which bake nothing), and
 // retarget's foot IK (1.4 KiB). The decoder on demand is asked of tosijs-3d.
+// 76.9 KiB at tosijs-3d 0.13.0 (2026-11-13), lowered to 79: its rigged-body
+// writer bakes only when handed the baker, so the decoder is gone (#4060).
 
 import { describe, expect, test } from 'bun:test'
 import { join } from 'node:path'
@@ -31,7 +33,7 @@ const KiB = 1024
 
 const CEILINGS: Record<string, number> = {
   'src/three/index.ts': 7 * KiB,
-  'src/index.ts': 86 * KiB,
+  'src/index.ts': 79 * KiB,
 }
 
 async function gzipSize(entry: string): Promise<number> {

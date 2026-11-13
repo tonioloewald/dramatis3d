@@ -4,6 +4,14 @@ All notable changes to Dramatis. The format follows [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+### Changed
+
+- **tosijs-3d 0.13.0, pinned.** Its rigged-body writer bakes garment looks only when handed the baker, so the core no longer carries a JPEG decoder it never used: `dramatis` is 76.9 KiB gzip, down from 82.5, and its ceiling goes from 86 to 79 KiB (#4060). Exports are byte-identical; nothing else in its breaking changes reaches Dramatis.
+
+### Fixed
+
+- **The creator's preview: the right leg no longer twitches** (#4078). tosijs-3d 0.12.6 turned on foot IK when retargeting clips, and on the default MakeHuman body it jumped the right leg 10 to 20 degrees between frames of the idle loop and set the feet wide. The preview turns it off until tosijs-3d fixes it (0.13.0 does not); exports, which measured smooth, are unchanged.
+
 ## [0.1.3] - 2026-11-12
 
 Mesh bodies, clips and a held item in the export, a starter wardrobe, VRM from the creator, and the creator's tabs and undo. New public API (below); nothing removed. On tosijs-3d 0.12.6.
