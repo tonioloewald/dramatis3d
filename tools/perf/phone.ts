@@ -50,10 +50,10 @@ export interface Probe {
 }
 
 const VIEWER_PLAYING = '(globalThis.dramatisViewer?.state.playing === true)'
-const CREATOR_BUTTON = (enabled: boolean) =>
-  `[...document.querySelectorAll('dramatis-creator button')].some(b => b.textContent === 'View in three.js'${
-    enabled ? ' && !b.disabled' : ''
-  })`
+// Useful: the creator's stage is painted (its loading note), at once from
+// the page's own bundle. Ready: the scene is up and its menus work.
+const CREATOR_STAGE = "!!document.querySelector('dramatis-creator .dc-stage')"
+const CREATOR_READY = "!!document.querySelector('dramatis-creator[data-ready]')"
 
 export const PROBES: Probe[] = [
   {
@@ -65,8 +65,8 @@ export const PROBES: Probe[] = [
   {
     name: 'creator',
     path: '/creator/',
-    useful: CREATOR_BUTTON(false),
-    ready: CREATOR_BUTTON(true),
+    useful: CREATOR_STAGE,
+    ready: CREATOR_READY,
   },
   {
     // Nothing saved in a fresh profile: the demo builds a default character

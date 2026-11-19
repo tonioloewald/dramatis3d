@@ -15,7 +15,7 @@ This page covers a GLB you exported. If you want to build the character in
 the page and keep it live as sliders move, read [dramatis/three](/dramatis-three/).
 
 **Try it:** the [three.js viewer](/viewer/) opens any GLB you drop on it.
-The creator's **View in three.js** button sends its export there. The
+The creator's **View in three.js** (in its Export menu) sends its export there. The
 [three.js demo](/demo/) walks a character round a scene with UAL's idle,
 walk, jog and sprint loops: a character saved in this browser (built to a
 GLB in the page), or a GLB or character file you open.
@@ -74,8 +74,8 @@ If you would rather not depend on Dramatis at run time, the same filter is
 about fifteen lines (`src/three/clip.ts`). Walk the clip's tracks, keep
 `*.quaternion` and the `.position` of `root` and `pelvis`, and drop the rest.
 
-**Mixamo names.** An export made with Mixamo names (the creator's naming
-menu) has the same joints and the same rest frames under other names, such
+**Mixamo names.** An export made with Mixamo names (**Skeleton names**
+in the creator's Export menu) has the same joints and the same rest frames under other names, such
 as `mixamorig:Hips`. three.js drops the `:` when it binds (`mixamorigHips`),
 as it does for Mixamo's own files. A UAL clip then needs its tracks
 **renamed**, which `characterClip(clip, { naming: 'mixamo' })` does. Nothing
@@ -137,7 +137,7 @@ The [viewer](/viewer/) is this page as a working tool. It is three.js only:
 its build fails if any Babylon code ends up in its bundle. It opens a GLB in
 any of four ways:
 
-- **from the creator:** **View in three.js** puts the export in this
+- **from the creator:** **View in three.js** (the Export menu) puts the export in this
   browser's IndexedDB and opens `/viewer/?handoff=<id>`. Nothing goes over
   the network. The export is kept for a day, so a reload still finds it.
 - **by URL:** `/viewer/?glb=<url>` (the server must allow cross-origin reads).
@@ -188,7 +188,7 @@ without a build. In your project, import it from `dramatis/three`.
   The sample page loads, lists its licences, and its picture changes from
   frame to frame.
 - With `DRAMATIS_NETWORK=1` as well, the whole path runs: the creator page
-  loads, **View in three.js** is clicked, and the viewer shows the
+  loads, **View in three.js** runs, and the viewer shows the
   character walking, with its licences. Then UAL's other clips load from the
   CDN and `Dance_Loop` plays.
 

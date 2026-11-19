@@ -11,7 +11,7 @@ window was not tried: the check maps the bones explicitly, as below.
 
 **Try it:** the [Unity player](/unity/) is the three.js demo's walk-round
 in Unity's Web player, loading your export at runtime with glTFast (the
-creator's **View in Unity** button sends it there). That
+creator's **View in Unity**, in its Export menu, sends it there). That
 is glTFast's runtime path, with legacy clips; a game in the editor would
 more often use the editor import and a Humanoid avatar, below.
 
