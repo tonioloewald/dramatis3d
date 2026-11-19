@@ -6,6 +6,8 @@ All notable changes to Dramatis. The format follows [Keep a Changelog](https://k
 
 ### Changed
 
+- **The creator fills the page.** On its page the creator takes the whole content area beside the sidebar (it was a box in the reading column), and maximize still fills the screen. Its controls moved into the scene: an **Export** menu on the system bar (view in three.js or Unity, download GLB or VRM, share link, skeleton names) and a **Dramatis** menu (the intro, the demos, the viewer, tosijs-3d's character builder, the docs). The name is a field in the Character tab (tosijs-3d's input, with its on-screen keyboard in a headset). A first visit opens a short intro over the scene. Export notes show over the scene.
+- The home page and the creator link to [tosijs-3d's character builder](https://3d.tosijs.net/character-builder/), for everything underneath working in tosijs-3d.
 - **tosijs-3d 0.13.1, pinned.** 0.13.0's rigged-body writer bakes garment looks only when handed the baker, so the core no longer carries a JPEG decoder it never used: `dramatis` is 76.9 KiB gzip, down from 82.5, and its ceiling goes from 86 to 79 KiB (#4060). 0.13.1's foot IK sets only a grounded foot's height, so the two samples that carry clips (`with-clips`, `mesh-kevin-spacesuit`) changed; gate 1 passes. Nothing else in 0.13.0's breaking changes reaches Dramatis.
 
 ### Fixed

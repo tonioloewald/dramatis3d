@@ -44,6 +44,8 @@ import {
   type SceneCharacter,
 } from 'tosijs-3d/character'
 import { mountRigTool, type RigToolHandle } from 'tosijs-3d/rig-tool'
+import { barMenu } from 'tosijs-3d/bar-menu'
+import { inputField } from 'tosijs-3d/keyboard'
 import { undoHistory } from 'tosijs-3d/undo-history'
 import { b3dLibrary, type B3dLibrary } from 'tosijs-3d/b3d-library'
 import { handSocket, heldGrip } from 'tosijs-3d/b3d-launcher'
@@ -100,20 +102,27 @@ import {
   viewInUnity,
   type ActionResult,
 } from './actions'
+import { DEMO_LINKS, DOC_LINKS, openLink, TOSIJS_3D_BUILDER } from './links'
 
 /** What the shell (element.ts) gives the app. */
 export interface CreatorShell {
-  /** The character's name, as typed in the toolbar. */
+  /** The character's name (the Character tab's name field). */
   name(): string
   setName(name: string): void
+  /** The skeleton's joint names in a GLB (the Export menu's choice). */
   naming(): NamingProfile
-  /** A line in the status bar; `false` clears it. */
+  setNaming(naming: NamingProfile): void
+  /** A line over the scene; `false` clears it. */
   status(message: string | false, tone?: 'info' | 'error'): void
   /** The creator's URL for share links. */
   shareBase(): string
+  /** Run an export action: the Export menu's entries. */
+  act(action: 'view' | 'unity' | 'download' | 'vrm' | 'share'): void
+  /** Show the intro again (the Dramatis menu's About). */
+  about(): void
 }
 
-/** What the app gives the shell: the toolbar's actions. */
+/** What the app gives the shell: the export actions it runs. */
 export interface CreatorApp {
   view(opened: Window | null): Promise<ActionResult>
   /** The same, in the Unity player. */
@@ -124,8 +133,6 @@ export interface CreatorApp {
   share(): Promise<ActionResult>
   /** The character as a file, now. */
   character(): Character
-  /** Something outside the panel changed (the name): keep the working figure. */
-  touched(): void
   dispose(): void
 }
 
@@ -280,6 +287,7 @@ export async function mountCreator(
     importJson: () => {},
     undo: () => {},
     redo: () => {},
+    named: () => {},
     grip: (_patch: Partial<HoldGrip>) => {},
     resetGrip: () => {},
   }
@@ -291,6 +299,15 @@ export async function mountCreator(
 
   const characterRows = (): Widget3d[] => [
     label3d({ text: 'Character', collapsible: true, icon: 'character' }),
+    inputField({
+      value: shell.name(),
+      placeholder: 'name your character',
+      name: 'character name',
+      handleChange: (v) => {
+        shell.setName(v)
+        handlers.named()
+      },
+    }),
     button3d({
       label: 'save in this browser…',
       handleClick: () => handlers.save(),
@@ -875,7 +892,10 @@ export async function mountCreator(
         for (const slot of SLOTS)
           if (c.cloth[slot]) character.setCloth(slot, c.cloth[slot])
         await character.ready()
-        if (c.name && c.name !== WORKING_CHARACTER) shell.setName(c.name)
+        if (c.name && c.name !== WORKING_CHARACTER) {
+          shell.setName(c.name)
+          host.refreshScenePanel?.()
+        }
       } finally {
         restoring = false
       }
@@ -906,6 +926,8 @@ export async function mountCreator(
       }, 800)
     }
     for (const k of KEPT) watch(box(k), changed)
+    // The name is the shell's, typed in the Character tab.
+    handlers.named = changed
 
     const listSaved = async () => {
       saved = await store.list().catch(() => [])
@@ -1227,6 +1249,61 @@ export async function mountCreator(
         ...(held ? { held } : {}),
       }
     }
+    // THE BAR'S MENUS (tosijs-3d's barMenu, flat and in a headset): Export
+    // runs the shell's export actions; Dramatis has the intro and where to go
+    // next. Both read their entries each time they open.
+    const naming = (n: NamingProfile, label: string) => ({
+      label,
+      checked: shell.naming() === n,
+      handleSelect: () => shell.setNaming(n),
+    })
+    el.append(
+      barMenu({
+        // Not download: the panel's own download icon is its screenshot.
+        icon: 'upload',
+        title: 'Export',
+        layout: 'list',
+        options: () => [
+          { label: 'View in three.js', handleSelect: () => shell.act('view') },
+          { label: 'View in Unity', handleSelect: () => shell.act('unity') },
+          { separator: true },
+          { label: 'Download GLB', handleSelect: () => shell.act('download') },
+          { label: 'Download VRM', handleSelect: () => shell.act('vrm') },
+          { separator: true },
+          { label: 'Share link', handleSelect: () => shell.act('share') },
+          { separator: true },
+          {
+            label: 'Skeleton names',
+            items: () => [
+              naming('ue', 'UE / UAL names'),
+              naming('mixamo', 'Mixamo names'),
+            ],
+          },
+        ],
+      }),
+      barMenu({
+        icon: 'menu',
+        title: 'Dramatis',
+        layout: 'list',
+        options: () => [
+          { label: 'About Dramatis', handleSelect: () => shell.about() },
+          { separator: true },
+          ...DEMO_LINKS.map((l) => ({
+            label: l.label,
+            handleSelect: () => openLink(l.href),
+          })),
+          { separator: true },
+          {
+            label: TOSIJS_3D_BUILDER.label,
+            handleSelect: () => openLink(TOSIJS_3D_BUILDER.href),
+          },
+          ...DOC_LINKS.map((l) => ({
+            label: l.label,
+            handleSelect: () => openLink(l.href),
+          })),
+        ],
+      })
+    )
     resolveApp({
       view: async (w) => viewInThree(await input(), w),
       unity: async (w) => viewInUnity(await input(), w),
@@ -1236,7 +1313,6 @@ export async function mountCreator(
         downloadVrm({ character: snapshot(), pack, naming: shell.naming() }),
       share: () => shareLink(snapshot(), shell.shareBase()),
       character: () => snapshot(),
-      touched: () => changed(),
       dispose,
     })
   }

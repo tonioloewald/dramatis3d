@@ -367,6 +367,22 @@ describe.skipIf(!BROWSER)('the viewer in Chromium', () => {
     await page.close()
   }, 90_000)
 
+  // The creator's export actions are on its Export menu, drawn in the scene
+  // (tosijs-3d's barMenu); the element's act() is the same call the menu
+  // makes. Ready once the scene is up: data-ready on the element.
+  const creatorReady = (page: Page) =>
+    page.waitForSelector('dramatis-creator[data-ready]', { timeout: 240_000 })
+  const act = (page: Page, action: string) =>
+    page.evaluate(
+      (a) =>
+        (
+          document.querySelector('dramatis-creator') as unknown as {
+            act(a: string): void
+          }
+        ).act(a),
+      action
+    )
+
   test.skipIf(!NETWORK)(
     'creator -> View in three.js -> the viewer shows the character animating',
     async () => {
@@ -375,22 +391,11 @@ describe.skipIf(!BROWSER)('the viewer in Chromium', () => {
         if (m.type() === 'error') errors.push(`console: ${m.text()}`)
       })
       await page.goto(`${base}/creator/`)
-      const view = page.getByRole('button', { name: 'View in three.js' })
-      await view.waitFor({ state: 'visible', timeout: 60_000 })
-      await page.waitForFunction(
-        () =>
-          [...document.querySelectorAll('dramatis-creator button')].some(
-            (b) =>
-              b.textContent === 'View in three.js' &&
-              !(b as HTMLButtonElement).disabled
-          ),
-        undefined,
-        { timeout: 240_000 }
-      )
+      await creatorReady(page)
       await page.screenshot({ path: join(SHOTS, 'creator.png') })
       const [viewer] = await Promise.all([
         page.context().waitForEvent('page', { timeout: 120_000 }),
-        view.click(),
+        act(page, 'view'),
       ])
       viewer.on('pageerror', (e) => errors.push(`viewer: ${e.message}`))
       await viewer.waitForURL(/\/viewer\/\?handoff=/, { timeout: 180_000 })
@@ -436,21 +441,10 @@ describe.skipIf(!BROWSER)('the viewer in Chromium', () => {
     async () => {
       const { page, errors } = await newPage()
       await page.goto(`${base}/creator/`)
-      const view = page.getByRole('button', { name: 'View in Unity' })
-      await view.waitFor({ state: 'visible', timeout: 60_000 })
-      await page.waitForFunction(
-        () =>
-          [...document.querySelectorAll('dramatis-creator button')].some(
-            (b) =>
-              b.textContent === 'View in Unity' &&
-              !(b as HTMLButtonElement).disabled
-          ),
-        undefined,
-        { timeout: 240_000 }
-      )
+      await creatorReady(page)
       const [player] = await Promise.all([
         page.context().waitForEvent('page', { timeout: 120_000 }),
-        view.click(),
+        act(page, 'unity'),
       ])
       player.on('pageerror', (e) => errors.push(`unity: ${e.message}`))
       await player.waitForURL(/\/unity\/\?handoff=/, { timeout: 180_000 })
@@ -498,19 +492,10 @@ describe.skipIf(!BROWSER)('the viewer in Chromium', () => {
     async () => {
       const { page, errors } = await newPage()
       await page.goto(`${base}/creator/`)
-      await page.waitForFunction(
-        () =>
-          [...document.querySelectorAll('dramatis-creator button')].some(
-            (b) =>
-              b.textContent === 'Download VRM' &&
-              !(b as HTMLButtonElement).disabled
-          ),
-        undefined,
-        { timeout: 240_000 }
-      )
+      await creatorReady(page)
       const [download] = await Promise.all([
         page.waitForEvent('download', { timeout: 180_000 }),
-        page.getByRole('button', { name: 'Download VRM' }).click(),
+        act(page, 'vrm'),
       ])
       expect(download.suggestedFilename()).toMatch(/\.vrm$/)
       const bytes = new Uint8Array(readFileSync((await download.path())!))
@@ -520,7 +505,7 @@ describe.skipIf(!BROWSER)('the viewer in Chromium', () => {
         .locator('dramatis-creator .dc-status')
         .innerText()
       expect(status).toMatch(/^Saved .+\.vrm \(VRM 1\.0, /)
-      // Five buttons still fit a phone: the bar wraps, the page doesn't scroll sideways.
+      // On a phone the creator fits the width: the page doesn't scroll sideways.
       await page.setViewportSize({ width: 390, height: 780 })
       await page.waitForTimeout(300)
       await page.screenshot({ path: join(SHOTS, 'creator-phone.png') })
@@ -547,16 +532,7 @@ describe.skipIf(!BROWSER)('the viewer in Chromium', () => {
       })
       /** The creator's character is up, and its skin is shaded. */
       const shaded = async (): Promise<boolean> => {
-        await page.waitForFunction(
-          () =>
-            [...document.querySelectorAll('dramatis-creator button')].some(
-              (b) =>
-                b.textContent === 'View in three.js' &&
-                !(b as HTMLButtonElement).disabled
-            ),
-          undefined,
-          { timeout: 240_000 }
-        )
+        await creatorReady(page)
         return page.evaluate(() => {
           type Plugin = { isEnabled: boolean } | null
           type Mat = {
@@ -578,7 +554,7 @@ describe.skipIf(!BROWSER)('the viewer in Chromium', () => {
       // runner; if this one ever isn't, the shot and the list say why.)
       try {
         await page
-          .locator('a[href="/docs/"]')
+          .locator('a[href="/docs/"]:not(.dc-intro a)')
           .filter({ visible: true })
           .first()
           .click({ timeout: 30_000 })

@@ -18,7 +18,9 @@ take them anywhere: CC0 base data, GLB and VRM out, for any engine.
 />
 
 **[Open the creator](/creator/)** · [three.js demo](/demo/) · [Unity demo](/unity/) ·
-[three.js viewer](/viewer/) · [Documentation](/docs/)
+[three.js viewer](/viewer/) · [Documentation](/docs/) ·
+[tosijs-3d's character builder](https://3d.tosijs.net/character-builder/) (everything
+underneath, working in tosijs-3d)
 
 Dramatis 0.1 is out (`npm install dramatis`). Shape a body, dress it, then
 download it as a GLB, walk it round the three.js or Unity demo, or share it as

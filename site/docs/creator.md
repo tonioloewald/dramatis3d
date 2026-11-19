@@ -2,17 +2,14 @@
 
 <!--{"pin": "top", "order": 0, "description": "Make a character in the browser, then download it as a GLB, view it in three.js, or share it as a link."}-->
 
-**Make a person, then take them anywhere.** Shape the body in the scene's
-panel, name your character, and export it.
-
 <dramatis-creator></dramatis-creator>
 
 ## Using it
 
-- **Shape** the character in the scene's panel (the owl opens and closes
-  it), a tab for each part: body (vital stats, shape and ancestry), skin, eyes, face,
+- **Shape** the character in the scene's panel (the owl on the bar at the
+  top left opens and closes it), a tab for each part: body (vital stats, shape and ancestry), skin, eyes, face,
   hair and clothes, and **hold**. **Motion** sets them walking, dancing or standing still,
-  and **character** saves, loads and moves the file. Drag to turn the
+  and **character** names it, saves, loads and moves the file. Drag to turn the
   camera, scroll or pinch to zoom.
 - **Clips in the file.** By default an exported GLB carries no animation:
   UAL's clips play on it by name in any engine. **in exported GLBs**, in the
@@ -41,6 +38,10 @@ panel, name your character, and export it.
   share link can't carry it** (a link holds settings, not meshes): the link
   says so, and opens with MakeHuman's body. Its licence is yours to know, so
   the export marks it as not stated (`NOASSERTION`).
+- **Export** (the arrow out of a tray, on the bar) views, downloads and shares
+  the character, and picks the skeleton's joint names. **Dramatis** (the menu beside it) has the intro shown on
+  a first visit, the demos, tosijs-3d's character builder and these docs.
+  The square at the end of the bar makes the scene fill the screen.
 - **View in three.js** exports a GLB and opens it in Dramatis's three.js
   viewer in a new tab. The file goes to the viewer through this browser's
   storage, not over the network, and is deleted after a day.
@@ -49,7 +50,7 @@ panel, name your character, and export it.
   round, as in the three.js demo.
 - **Download GLB** saves the same file. It follows the
   [export format](/export-format/): metres, Y-up, a UE-named skeleton (or
-  Mixamo names, from the menu at the end of the toolbar) and the face's
+  Mixamo names, from **Skeleton names** in the Export menu) and the face's
   expressions as morph targets, with every asset's licence written inside.
 - **Share link** makes a link that opens this character here. It holds the
   settings and nothing else, so it works without an account; the link is
@@ -63,8 +64,8 @@ panel, name your character, and export it.
 - **[Walk them round](/demo/)**: the three.js demo offers every character
   saved in this browser, the one you are working on first.
 
-When an export cannot be made, the line under the buttons says why, and
-your character is kept.
+When an export cannot be made, a note over the scene says why, and your
+character is kept.
 
 **Download VRM** saves a [VRM 1.0](/vrm/) avatar, for VTuber apps and VRM
 viewers: the GLB plus VRM's bone map, expressions and licence terms, always
