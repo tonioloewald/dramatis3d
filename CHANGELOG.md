@@ -6,11 +6,11 @@ All notable changes to Dramatis. The format follows [Keep a Changelog](https://k
 
 ### Changed
 
-- **tosijs-3d 0.13.0, pinned.** Its rigged-body writer bakes garment looks only when handed the baker, so the core no longer carries a JPEG decoder it never used: `dramatis` is 76.9 KiB gzip, down from 82.5, and its ceiling goes from 86 to 79 KiB (#4060). Exports are byte-identical; nothing else in its breaking changes reaches Dramatis.
+- **tosijs-3d 0.13.1, pinned.** 0.13.0's rigged-body writer bakes garment looks only when handed the baker, so the core no longer carries a JPEG decoder it never used: `dramatis` is 76.9 KiB gzip, down from 82.5, and its ceiling goes from 86 to 79 KiB (#4060). 0.13.1's foot IK sets only a grounded foot's height, so the two samples that carry clips (`with-clips`, `mesh-kevin-spacesuit`) changed; gate 1 passes. Nothing else in 0.13.0's breaking changes reaches Dramatis.
 
 ### Fixed
 
-- **The creator's preview: the right leg no longer twitches** (#4078). tosijs-3d 0.12.6 turned on foot IK when retargeting clips, and on the default MakeHuman body it jumped the right leg 10 to 20 degrees between frames of the idle loop and set the feet wide. The preview turns it off until tosijs-3d fixes it (0.13.0 does not); exports, which measured smooth, are unchanged.
+- **The creator's preview: the right leg no longer twitches** (#4078). tosijs-3d 0.12.6's foot IK jumped the default MakeHuman body's right leg 12 to 25 degrees between frames of the idle loop, and pulled the feet out to the mannequin's stance. tosijs-3d 0.13.1 fixes both; the preview had it off in the meantime and now has it on again (leg joints under 0.4 degrees a frame, measured headless against 0.13.0 as the control).
 
 ## [0.1.3] - 2026-11-12
 

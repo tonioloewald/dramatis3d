@@ -6,7 +6,7 @@
       "name": "dramatis",
       "dependencies": {
         "fflate": "0.8.3",
-        "tosijs-3d": "0.13.0",
+        "tosijs-3d": "0.13.1",
       },
       "devDependencies": {
         "@babylonjs/core": "^9.35.0",
@@ -170,7 +170,7 @@
 
     "tosijs": ["tosijs@1.10.10", "", { "bin": { "tosijs": "dist/cli.mjs" } }, "sha512-nsFcBgRvhkNVGwcZUTsKw2H2s3vKo3HuztiMZe+SsF0m3Oh7hQ7uJtZlYMKbZzqfRUOTtuw1/0RUBZtV68p92A=="],
 
-    "tosijs-3d": ["tosijs-3d@0.13.0", "", { "dependencies": { "fflate": "^0.8.3" }, "peerDependencies": { "@babylonjs/core": "^9.0.0", "@babylonjs/gui": "^9.0.0", "@babylonjs/loaders": "^9.0.0", "@babylonjs/materials": "^9.0.0", "jolt-physics": "^1.1.0", "tosijs": "^1.9.2" }, "optionalPeers": ["@babylonjs/core", "@babylonjs/gui", "@babylonjs/loaders", "@babylonjs/materials", "jolt-physics"] }, "sha512-3HOTMbqrwtuxc+mOwbteNfjhW64v4ruBD25f9Cll6hAqVclEvHTgDAN152JesnBAqURypyo0g9uvGJ57r3HcDw=="],
+    "tosijs-3d": ["tosijs-3d@0.13.1", "", { "dependencies": { "fflate": "^0.8.3" }, "peerDependencies": { "@babylonjs/core": "^9.0.0", "@babylonjs/gui": "^9.0.0", "@babylonjs/loaders": "^9.0.0", "@babylonjs/materials": "^9.0.0", "jolt-physics": "^1.1.0", "tosijs": "^1.9.2" }, "optionalPeers": ["@babylonjs/core", "@babylonjs/gui", "@babylonjs/loaders", "@babylonjs/materials", "jolt-physics"] }, "sha512-COB1c5vE9Gv+cfucemW4J08vOszlY3ULfT+zAmIfp+8FRfUQny8/uaS8xZspyb4IQNlK4xOrU7BdjINkaabe6w=="],
 
     "tosijs-kilpi": ["tosijs-kilpi@1.0.1", "", {}, "sha512-WaYFCXNt63OJWo+ZXNuVM1S5YEytwHplLYq7Ez+dD0TmzJhHJnvpGigAN+CrupjJYRQSgcixrVK0o5IwuFX+FQ=="],
 
