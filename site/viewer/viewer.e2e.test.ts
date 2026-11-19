@@ -426,9 +426,10 @@ describe.skipIf(!BROWSER)('the viewer in Chromium', () => {
       const dance = await viewerState(viewer)
       expect(dance.clipOk).toBe(true)
       expect(await animating(viewer)).toBeGreaterThan(0.01)
-      const status = await page
-        .locator('dramatis-creator .dc-status')
-        .innerText()
+      const status =
+        (await page
+          .locator('dramatis-creator')
+          .getAttribute('data-last-status')) ?? ''
       expect(status).toContain('Opened')
       expect(errors.filter((e) => !e.startsWith('console:'))).toEqual([])
       if (errors.length) console.log('console errors (not failing):', errors)
@@ -478,9 +479,10 @@ describe.skipIf(!BROWSER)('the viewer in Chromium', () => {
         expect.arrayContaining(['idle', 'walk', 'jog', 'sprint'])
       )
       await player.screenshot({ path: join(SHOTS, 'creator-to-unity.png') })
-      const status = await page
-        .locator('dramatis-creator .dc-status')
-        .innerText()
+      const status =
+        (await page
+          .locator('dramatis-creator')
+          .getAttribute('data-last-status')) ?? ''
       expect(status).toContain('in the Unity player')
       expect(errors.filter((e) => !e.startsWith('console:'))).toEqual([])
     },
@@ -501,9 +503,10 @@ describe.skipIf(!BROWSER)('the viewer in Chromium', () => {
       const bytes = new Uint8Array(readFileSync((await download.path())!))
       expect(vrmProblems(bytes)).toEqual([])
       expect(glbLicences(bytes).length).toBeGreaterThan(0)
-      const status = await page
-        .locator('dramatis-creator .dc-status')
-        .innerText()
+      const status =
+        (await page
+          .locator('dramatis-creator')
+          .getAttribute('data-last-status')) ?? ''
       expect(status).toMatch(/^Saved .+\.vrm \(VRM 1\.0, /)
       // On a phone the creator fits the width: the page doesn't scroll sideways.
       await page.setViewportSize({ width: 390, height: 780 })

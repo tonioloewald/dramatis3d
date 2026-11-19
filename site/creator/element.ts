@@ -289,6 +289,8 @@ export class DramatisCreator extends HTMLElement {
     this.statusEl.replaceChildren()
     if (message === false) return
     this.statusEl.append(message)
+    // The last message stays readable after the note fades (tests, agents).
+    this.dataset.lastStatus = message
     if (link)
       this.statusEl.append(' ', h('a', { href: link, textContent: link }))
     // A note fades on its own; an error, a link, or work in progress stays
