@@ -12,8 +12,8 @@
   and **character** names it, saves, loads and moves the file. Drag to turn the
   camera, scroll or pinch to zoom.
 - **Clips in the file.** By default an exported GLB carries no animation:
-  UAL's clips play on it by name in any engine. **in exported GLBs**, in the
-  Motion tab, picks clips for the file to carry instead, each retargeted onto
+  UAL's clips play on it by name in any engine. **in exported GLBs**, a table in
+  the Motion tab, picks clips for the file to carry instead (tick each one), each retargeted onto
   the character (Walk, Dance and the rest; CC0, by Quaternius). The viewer
   plays them, and the character file and share links keep the choice. VRM
   files carry none.
@@ -102,8 +102,8 @@ yet: garments made with it don't export yet.
 ## Size
 
 The page itself is small. The creator loads its 3D engine and the body data
-when it opens: about 2.5 MB of script (compressed; the build fails past
-2.6 MB), 1.5 MB of animation clips from this site, and about 19 MB of models
+when it opens: about 2.6 MB of script (compressed; the build fails past
+2.62 MB), 1.5 MB of animation clips from this site, and about 19 MB of models
 from `cdn.tosijs.net`, most of it a hair library the default character
 doesn't wear. All of it is cached after the first visit. It works best on a desktop
 or a recent flagship phone (it runs well on an iPhone 17 Pro). On a mid-range

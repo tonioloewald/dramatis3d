@@ -14,10 +14,14 @@ const OUT = join(CREATOR_STATIC, 'creator-app')
 /**
  * The creator's script may not grow past this, gzip -9 (#3670); the build
  * fails over it. site/docs/creator.md says "about 2.5 MB of script". History:
- * 2.49 MB at 0.1.0, 2.48 MB 2026-11-03. Lower it when the script shrinks;
- * never raise it without saying why here.
+ * 2.49 MB at 0.1.0, 2.48 MB 2026-11-03, 2.59 MB 2026-11-19 (tosijs-3d
+ * 0.13.1). Raised 2.6 -> 2.62 MB 2026-11-20: tosijs-3d 0.13.2 adds 17 KB
+ * gzip, mostly the scene element's static import of the dev server's test
+ * checklist (b3d-checklist, #4221) and gamepad panel focus (pad-ui); the clip table
+ * is 3 KB. 2.61 MB. Lower it when the script shrinks; never raise it without
+ * saying why here.
  */
-export const CREATOR_GZIP_CEILING = 2.6e6
+export const CREATOR_GZIP_CEILING = 2.62e6
 
 export async function buildCreatorApp(): Promise<boolean> {
   // Built in memory and synced: OUT is under a watched static dir (sync-dir.ts).

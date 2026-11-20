@@ -46,6 +46,7 @@ import {
 import { mountRigTool, type RigToolHandle } from 'tosijs-3d/rig-tool'
 import { barMenu } from 'tosijs-3d/bar-menu'
 import { inputField } from 'tosijs-3d/keyboard'
+import { table, type Table } from 'tosijs-3d/table'
 import { undoHistory } from 'tosijs-3d/undo-history'
 import { b3dLibrary, type B3dLibrary } from 'tosijs-3d/b3d-library'
 import { handSocket, heldGrip } from 'tosijs-3d/b3d-launcher'
@@ -232,25 +233,17 @@ export async function mountCreator(
     const off = b.observe(cb)
     if (typeof off === 'function') unwatch.push(off as () => void)
   }
-  // The Motion tab's "in exported GLBs" toggles, one per clip, kept in step
-  // with exportClips (the list the character file keeps).
-  const exported = tosi({
-    dramatisExportClips: Object.fromEntries(CLIPS.map((c) => [c, false])),
-  }).dramatisExportClips as unknown as Record<string, Box>
-  const listed = () =>
-    new Set((box('exportClips').value as string[] | undefined) ?? [])
-  const toToggles = () => {
+  // The Motion tab's "in exported GLBs" table, kept in step with exportClips
+  // (the list the character file keeps). The panel builds a new table each
+  // time it is drawn; a change from elsewhere (a load, undo) reaches the one
+  // showing.
+  const listed = () => (box('exportClips').value as string[] | undefined) ?? []
+  let clipTable: Table | null = null
+  watch(box('exportClips'), () => {
     const on = listed()
-    for (const c of CLIPS)
-      if (exported[c]!.value !== on.has(c)) exported[c]!.value = on.has(c)
-  }
-  toToggles()
-  watch(box('exportClips'), toToggles)
-  for (const c of CLIPS)
-    watch(exported[c]!, () => {
-      const on = CLIPS.filter((k) => exported[k]!.value)
-      if (on.join() !== [...listed()].join()) box('exportClips').value = on
-    })
+    if (clipTable && clipTable.selected.join() !== on.join())
+      clipTable.setSelected(on)
+  })
 
   let ch: SceneCharacter | null = null
   // Mesh bodies: the cast, and files opened here (kept with their bytes, which
@@ -451,13 +444,21 @@ export async function mountCreator(
     toggle3d({ label: 'pause', value: box('paused') }),
     // Which clips an exported GLB carries (#3908): none by default, since
     // UAL's clips play on an export by name without them.
-    label3d({ text: 'in exported GLBs' }),
-    ...CLIPS.map((clip) =>
-      toggle3d({
-        label: clip.replace(/_Loop$/, '').replace(/_/g, ' '),
-        value: exported[clip]!,
-      })
-    ),
+    (clipTable = table({
+      rows: CLIPS.map((id) => ({
+        id,
+        name: id.replace(/_Loop$/, '').replace(/_/g, ' '),
+      })),
+      columns: [{ key: 'name', label: 'in exported GLBs', flex: 1 }],
+      // Up to eight rows show; past that it scrolls (drag it).
+      height: Math.min(CLIPS.length, 8) * 28,
+      selection: 'multi',
+      selected: listed(),
+      handleSelect: (ids) => {
+        const on = CLIPS.filter((c) => ids.includes(c))
+        if (on.join() !== listed().join()) box('exportClips').value = on
+      },
+    })),
   ]
   const humanPanel = (): Widget3d[] => [
     label3d({ text: 'Body', collapsible: true, open: true, icon: 'body' }),
