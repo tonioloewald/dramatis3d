@@ -6,6 +6,11 @@
 
 import type { Character } from 'tosijs-3d/character-file'
 import { parseGlbJson } from 'tosijs-3d/glb-manifest'
+import {
+  changesPictures,
+  compactGlbTextures,
+  type PictureOptions,
+} from 'tosijs-3d/glb-textures'
 import type { ExportClip } from '../../src/clips'
 import type { ExportHeld } from '../../src/held'
 import type { HumanPack } from 'tosijs-3d/human-pack'
@@ -113,6 +118,21 @@ export interface ExportInput {
   clips?: readonly ExportClip[]
   /** What the right hand holds (#3909). */
   held?: ExportHeld
+  /**
+   * The pictures made smaller after writing (tosijs-3d's glb-textures):
+   * scaled to a longest side, opaque PNGs compressed. Unset: as made.
+   */
+  pictures?: PictureOptions
+}
+
+/** The file with its pictures as `pictures` asks (unchanged when it asks nothing). */
+async function compact(
+  bytes: Uint8Array,
+  pictures: PictureOptions | undefined
+): Promise<Uint8Array> {
+  return pictures && changesPictures(pictures)
+    ? compactGlbTextures(bytes, pictures)
+    : bytes
 }
 
 /** Export a GLB, or a sentence saying why not. */
@@ -123,11 +143,14 @@ export async function exportGlb(
   | { ok: false; message: string }
 > {
   try {
-    const glb = await exportCharacterGlb(input.character, input.pack, {
-      naming: input.naming,
-      ...(input.clips?.length ? { clips: input.clips } : {}),
-      ...(input.held ? { held: input.held } : {}),
-    })
+    const glb = await compact(
+      await exportCharacterGlb(input.character, input.pack, {
+        naming: input.naming,
+        ...(input.clips?.length ? { clips: input.clips } : {}),
+        ...(input.held ? { held: input.held } : {}),
+      }),
+      input.pictures
+    )
     return { ok: true, glb, fileName: fileNameFor(input.character.name, 'glb') }
   } catch (error) {
     return { ok: false, message: explain(error, 'export the GLB') }
@@ -174,7 +197,10 @@ export async function downloadGlb(input: ExportInput): Promise<ActionResult> {
 export async function downloadVrm(input: ExportInput): Promise<ActionResult> {
   let vrm: Uint8Array
   try {
-    vrm = await exportCharacterVrm(input.character, input.pack)
+    vrm = await compact(
+      await exportCharacterVrm(input.character, input.pack),
+      input.pictures
+    )
   } catch (error) {
     return { ok: false, message: explain(error, 'export the VRM') }
   }

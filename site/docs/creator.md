@@ -52,6 +52,12 @@
   [export format](/export-format/): metres, Y-up, a UE-named skeleton (or
   Mixamo names, from **Skeleton names** in the Export menu) and the face's
   expressions as morph targets, with every asset's licence written inside.
+- **Pictures**, in the Export menu, makes the file's pictures smaller: at
+  most 2048, 1024 or 512 pixels on a side, and **Compress** turns pictures
+  with no see-through parts into JPEGs where that is smaller. The default
+  character's pictures are already 1024, so at 512 its GLB goes from 4.9 to
+  3.1 MB. GLB and VRM downloads and both viewers follow it; as made is the
+  default.
 - **Share link** makes a link that opens this character here. It holds the
   settings and nothing else, so it works without an account; the link is
   copied to the clipboard when the browser allows it.

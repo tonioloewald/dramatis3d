@@ -47,6 +47,7 @@ import { mountRigTool, type RigToolHandle } from 'tosijs-3d/rig-tool'
 import { barMenu } from 'tosijs-3d/bar-menu'
 import { inputField } from 'tosijs-3d/keyboard'
 import { table, type Table } from 'tosijs-3d/table'
+import type { PictureOptions, TextureLevel } from 'tosijs-3d/glb-textures'
 import { undoHistory } from 'tosijs-3d/undo-history'
 import { b3dLibrary, type B3dLibrary } from 'tosijs-3d/b3d-library'
 import { handSocket, heldGrip } from 'tosijs-3d/b3d-launcher'
@@ -1240,12 +1241,16 @@ export async function mountCreator(
         plain((box('grips').value ?? {}) as Record<string, Partial<HoldGrip>>)
       )
     }
+    // What exports do to their pictures (Export > Pictures): as made unless
+    // asked. Kept for the visit, like the skeleton names; not in the file.
+    let pictures: PictureOptions = { size: 'as made', compress: false }
     const input = async () => {
       const held = await exportHeld()
       return {
         character: snapshot(),
         pack,
         naming: shell.naming(),
+        pictures,
         clips: await exportClips(),
         ...(held ? { held } : {}),
       }
@@ -1280,6 +1285,25 @@ export async function mountCreator(
               naming('mixamo', 'Mixamo names'),
             ],
           },
+          {
+            label: 'Pictures',
+            items: () => [
+              ...(['as made', '2048', '1024', '512'] as TextureLevel[]).map(
+                (size) => ({
+                  label: size === 'as made' ? 'As made' : `At most ${size} px`,
+                  checked: pictures.size === size,
+                  handleSelect: () => (pictures = { ...pictures, size }),
+                })
+              ),
+              { separator: true },
+              {
+                label: 'Compress (opaque PNG to JPEG)',
+                checked: pictures.compress === true,
+                handleSelect: () =>
+                  (pictures = { ...pictures, compress: !pictures.compress }),
+              },
+            ],
+          },
         ],
       }),
       barMenu({
@@ -1311,7 +1335,12 @@ export async function mountCreator(
       download: async () => downloadGlb(await input()),
       // VRM carries no clips, and nothing in the hand.
       vrm: () =>
-        downloadVrm({ character: snapshot(), pack, naming: shell.naming() }),
+        downloadVrm({
+          character: snapshot(),
+          pack,
+          naming: shell.naming(),
+          pictures,
+        }),
       share: () => shareLink(snapshot(), shell.shareBase()),
       character: () => snapshot(),
       dispose,
