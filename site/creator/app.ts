@@ -27,6 +27,8 @@ import {
   slider3d,
   text3d,
   toggle3d,
+  fitPanel,
+  row3d,
   type Widget3d,
 } from 'tosijs-3d/widgets3d'
 import { colorPicker3d } from 'tosijs-3d/color-picker'
@@ -105,6 +107,7 @@ import {
   type ActionResult,
 } from './actions'
 import { DEMO_LINKS, DOC_LINKS, openLink, TOSIJS_3D_BUILDER } from './links'
+import { INTRO_TEXT, INTRO_TITLE, introSeen, markIntroSeen } from './intro'
 
 /** What the shell (element.ts) gives the app. */
 export interface CreatorShell {
@@ -120,8 +123,6 @@ export interface CreatorShell {
   shareBase(): string
   /** Run an export action: the Export menu's entries. */
   act(action: 'view' | 'unity' | 'download' | 'vrm' | 'share'): void
-  /** Show the intro again (the Dramatis menu's About). */
-  about(): void
 }
 
 /** What the app gives the shell: the export actions it runs. */
@@ -135,6 +136,8 @@ export interface CreatorApp {
   share(): Promise<ActionResult>
   /** The character as a file, now. */
   character(): Character
+  /** Show the intro (the Dramatis menu's About). */
+  about(): void
   dispose(): void
 }
 
@@ -545,6 +548,8 @@ export async function mountCreator(
   ]
 
   let disposed = false
+  /** Closes the intro if it is open (set when the scene is up). */
+  let closeIntroOnDispose: (() => void) | null = null
   let pendingSave: ReturnType<typeof setTimeout> | undefined
   let resolveApp: (app: CreatorApp) => void = () => {}
   let rejectApp: (e: unknown) => void = () => {}
@@ -1311,7 +1316,7 @@ export async function mountCreator(
         title: 'Dramatis',
         layout: 'list',
         options: () => [
-          { label: 'About Dramatis', handleSelect: () => shell.about() },
+          { label: 'About Dramatis', handleSelect: () => about() },
           { separator: true },
           ...DEMO_LINKS.map((l) => ({
             label: l.label,
@@ -1329,7 +1334,48 @@ export async function mountCreator(
         ],
       })
     )
+    // THE INTRO, a scene modal (flat and in a headset): what Dramatis is,
+    // where to go, and Start. Shown on a first visit and from About.
+    let closeIntro: (() => void) | null = null
+    const about = () => {
+      closeIntro?.()
+      const done = () => {
+        closeIntro?.()
+        closeIntro = null
+      }
+      const go = (href: string) => () => {
+        done()
+        openLink(href)
+      }
+      // Start first after the words (the default, so Enter or B starts);
+      // the links two to a row, so the whole card shows without scrolling.
+      const links = [...DEMO_LINKS, TOSIJS_3D_BUILDER, ...DOC_LINKS].map((l) =>
+        button3d({
+          label: l === TOSIJS_3D_BUILDER ? 'tosijs-3d builder' : l.label,
+          handleClick: go(l.href),
+        })
+      )
+      const pairs: Widget3d[] = []
+      for (let i = 0; i < links.length; i += 2)
+        pairs.push(row3d({ gap: 8 }, ...links.slice(i, i + 2)))
+      const { svg, height } = fitPanel(
+        [
+          label3d({ text: INTRO_TITLE }),
+          ...INTRO_TEXT.map((text) => text3d({ text })),
+          button3d({ label: 'Start', default: true, handleClick: done }),
+          label3d({ text: 'elsewhere', muted: true }),
+          ...pairs,
+        ],
+        // A phone's scene is narrower than the card: keep a gutter.
+        { width: Math.max(260, Math.min(420, el.clientWidth - 24)) }
+      )
+      closeIntro = el.showModal(svg, height)
+      markIntroSeen()
+    }
+    closeIntroOnDispose = () => closeIntro?.()
+    if (!introSeen()) about()
     resolveApp({
+      about,
       view: async (w) => viewInThree(await input(), w),
       unity: async (w) => viewInUnity(await input(), w),
       download: async () => downloadGlb(await input()),
@@ -1350,6 +1396,7 @@ export async function mountCreator(
   function dispose() {
     if (disposed) return
     disposed = true
+    closeIntroOnDispose?.()
     rigging?.unmount()
     clearTimeout(pendingSave)
     for (const off of unwatch.splice(0)) off()

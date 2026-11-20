@@ -557,7 +557,7 @@ describe.skipIf(!BROWSER)('the viewer in Chromium', () => {
       // runner; if this one ever isn't, the shot and the list say why.)
       try {
         await page
-          .locator('a[href="/docs/"]:not(.dc-intro a)')
+          .locator('a[href="/docs/"]')
           .filter({ visible: true })
           .first()
           .click({ timeout: 30_000 })

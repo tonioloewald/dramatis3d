@@ -8,20 +8,19 @@
 // The export actions live here (they open the viewer's tab inside the click,
 // and report in the status line), but their controls are the scene's own:
 // the Export menu on the system bar (app.ts) calls `shell.act`. A first visit
-// gets a short intro over the stage (`about`), which the Dramatis menu shows
-// again.
+// gets a short intro, a scene modal drawn by app.ts (intro.ts), which the
+// Dramatis menu shows again.
 
 import type { NamingProfile } from '../../src/contracts/profile'
 import type { CreatorApp, CreatorShell } from './app'
-import { DEMO_LINKS, DOC_LINKS, TOSIJS_3D_BUILDER } from './links'
 import { onSmallDevice, PHONE_NOTE } from './phone'
 
 /** Where build.ts puts the heavy half, from the site root. */
 export const CREATOR_APP_PATH = '/creator-app/app.js'
 /** The creator's own page, for share links made on other origins (dev). */
 export const CREATOR_PAGE = 'https://dramatis.tosijs.net/creator/'
-/** Set once the intro has been closed, so it shows on a first visit only. */
-export const INTRO_SEEN_KEY = 'dramatis-creator-intro-seen'
+/** Set once the intro has been shown (intro.ts; the scene draws it). */
+export { INTRO_SEEN_KEY } from './intro'
 
 /** What the Export menu can ask of the shell. */
 export type CreatorAction = 'view' | 'unity' | 'download' | 'vrm' | 'share'
@@ -40,22 +39,6 @@ dramatis-creator .dc-status { position: absolute; left: 50%; bottom: 14px; trans
 dramatis-creator .dc-status:empty { display: none; }
 dramatis-creator .dc-status.dc-error { background: rgba(110, 22, 18, 0.92); }
 dramatis-creator .dc-status a { color: #9cc7ff; word-break: break-all; }
-dramatis-creator .dc-intro { position: absolute; inset: 0; z-index: 3; display: flex;
-  align-items: center; justify-content: center; padding: 16px; border-radius: 8px;
-  background: rgba(16, 20, 28, 0.55); }
-dramatis-creator .dc-intro[hidden] { display: none; }
-dramatis-creator .dc-card { max-width: 30em; max-height: 100%; overflow: auto; padding: 20px 24px;
-  border-radius: 10px; background: #f7efe3; color: #2b2118; box-shadow: 0 6px 30px rgba(0,0,0,0.4);
-  font-size: 0.95em; line-height: 1.45; }
-@media (prefers-color-scheme: dark) { dramatis-creator .dc-card { background: #2b2620; color: #ece3d6; } }
-dramatis-creator .dc-card h2 { margin: 0 0 8px; font-size: 1.6em; color: var(--dc-accent); border: 0; }
-dramatis-creator .dc-card p { margin: 0 0 10px; }
-dramatis-creator .dc-card ul { margin: 0 0 14px; padding-left: 1.2em; }
-dramatis-creator .dc-card li { margin: 2px 0; }
-dramatis-creator .dc-card a { color: var(--dc-accent); }
-dramatis-creator .dc-card button { padding: 6px 18px; font: inherit; cursor: pointer; border-radius: 6px;
-  border: 1px solid var(--dc-accent); background: var(--dc-accent); color: #fff; }
-@media (prefers-color-scheme: dark) { dramatis-creator .dc-card button { color: #1a1612; } }
 .dc-visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden;
   clip: rect(0 0 0 0); white-space: nowrap; }
 `
@@ -71,21 +54,6 @@ function h<K extends keyof HTMLElementTagNameMap>(
   return el
 }
 
-const seen = (): boolean => {
-  try {
-    return localStorage.getItem(INTRO_SEEN_KEY) === '1'
-  } catch {
-    return false
-  }
-}
-const markSeen = () => {
-  try {
-    localStorage.setItem(INTRO_SEEN_KEY, '1')
-  } catch {
-    // A private window: it shows again next visit, which is harmless.
-  }
-}
-
 export class DramatisCreator extends HTMLElement {
   private app: CreatorApp | null = null
   private mounting = false
@@ -94,7 +62,6 @@ export class DramatisCreator extends HTMLElement {
   private naming: NamingProfile = 'ue'
   private statusEl = h('div', { className: 'dc-status', role: 'status' })
   private statusTimer: ReturnType<typeof setTimeout> | undefined
-  private introEl = h('div', { className: 'dc-intro', hidden: true })
   private fit = () => this.fitHeight()
   private watcher: ResizeObserver | null = null
   private watched: HTMLElement | null = null
@@ -122,9 +89,7 @@ export class DramatisCreator extends HTMLElement {
     this.statusEl.addEventListener('click', (e) => {
       if (!(e.target instanceof HTMLAnchorElement)) this.status(false)
     })
-    this.buildIntro()
-    this.replaceChildren(stage, this.statusEl, this.introEl)
-    if (!seen()) this.about()
+    this.replaceChildren(stage, this.statusEl)
     window.addEventListener('resize', this.fit)
     requestAnimationFrame(this.fit)
     // The doc browser may still be placing the page on the first frame.
@@ -215,68 +180,9 @@ export class DramatisCreator extends HTMLElement {
     this.style.height = `${Math.max(420, Math.round(room))}px`
   }
 
-  private buildIntro() {
-    const link = (l: { label: string; href: string; note: string }) =>
-      h(
-        'li',
-        {},
-        h('a', {
-          href: l.href,
-          textContent: l.label,
-          target: '_blank',
-          rel: 'noopener',
-        }),
-        `: ${l.note}`
-      )
-    const start = h('button', { type: 'button', textContent: 'Start' })
-    const close = () => {
-      markSeen()
-      this.introEl.hidden = true
-    }
-    start.addEventListener('click', close)
-    this.introEl.addEventListener('click', (e) => {
-      if (e.target === this.introEl) close()
-    })
-    this.introEl.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') close()
-    })
-    this.introEl.setAttribute('role', 'dialog')
-    this.introEl.setAttribute('aria-modal', 'false')
-    this.introEl.setAttribute('aria-labelledby', 'dc-intro-title')
-    this.introEl.append(
-      h(
-        'div',
-        { className: 'dc-card' },
-        h('h2', { id: 'dc-intro-title', textContent: 'Dramatis' }),
-        h('p', {
-          textContent:
-            'An open 3D character creator for the web. Shape a body, dress it, ' +
-            'give it something to hold, then export it as a GLB or VRM that works ' +
-            'in three.js, Unity, Godot and other engines, its licences inside.',
-        }),
-        h('p', {
-          textContent:
-            'The panel shapes the character, a tab per part. The menus at the top ' +
-            'left of the scene export it, share it as a link, and lead to the demos. ' +
-            'Your characters stay in this browser; there are no accounts.',
-        }),
-        h(
-          'ul',
-          {},
-          ...[...DEMO_LINKS, TOSIJS_3D_BUILDER, ...DOC_LINKS].map(link)
-        ),
-        start
-      )
-    )
-    queueMicrotask(() => {
-      if (!this.introEl.hidden) start.focus({ preventScroll: true })
-    })
-  }
-
-  /** Show the intro (on a first visit, and from the Dramatis menu). */
+  /** Show the intro (also from the Dramatis menu); once the scene is up. */
   about() {
-    this.introEl.hidden = false
-    this.introEl.querySelector('button')?.focus({ preventScroll: true })
+    this.app?.about()
   }
 
   private status(
@@ -316,7 +222,6 @@ export class DramatisCreator extends HTMLElement {
           ? `${location.origin}${location.pathname}`
           : CREATOR_PAGE,
       act: (action) => this.act(action),
-      about: () => this.about(),
     }
   }
 
